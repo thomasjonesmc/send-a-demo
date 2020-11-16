@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const trackSchema = new mongoose.Schema({
-  trackTitle: { type: String, required: true, unique: true },
+  trackTitle: { type: String, required: true },
   trackPath: { type: String, required: true },
   trackAuthor: { type: String, required: true },
 });

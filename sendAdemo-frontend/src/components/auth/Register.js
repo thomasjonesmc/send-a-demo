@@ -19,14 +19,11 @@ export default function Register() {
 
     try {
       const newUser = { email, password, passwordCheck, displayName };
-      await Axios.post("http://192.168.86.105:8080/users/register", newUser);
-      const loginRes = await Axios.post(
-        "http://192.168.86.105:8080/users/login",
-        {
-          email,
-          password,
-        }
-      );
+      await Axios.post("users/register", newUser);
+      const loginRes = await Axios.post("users/login", {
+        email,
+        password,
+      });
       setUserData({ token: loginRes.data.token, user: loginRes.data.user });
       localStorage.setItem("auth-token", loginRes.data.token);
       history.push("/");

@@ -1,9 +1,8 @@
 import Axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import UserContext from "../../context/UserContext";
 import Button from "../layout/Button";
 import DemoList from "../layout/DemoList";
-import DemosLoading from "../misc/DemosLoading";
 
 export default function MyDemos() {
   const { userData } = useContext(UserContext);
@@ -12,31 +11,32 @@ export default function MyDemos() {
     demos: null,
   });
 
-  const LoadDemos = DemosLoading(DemoList);
+  let loadingTimeout = useRef(null);
 
   let token = localStorage.getItem("auth-token");
 
   useEffect(() => {
     const getUserDemos = async () => {
-      await Axios.get("http://192.168.86.105:8080/demos/get-demo-list", {
+      await Axios.get("demos/get-demo-list", {
         headers: { "x-auth-token": token },
       })
         .then((res) => {
-          console.log(res.data);
-          setAppState({ loading: false, demos: res.data });
+          loadingTimeout.current = setTimeout(() => {
+            setAppState({ loading: false, demos: res.data });
+          }, 750);
         })
         .catch((err) => {
           console.log(err.message);
         });
     };
     getUserDemos();
-  }, [setAppState]);
+  }, [setAppState, token]);
 
   return (
     <div className="container">
       <div>
         <h1 className="text-3xl text-bold text-center py-5">
-          {userData.user.displayName}'s demos
+          {userData.user && `${userData.user.displayName}`}'s demos
         </h1>
       </div>
       <hr></hr>
@@ -44,7 +44,13 @@ export default function MyDemos() {
         <Button name="New Demo +" path="/create-demo" />
       </div>
       <div>
-        <LoadDemos isLoading={appState.loading} demos={appState.demos} />
+        {appState.loading ? (
+          <div className="text-center py-20">
+            <p className="text-2xl">Fetching demos... 🎸 </p>
+          </div>
+        ) : (
+          <DemoList demos={appState.demos} />
+        )}
       </div>
     </div>
   );

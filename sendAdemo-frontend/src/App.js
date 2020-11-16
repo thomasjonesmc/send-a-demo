@@ -26,13 +26,11 @@ export default function App() {
         localStorage.setItem("auth-token", "");
         token = "";
       }
-      const tokenRes = await Axios.post(
-        "http://192.168.86.105:8080/users/tokenIsValid",
-        null,
-        { headers: { "x-auth-token": token } }
-      );
+      const tokenRes = await Axios.post("users/tokenIsValid", null, {
+        headers: { "x-auth-token": token },
+      });
       if (tokenRes.data) {
-        const userRes = await Axios.get("http://192.168.86.105:8080/users/", {
+        const userRes = await Axios.get("users/", {
           headers: { "x-auth-token": token },
         });
         setUserData({
@@ -54,13 +52,13 @@ export default function App() {
           <Header />
           <div className="container mx-auto">
             <Switch>
-              {/*TODO: Add dynamic routing for demos */}
               <Route exact path="/" component={Home} />
-              <Route path="/login" component={Login} />
-              <Route path="/register" component={Register} />
-              <Route path="/my-demos" component={MyDemos} />
-              <Route path="/create-demo" component={CreateDemo} />
-              <Route path="/demo/:path" component={DemoHub} />
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/register" component={Register} />
+              <Route exact path="/my-demos" component={MyDemos} />
+              <Route exact path="/create-demo" component={CreateDemo} />
+              <Route exact path="/demo/:path" component={DemoHub} />
+              <Route path="/" render={() => <div>404</div>} />
             </Switch>
           </div>
         </UserContext.Provider>

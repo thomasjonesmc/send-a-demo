@@ -19,10 +19,7 @@ export default function CreateDemo() {
     e.preventDefault();
     try {
       const newDemo = { userId, displayName, demoTitle };
-      const newDemoRes = await Axios.post(
-        "http://192.168.86.105:8080/demos/new-demo",
-        newDemo
-      );
+      const newDemoRes = await Axios.post("demos/new-demo", newDemo);
       console.log(newDemoRes);
       history.push(`/demo/path/?demo=${newDemoRes.data._id}`);
     } catch (e) {

@@ -11,11 +11,10 @@ export default function DemoHub() {
 
   const params = new URLSearchParams(document.location.search.substring(1));
   const demoID = params.get("demo");
-  console.log(demoID);
 
   useEffect(() => {
     const getDemo = async () => {
-      await Axios.get("http://192.168.86.105:8080/demos/get-demo-by-id", {
+      await Axios.get("/demos/get-demo-by-id", {
         params: { id: demoID },
       })
         .then((res) => {
@@ -29,7 +28,7 @@ export default function DemoHub() {
         });
     };
     getDemo();
-  }, [setAppState]);
+  }, [setAppState, demoID]);
 
   if (appState.loading) {
     return (

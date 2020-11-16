@@ -16,10 +16,7 @@ export default function Login() {
     e.preventDefault(); //stops the page from reloading upon form submission
     try {
       const loginUser = { email, password };
-      const loginRes = await Axios.post(
-        "http://192.168.86.105:8080/users/login",
-        loginUser
-      );
+      const loginRes = await Axios.post("users/login", loginUser);
       setUserData({ token: loginRes.data.token, user: loginRes.data.user });
       localStorage.setItem("auth-token", loginRes.data.token);
       history.push("/my-demos");

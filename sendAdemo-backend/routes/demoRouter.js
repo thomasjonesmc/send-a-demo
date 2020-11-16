@@ -47,7 +47,8 @@ router.get("/get-demo-by-id", async (req, res) => {
       path: "tracks",
       model: Track,
     });
-    // await demo.populate({ path: "tracks", model: Track });
+
+    await demo.populate({ path: "tracks", model: Track });
 
     res.json(demo);
   } catch (err) {

@@ -42,14 +42,15 @@ router.post("/new-demo", async (req, res) => {
 });
 
 router.get("/get-demo-by-id", async (req, res) => {
+  console.log(req);
   try {
-    const demo = await Demo.findOne({ _id: req.query.id }).populate({
+    demo = await Demo.findOne({ _id: req.query.id }).populate({
       path: "tracks",
       model: Track,
-    });
+    }); //demo = await Demo.findOne({ _id: req.body.id });
 
-    await demo.populate({ path: "tracks", model: Track });
-
+    //let demo = await Demo.findOne({ _id: req.body._id });
+    console.log(demo);
     res.json(demo);
   } catch (err) {
     res.status(400).json({ msg: err.message });
@@ -77,12 +78,12 @@ router.delete("/delete-demo", async (req, res) => {
   }
 });
 
-router.post("/new-track/:id", auth, async (req, res) => {
+router.post("/new-track/:id", async (req, res) => {
   try {
-    const user = await User.findById(req.user);
-    const trackAuthor = user.displayName;
+    const trackPath = req.params.id;
 
-    let { trackTitle, trackPath } = req.body;
+    let trackTitle = req.body.trackTitle;
+    let trackAuthor = req.body.trackAuthor;
 
     const newTrack = new Track({
       trackTitle,
@@ -92,7 +93,17 @@ router.post("/new-track/:id", auth, async (req, res) => {
 
     newTrack.trackPath += `/${newTrack._id}`;
 
-    Track.create(newTrack);
+    const saveTrack = async () => {
+      await newTrack.save((err) => {
+        if (err)
+          return res
+            .status(400)
+            .json({ error: `error on saving track : ${err.message}` });
+      });
+    };
+
+    saveTrack();
+    // Track.create(newTrack);
 
     return Demo.findOneAndUpdate(
       { _id: req.params.id },
@@ -104,10 +115,9 @@ router.post("/new-track/:id", auth, async (req, res) => {
         console.log(demo);
       })
       .catch((err) => {
-        res.status(400);
+        res.status(400).json({ error: err.message });
       });
-    // const savedTrack = await newTrack.save();
-    //
+    //const savedTrack = await newTrack.save();
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

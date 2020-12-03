@@ -1,6 +1,7 @@
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import ErrorNotice from "../misc/ErrorNotice";
+import NewTrack from "../misc/NewTrack";
 
 export default function DemoHub() {
   const [appState, setAppState] = useState({
@@ -8,26 +9,29 @@ export default function DemoHub() {
     demo: null,
   });
   const [errorMsg, setErrorMsg] = useState();
+  const [showNewTrack, setShowNewTrack] = useState(false);
 
   const params = new URLSearchParams(document.location.search.substring(1));
   const demoID = params.get("demo");
 
+  //after page refresh from new track, user loses auth token
+  //    needs to be fixed
   useEffect(() => {
-    const getDemo = async () => {
-      await Axios.get("/demos/get-demo-by-id", {
-        params: { id: demoID },
-      })
-        .then((res) => {
+    try {
+      const getDemo = async () => {
+        await Axios.get("/demos/get-demo-by-id", {
+          params: { id: demoID },
+        }).then((res) => {
           setAppState({
             loading: false,
             demo: res.data,
           });
-        })
-        .catch((err) => {
-          err.response.data.msg && setErrorMsg(err.response.data.msg);
         });
-    };
-    getDemo();
+      };
+      getDemo();
+    } catch (err) {
+      err.response.data.msg && setErrorMsg(err.response.data.msg);
+    }
   }, [setAppState, demoID]);
 
   if (appState.loading) {
@@ -50,14 +54,23 @@ export default function DemoHub() {
           {appState.demo.demoTitle}
         </h1>
         <hr></hr>
+
+        <div className="flex pt-5">
+          <button
+            className="mx-auto bg-white border-solid border-2 border-black hover:bg-gray-200 text-black  py-2 px-4 rounded"
+            type="button"
+            value="New Track +"
+            onClick={() => setShowNewTrack(!showNewTrack)}
+          >
+            {showNewTrack ? "Cancel" : "New Track +"}
+          </button>
+        </div>
+        <div>{showNewTrack ? <NewTrack demo={appState.demo} /> : ""}</div>
+
         <div id="demoContainer" className="flex pt-5">
           <div className="text-lg">
             {appState.demo.tracks.map((track) => {
-              return (
-                <div key={track._id}>
-                  <p>{track.trackTitle}</p>
-                </div>
-              );
+              return <div key={track._id}>{track.trackTitle}</div>;
             })}
           </div>
         </div>

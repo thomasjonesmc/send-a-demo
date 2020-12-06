@@ -32,7 +32,7 @@ export default function DemoHub() {
     } catch (err) {
       err.response.data.msg && setErrorMsg(err.response.data.msg);
     }
-  }, [setAppState, demoID, showNewTrack]);
+  }, [setAppState, demoID, showNewTrack, appState.loading]);
 
   if (appState.loading) {
     return (
@@ -65,10 +65,23 @@ export default function DemoHub() {
             {showNewTrack ? "Close" : "New Track +"}
           </button>
         </div>
-        <div>{showNewTrack ? <NewTrack demo={appState.demo} /> : ""}</div>
+        <div>
+          {showNewTrack ? (
+            <NewTrack
+              demo={appState.demo}
+              onClick={(e) => setShowNewTrack(false)}
+            />
+          ) : (
+            ""
+          )}
+        </div>
 
         <div id="demoContainer" className="flex pt-5">
-          <TrackList tracks={appState.demo.tracks} demo={demoID} />
+          <TrackList
+            tracks={appState.demo.tracks}
+            demo={demoID}
+            onDelete={() => setAppState({ loading: true })}
+          />
           {/* {appState.demo.tracks.map((track) => {
               return <TrackList track={track} />;
             })} */}

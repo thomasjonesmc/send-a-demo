@@ -1,11 +1,9 @@
 import React, { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
 import Axios from "axios";
 import UserContext from "../../context/UserContext";
 
 export default function NewTrack(props) {
   const [trackTitle, setTrackTitle] = useState("");
-  const history = useHistory();
   const { userData } = useContext(UserContext);
 
   const submit = async (e) => {
@@ -18,7 +16,7 @@ export default function NewTrack(props) {
         newTrack
       );
       console.log(newTrackRes);
-      history.push(`/demo/path/?demo=${props.demo._id}`);
+      props.onClick();
     } catch (e) {
       console.log(e.response.data.msg);
     }
@@ -45,6 +43,7 @@ export default function NewTrack(props) {
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
           value="create track"
+          // onClick={(e) => props.onClick()}
         />
       </div>
     </form>

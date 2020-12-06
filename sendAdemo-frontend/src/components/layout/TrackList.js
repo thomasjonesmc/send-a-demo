@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import Axios from "axios";
 
 export default function Track(props) {
-  let [selectedTrack, setSelectedTrack] = useState(null);
-  const history = useHistory();
+  let [selectedTrack, setSelectedTrack] = useState();
   const token = localStorage.getItem("auth-token");
 
   const deleteTrack = async (e) => {
@@ -19,7 +17,7 @@ export default function Track(props) {
         },
       });
       console.log(delTrackRes);
-      history.push(`/demo/path/?demo=${props.demo}`);
+      props.onDelete();
     } catch (err) {
       console.log(err);
     }

@@ -42,15 +42,11 @@ router.post("/new-demo", async (req, res) => {
 });
 
 router.get("/get-demo-by-id", async (req, res) => {
-  console.log(req);
   try {
     demo = await Demo.findOne({ _id: req.query.id }).populate({
       path: "tracks",
       model: Track,
-    }); //demo = await Demo.findOne({ _id: req.body.id });
-
-    //let demo = await Demo.findOne({ _id: req.body._id });
-    console.log(demo);
+    });
     res.json(demo);
   } catch (err) {
     res.status(400).json({ msg: err.message });
@@ -112,7 +108,6 @@ router.post("/new-track/:id", async (req, res) => {
     )
       .then((demo) => {
         res.json(demo);
-        console.log(demo);
       })
       .catch((err) => {
         res.status(400).json({ error: err.message });
@@ -136,7 +131,6 @@ router.delete("/delete-track", auth, async (req, res) => {
     )
       .then((demo) => {
         res.json(demo);
-        console.log(demo);
       })
       .catch((err) => {
         res.status(400).json({ error: err.message });

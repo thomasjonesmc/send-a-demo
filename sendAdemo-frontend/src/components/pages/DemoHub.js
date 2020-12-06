@@ -2,20 +2,20 @@ import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import ErrorNotice from "../misc/ErrorNotice";
 import NewTrack from "../misc/NewTrack";
+import TrackList from "../layout/TrackList";
 
 export default function DemoHub() {
   const [appState, setAppState] = useState({
     loading: true,
     demo: null,
   });
+
   const [errorMsg, setErrorMsg] = useState();
   const [showNewTrack, setShowNewTrack] = useState(false);
 
   const params = new URLSearchParams(document.location.search.substring(1));
   const demoID = params.get("demo");
 
-  //after page refresh from new track, user loses auth token
-  //    needs to be fixed
   useEffect(() => {
     try {
       const getDemo = async () => {
@@ -32,7 +32,7 @@ export default function DemoHub() {
     } catch (err) {
       err.response.data.msg && setErrorMsg(err.response.data.msg);
     }
-  }, [setAppState, demoID]);
+  }, [setAppState, demoID, showNewTrack]);
 
   if (appState.loading) {
     return (
@@ -62,17 +62,16 @@ export default function DemoHub() {
             value="New Track +"
             onClick={() => setShowNewTrack(!showNewTrack)}
           >
-            {showNewTrack ? "Cancel" : "New Track +"}
+            {showNewTrack ? "Close" : "New Track +"}
           </button>
         </div>
         <div>{showNewTrack ? <NewTrack demo={appState.demo} /> : ""}</div>
 
         <div id="demoContainer" className="flex pt-5">
-          <div className="text-lg">
-            {appState.demo.tracks.map((track) => {
-              return <div key={track._id}>{track.trackTitle}</div>;
-            })}
-          </div>
+          <TrackList tracks={appState.demo.tracks} demo={demoID} />
+          {/* {appState.demo.tracks.map((track) => {
+              return <TrackList track={track} />;
+            })} */}
         </div>
       </div>
     );

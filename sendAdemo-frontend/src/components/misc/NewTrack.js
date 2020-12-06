@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import Axios from "axios";
 import UserContext from "../../context/UserContext";
 
-export default function NewTrack(demo) {
+export default function NewTrack(props) {
   const [trackTitle, setTrackTitle] = useState("");
   const history = useHistory();
   const { userData } = useContext(UserContext);
@@ -14,17 +14,15 @@ export default function NewTrack(demo) {
     try {
       const newTrack = { trackTitle, trackAuthor: userData.user.displayName };
       const newTrackRes = await Axios.post(
-        `/demos/new-track/${demo.demo._id}`,
+        `/demos/new-track/${props.demo._id}`,
         newTrack
       );
       console.log(newTrackRes);
-      history.go(0);
+      history.push(`/demo/path/?demo=${props.demo._id}`);
     } catch (e) {
       console.log(e.response.data.msg);
     }
   };
-
-  console.log(demo);
 
   return (
     <form className="bg-white rounded px-8 pt-6 pb-8 mb-4" onSubmit={submit}>

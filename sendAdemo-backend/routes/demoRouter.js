@@ -54,11 +54,26 @@ router.get("/get-demo-by-id", async (req, res) => {
 });
 
 router.get("/get-demo-list", auth, async (req, res) => {
+  let featuredDemos = [];
   try {
     const user = await User.findById(req.user);
     userDemos = await Demo.find({ displayName: user.displayName }).sort({
       modifiedOn: "desc",
     });
+    featuredTracks = await Track.find({ trackAuthor: user.displayName });
+    for (let track of Object.entries(featuredTracks)) {
+      let featuredDemo = await Demo.findOne({
+        tracks: track[1]._id,
+        displayName: { $ne: track[1].trackAuthor },
+      });
+      featuredDemos.push(featuredDemo);
+    }
+    let uniqueFeaturedDemos = featuredDemos.filter(function ({ _id }) {
+      return !this[_id] && (this[_id] = _id);
+    }, {});
+
+    userDemos = [...userDemos, ...uniqueFeaturedDemos];
+
     res.json(userDemos);
   } catch (err) {
     res.status(500).json({ error: err.message });

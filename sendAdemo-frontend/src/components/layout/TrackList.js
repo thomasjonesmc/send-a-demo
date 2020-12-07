@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import Axios from "axios";
+import Recorder from "../misc/Recorder";
 
 export default function Track(props) {
   let [selectedTrack, setSelectedTrack] = useState();
   const token = localStorage.getItem("auth-token");
 
-  const deleteTrack = async (e) => {
+  const deleteTrack = async (e, track) => {
+    console.log(track);
+
     e.preventDefault();
     try {
       const delTrackRes = await Axios.delete(`/demos/delete-track/`, {
@@ -13,7 +16,7 @@ export default function Track(props) {
           "x-auth-token": token,
         },
         data: {
-          _id: selectedTrack._id,
+          _id: track._id,
         },
       });
       console.log(delTrackRes);
@@ -31,19 +34,30 @@ export default function Track(props) {
             key={track._id}
             className={
               selectedTrack === track
-                ? "rounded overflow-hidden shadow-lg pt-5 border-4 border-solid border-green-400"
-                : "rounded overflow-hidden shadow-lg pt-5"
+                ? "rounded overflow-hidden shadow-lg mt-5 pt-3 grid grid-cols-5 border-2 border-dashed border-green-400"
+                : "rounded overflow-hidden shadow-lg mt-5 pt-3 grid grid-cols-5"
             }
-            onClick={(e) => setSelectedTrack(track)}
+            onClick={
+              selectedTrack === track
+                ? (e) => setSelectedTrack()
+                : (e) => setSelectedTrack(track)
+            }
           >
-            <div className="px-6 px-4">
-              <h3 className="font-bold text-xl mb-2 underline">
-                {track.trackTitle}
-              </h3>
-              <p className="text-gray-700">{track.trackAuthor}</p>
+            <div className="px-3 col-start-1 col-span-1 pt-5">
+              <h4 className="font-bold">{track.trackTitle}</h4>
+              <p>{track.trackAuthor}</p>
+              <div className="py-3"></div>
             </div>
-            <div>
-              <button onClick={(e) => deleteTrack(e)}>Delete Track</button>
+            <div className="col-start-2 col-span-4 border border-gray-200">
+              <Recorder track={track} />
+            </div>
+            <div className="p-2 border border-solid border-gray-200 col-span-5">
+              <button
+                className="mx-auto bg-white border-solid border border-red-400 hover:bg-gray-200 text-black  py-2 px-4 rounded"
+                onClick={(e) => deleteTrack(e, track)}
+              >
+                Delete
+              </button>
             </div>
           </div>
         );

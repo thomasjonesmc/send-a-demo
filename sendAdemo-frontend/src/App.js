@@ -38,7 +38,6 @@ export default function App() {
           user: userRes.data,
         });
       }
-      console.log(tokenRes.data);
     };
     checkLoggedIn();
   }, []);

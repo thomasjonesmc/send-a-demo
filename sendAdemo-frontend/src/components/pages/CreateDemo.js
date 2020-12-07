@@ -8,8 +8,6 @@ export default function CreateDemo() {
   const { userData } = useContext(UserContext);
   const history = useHistory();
 
-  console.log(userData);
-
   const [userId] = useState(userData.user.id);
   const [displayName] = useState(userData.user.displayName);
   const [demoTitle, setDemoTitle] = useState();
@@ -20,7 +18,6 @@ export default function CreateDemo() {
     try {
       const newDemo = { userId, displayName, demoTitle };
       const newDemoRes = await Axios.post("demos/new-demo", newDemo);
-      console.log(newDemoRes);
       history.push(`/demo/path/?demo=${newDemoRes.data._id}`);
     } catch (e) {
       e.response.data.msg && setErrorMsg(e.response.data.msg);

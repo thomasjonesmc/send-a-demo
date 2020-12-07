@@ -7,11 +7,9 @@ export default function Track(props) {
   const token = localStorage.getItem("auth-token");
 
   const deleteTrack = async (e, track) => {
-    console.log(track);
-
     e.preventDefault();
     try {
-      const delTrackRes = await Axios.delete(`/demos/delete-track/`, {
+      await Axios.delete(`/demos/delete-track/`, {
         headers: {
           "x-auth-token": token,
         },
@@ -19,11 +17,8 @@ export default function Track(props) {
           _id: track._id,
         },
       });
-      console.log(delTrackRes);
       props.onDelete();
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   return (

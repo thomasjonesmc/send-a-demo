@@ -11,15 +11,9 @@ export default function NewTrack(props) {
     if (trackTitle === "") return;
     try {
       const newTrack = { trackTitle, trackAuthor: userData.user.displayName };
-      const newTrackRes = await Axios.post(
-        `/demos/new-track/${props.demo._id}`,
-        newTrack
-      );
-      console.log(newTrackRes);
+      await Axios.post(`/demos/new-track/${props.demo._id}`, newTrack);
       props.onClick();
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   };
 
   return (

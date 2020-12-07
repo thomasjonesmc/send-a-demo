@@ -1,11 +1,9 @@
 import React, { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
 import Axios from "axios";
 import UserContext from "../../context/UserContext";
 
-export default function NewTrack(demo) {
+export default function NewTrack(props) {
   const [trackTitle, setTrackTitle] = useState("");
-  const history = useHistory();
   const { userData } = useContext(UserContext);
 
   const submit = async (e) => {
@@ -14,20 +12,18 @@ export default function NewTrack(demo) {
     try {
       const newTrack = { trackTitle, trackAuthor: userData.user.displayName };
       const newTrackRes = await Axios.post(
-        `/demos/new-track/${demo.demo._id}`,
+        `/demos/new-track/${props.demo._id}`,
         newTrack
       );
       console.log(newTrackRes);
-      history.go(0);
+      props.onClick();
     } catch (e) {
-      console.log(e.response.data.msg);
+      console.log(e);
     }
   };
 
-  console.log(demo);
-
   return (
-    <form className="bg-white rounded px-8 pt-6 pb-8 mb-4" onSubmit={submit}>
+    <form className="bg-white rounded px-8 pt-6 mb-4" onSubmit={submit}>
       <div className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-2"
@@ -47,6 +43,7 @@ export default function NewTrack(demo) {
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
           value="create track"
+          // onClick={(e) => props.onClick()}
         />
       </div>
     </form>

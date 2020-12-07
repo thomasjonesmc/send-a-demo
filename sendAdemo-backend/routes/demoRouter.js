@@ -42,15 +42,11 @@ router.post("/new-demo", async (req, res) => {
 });
 
 router.get("/get-demo-by-id", async (req, res) => {
-  console.log(req);
   try {
     demo = await Demo.findOne({ _id: req.query.id }).populate({
       path: "tracks",
       model: Track,
-    }); //demo = await Demo.findOne({ _id: req.body.id });
-
-    //let demo = await Demo.findOne({ _id: req.body._id });
-    console.log(demo);
+    });
     res.json(demo);
   } catch (err) {
     res.status(400).json({ msg: err.message });
@@ -58,11 +54,26 @@ router.get("/get-demo-by-id", async (req, res) => {
 });
 
 router.get("/get-demo-list", auth, async (req, res) => {
+  let featuredDemos = [];
   try {
     const user = await User.findById(req.user);
     userDemos = await Demo.find({ displayName: user.displayName }).sort({
       modifiedOn: "desc",
     });
+    featuredTracks = await Track.find({ trackAuthor: user.displayName });
+    for (let track of Object.entries(featuredTracks)) {
+      let featuredDemo = await Demo.findOne({
+        tracks: track[1]._id,
+        displayName: { $ne: track[1].trackAuthor },
+      });
+      featuredDemos.push(featuredDemo);
+    }
+    let uniqueFeaturedDemos = featuredDemos.filter(function ({ _id }) {
+      return !this[_id] && (this[_id] = _id);
+    }, {});
+
+    userDemos = [...userDemos, ...uniqueFeaturedDemos];
+
     res.json(userDemos);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -112,7 +123,6 @@ router.post("/new-track/:id", async (req, res) => {
     )
       .then((demo) => {
         res.json(demo);
-        console.log(demo);
       })
       .catch((err) => {
         res.status(400).json({ error: err.message });
@@ -136,7 +146,6 @@ router.delete("/delete-track", auth, async (req, res) => {
     )
       .then((demo) => {
         res.json(demo);
-        console.log(demo);
       })
       .catch((err) => {
         res.status(400).json({ error: err.message });

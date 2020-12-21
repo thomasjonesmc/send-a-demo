@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Axios from "axios";
-import Recorder from "../misc/Recorder";
+//import Recorder from "../../../misc/Recorder";
 
 export default function Track(props) {
   let [selectedTrack, setSelectedTrack] = useState();
@@ -44,7 +44,8 @@ export default function Track(props) {
               <div className="py-3"></div>
             </div>
             <div className="col-start-2 col-span-4 border border-gray-200">
-              <Recorder track={track} />
+              {/* <Recorder track={track} /> */}
+              <p>placeholder for recorder</p>
             </div>
             <div className="p-2 border border-solid border-gray-200 col-span-5">
               <button

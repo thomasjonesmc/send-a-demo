@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
-import AuthOptions from "../auth/AuthOptions";
-import logo from "../../img/demo.svg";
-import UserContext from "../../context/UserContext";
+import AuthOptions from "components/header/AuthOptions";
+import logo from "img/demo.svg";
+import UserContext from "context/UserContext";
 
 export default function Header() {
   const { userData } = useContext(UserContext);

@@ -1,8 +1,8 @@
 import Axios from "axios";
 import React, { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
-import UserContext from "../../context/UserContext";
-import ErrorNotice from "../misc/ErrorNotice";
+import UserContext from "context/UserContext";
+import ErrorNotice from "components/reusable/ErrorNotice";
 
 export default function CreateDemo() {
   const { userData } = useContext(UserContext);

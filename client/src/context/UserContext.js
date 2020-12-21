@@ -1,9 +1,8 @@
 import { createContext, useEffect, useState } from "react";
-import Axios from 'axios';
+import Axios from "axios";
 
 const UserContext = createContext(null);
 export const UserProvider = (props) => {
-
   const [userData, setUserData] = useState({
     token: undefined,
     user: undefined,
@@ -31,12 +30,10 @@ export const UserProvider = (props) => {
     };
     checkLoggedIn();
   }, []);
-  /* ^^^
-    If no values are passed to useEffect, the hook will only be ran once at the start*/
 
   // return the UserContext.Provider with the values already baked in. This way our app component only has to be wrapped in the UserProvider
   // we could even override the value prop with different values if we wanted if we passed `value` in as props
-  return <UserContext.Provider value={{ userData, setUserData }} {...props} />
-}
+  return <UserContext.Provider value={{ userData, setUserData }} {...props} />;
+};
 
 export default UserContext;

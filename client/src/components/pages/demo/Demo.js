@@ -1,8 +1,8 @@
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
-import ErrorNotice from "../misc/ErrorNotice";
-import NewTrack from "../misc/NewTrack";
-import TrackList from "../layout/TrackList";
+import ErrorNotice from "components/reusable/ErrorNotice";
+import NewTrack from "components/pages/demo/track/NewTrack";
+import TrackList from "components/pages/demo/track/TrackList";
 
 export default function DemoHub() {
   const [appState, setAppState] = useState({
@@ -37,7 +37,7 @@ export default function DemoHub() {
   if (appState.loading) {
     return (
       <div className="container">
-        <h1 className="text-3xl text-center py-5">🎹 🎤 🎵 </h1>
+        <h1>🎹 🎤 🎵 </h1>
         {errorMsg && (
           <ErrorNotice
             message={errorMsg}
@@ -50,14 +50,11 @@ export default function DemoHub() {
   if (appState.demo !== null) {
     return (
       <div className="container">
-        <h1 className="text-2xl text-bold text-center py-5 underline">
-          {appState.demo.demoTitle}
-        </h1>
+        <h1>{appState.demo.demoTitle}</h1>
         <hr></hr>
 
-        <div className="flex pt-5">
+        <div>
           <button
-            className="mx-auto bg-white border-solid border-2 border-black hover:bg-gray-200 text-black  py-2 px-4 rounded"
             type="button"
             value="New Track +"
             onClick={() => setShowNewTrack(!showNewTrack)}

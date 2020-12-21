@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import Axios from "axios";
-import UserContext from "../../context/UserContext";
+import UserContext from "context/UserContext";
 
 export default function NewTrack(props) {
   const [trackTitle, setTrackTitle] = useState("");

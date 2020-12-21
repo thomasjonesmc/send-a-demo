@@ -1,8 +1,8 @@
 import Axios from "axios";
 import React, { useContext, useEffect, useState, useRef } from "react";
-import UserContext from "../../context/UserContext";
-import Button from "../layout/Button";
-import DemoList from "../layout/DemoList";
+import UserContext from "../../../context/UserContext";
+import Button from "components/reusable/Button";
+import DemoList from "components/pages/myDemos/DemoList";
 
 export default function MyDemos() {
   const { userData } = useContext(UserContext);

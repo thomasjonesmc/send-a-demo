@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import Button from "../layout/Button";
-import UserContext from "../../context/UserContext";
 import { useHistory } from "react-router-dom";
+import Button from "components/reusable/Button";
+import UserContext from "context/UserContext";
 
 export default function Home() {
   const { userData } = useContext(UserContext);

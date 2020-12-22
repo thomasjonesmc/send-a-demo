@@ -3,6 +3,7 @@ import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import UserContext from "context/UserContext";
 import ErrorNotice from "components/reusable/ErrorNotice";
+import "components/pages/login/login.css";
 
 export default function Login() {
   const [email, setEmail] = useState();
@@ -26,43 +27,27 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full">
-      <h2 className="text-2xl text-bold px-8 pt-4">Login</h2>
-      <form className="bg-white rounded px-8 pt-6 pb-8 mb-4" onSubmit={submit}>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="email"
-          >
-            Email
-          </label>
+    <div className="formContainer">
+      <h2 className="formHeader">Login</h2>
+      <form id="form" onSubmit={submit}>
+        <div>
+          <label htmlFor="email">Email</label>
           <input
             id="email"
             type="email"
             onChange={(e) => setEmail(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
         <div className="mb-6">
-          <label
-            htmlFor="password"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Password
-          </label>
+          <label htmlFor="password">Password</label>
           <input
             id="password"
             type="password"
             onChange={(e) => setPassword(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
         <div>
-          <input
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
-            value="Login"
-          />
+          <input id="loginBtn" type="submit" value="Login" />
         </div>
       </form>
       {errorMsg && (

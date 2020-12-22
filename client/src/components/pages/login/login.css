@@ -1,0 +1,27 @@
+.formContainer {
+  padding-top: 2em;
+  display: flex;
+  margin: 0 auto;
+  width: 40%;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.formHeader {
+  text-align: center;
+}
+
+input {
+  height: 4em;
+  display: flex;
+  width: 100%;
+  margin-bottom: 1.5em;
+  appearance: none;
+  /* -webkit-appearance: none; */
+}
+
+@media screen and (max-width: 550px) {
+  .formContainer {
+    width: 80%;
+  }
+}

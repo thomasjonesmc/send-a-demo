@@ -29,10 +29,16 @@ h6,
 p,
 ul,
 ol {
-  margin: 1em, 0;
+  margin: 1em 0;
 }
 
 /* General */
 .page {
   padding: 1rem;
+}
+
+input[type="submit"] {
+  border: 1px solid black;
+  background-color: white;
+  padding: 1em;
 }

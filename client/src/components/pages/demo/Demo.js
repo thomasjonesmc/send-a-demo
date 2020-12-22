@@ -55,6 +55,7 @@ export default function DemoHub() {
 
         <div>
           <button
+            id="btnComp"
             type="button"
             value="New Track +"
             onClick={() => setShowNewTrack(!showNewTrack)}

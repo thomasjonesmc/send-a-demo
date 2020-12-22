@@ -1,0 +1,50 @@
+#container {
+  display: flex;
+  margin: 0 auto;
+  width: 40%;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#homeHeader {
+  padding-top: 3em;
+  text-align: center;
+}
+
+#homeHeader > h3 {
+  padding-top: 1.5em;
+  font-weight: 400;
+  width: 90%;
+  margin: auto;
+}
+
+#homeBtns {
+  padding-top: 2em;
+  margin: auto;
+}
+
+#homeBody {
+  padding-top: 2em;
+  margin: auto;
+  width: 90%;
+}
+
+#homeBody > div + div {
+  padding-top: 1.5em;
+}
+
+#homeBody > div > p {
+  padding-top: 0.5em;
+}
+
+@media screen and (max-width: 1000px) {
+  #container {
+    width: 60%;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  #container {
+    width: 100%;
+  }
+}

@@ -35,10 +35,12 @@ export default function Register() {
 
   return (
     <div className="formContainer">
-      <h2 className="formHeader">Register</h2>
+      <h2 className="pageTitle">Register</h2>
       <form onSubmit={submit}>
         <div>
-          <label htmlFor="email">Email</label>
+          <label className="lbl" htmlFor="email">
+            Email
+          </label>
           <input
             id="email"
             type="email"
@@ -46,14 +48,18 @@ export default function Register() {
           />
         </div>
         <div>
-          <label htmlFor="displayName">Display Name</label>
+          <label className="lbl" htmlFor="displayName">
+            Display Name
+          </label>
           <input
             id="displayName"
             onChange={(e) => setDisplayName(e.target.value)}
           />
         </div>
         <div>
-          <label htmlFor="password">Password</label>
+          <label className="lbl" htmlFor="password">
+            Password
+          </label>
           <input
             id="password"
             type="password"
@@ -61,15 +67,17 @@ export default function Register() {
           />
         </div>
         <div>
+          <label className="lbl" htmlFor="password">
+            Verify Password
+          </label>
           <input
             id="passwordCheck"
             type="password"
-            placeholder="Verify Password"
             onChange={(e) => setPasswordCheck(e.target.value)}
           />
         </div>
-        <div>
-          <input type="submit" value="Register 😁" />
+        <div className="btnDiv">
+          <button type="submit">Register 😁</button>
         </div>
       </form>
       {errorMsg && (

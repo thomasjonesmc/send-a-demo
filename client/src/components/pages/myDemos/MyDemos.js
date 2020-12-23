@@ -1,8 +1,9 @@
 import Axios from "axios";
 import React, { useContext, useEffect, useState, useRef } from "react";
 import UserContext from "../../../context/UserContext";
-import Button from "components/reusable/button//Button";
-import DemoList from "components/pages/myDemos/DemoList";
+import Button from "components/reusable/button/Button";
+import DemoList from "components/pages/myDemos/RenderDemos";
+import "components/pages/myDemos/mydemos.css";
 
 export default function MyDemos() {
   const { userData } = useContext(UserContext);
@@ -33,20 +34,20 @@ export default function MyDemos() {
   }, [setAppState, token]);
 
   return (
-    <div className="container">
+    <div id="myDemosContainer">
       <div>
-        <h1 className="text-3xl text-bold text-center py-5">
+        <h1 className="pageTitle">
           {userData.user && `${userData.user.displayName}`}'s demos
         </h1>
       </div>
       <hr></hr>
-      <div className="flex pt-5">
-        <Button name="New Demo +" path="/create-demo" />
+      <div id="newDemo">
+        <Button name="New Demo +" path="/new-demo" />
       </div>
       <div>
         {appState.loading ? (
-          <div className="text-center py-20">
-            <p className="text-2xl">Fetching demos... 🎸 </p>
+          <div id="loading">
+            <p>Fetching demos... 🎸 </p>
           </div>
         ) : (
           <DemoList demos={appState.demos} />

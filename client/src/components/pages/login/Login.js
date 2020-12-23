@@ -28,26 +28,30 @@ export default function Login() {
 
   return (
     <div className="formContainer">
-      <h2 className="formHeader">Login</h2>
+      <h2 className="pageTitle">Login</h2>
       <form id="form" onSubmit={submit}>
         <div>
-          <label htmlFor="email">Email</label>
+          <label className="lbl" htmlFor="email">
+            Email
+          </label>
           <input
             id="email"
             type="email"
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div className="mb-6">
-          <label htmlFor="password">Password</label>
+        <div>
+          <label className="lbl" htmlFor="password">
+            Password
+          </label>
           <input
             id="password"
             type="password"
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <div>
-          <input id="loginBtn" type="submit" value="Login" />
+        <div className="btnDiv">
+          <button type="submit">Login</button>
         </div>
       </form>
       {errorMsg && (

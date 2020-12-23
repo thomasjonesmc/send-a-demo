@@ -7,7 +7,7 @@ export default function Button(props) {
   const link = () => history.push(props.path);
 
   return (
-    <button type="button" id="btnComp" value={props.name} onClick={link}>
+    <button type="button" className="btnComp" value={props.name} onClick={link}>
       {props.name}
     </button>
   );

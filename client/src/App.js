@@ -6,7 +6,7 @@ import MyDemos from "components/pages/myDemos/MyDemos";
 import Login from "components/pages/login/Login";
 import Register from "components/pages/register/Register";
 import { UserProvider } from "context/UserContext";
-import CreateDemo from "components/pages/myDemos/CreateDemo";
+import NewDemo from "components/pages/myDemos/NewDemo";
 import Demo from "components/pages/demo/Demo";
 import "style.css";
 
@@ -21,7 +21,7 @@ export default function App() {
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/my-demos" component={MyDemos} />
-            <Route exact path="/create-demo" component={CreateDemo} />
+            <Route exact path="/new-demo" component={NewDemo} />
             <Route exact path="/demo/:path" component={Demo} />
             <Route path="/" render={() => <div>404</div>} />
           </Switch>

@@ -1,18 +1,24 @@
-#container {
+#homeHeader {
   display: flex;
-  margin: 0 auto;
-  width: 40%;
   flex-direction: column;
   justify-content: center;
+  padding: 5em 0;
+  text-align: center;
+  background: linear-gradient(45deg, #00fdff, #ff45d7, #ffe245);
+  background-size: 600% 600%;
+  -webkit-animation: AnimatedGradient 17s ease infinite;
+  -moz-animation: AnimatedGradient 17s ease infinite;
+  animation: AnimatedGradient 17s ease infinite;
+  color: white;
 }
 
-#homeHeader {
-  padding-top: 3em;
-  text-align: center;
+#homeHeader img {
+  margin: auto;
+  padding-left: 2rem;
 }
 
 #homeHeader > h3 {
-  padding-top: 1.5em;
+  padding-top: 1rem;
   font-weight: 400;
   width: 90%;
   margin: auto;
@@ -37,14 +43,43 @@
   padding-top: 0.5em;
 }
 
-@media screen and (max-width: 1000px) {
-  #container {
-    width: 60%;
-  }
-}
-
 @media screen and (max-width: 550px) {
   #container {
     width: 100%;
+  }
+}
+
+/* Keyframes for gradient */
+@-webkit-keyframes AnimatedGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@-moz-keyframes AnimatedGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes AnimatedGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

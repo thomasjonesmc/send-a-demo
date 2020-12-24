@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Trispace:wght@400;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Trispace", sans-serif;
+}
+
+a {
+  color: #2d7c54;
+  text-decoration: unset;
+}
+
+ul {
+  margin-left: 1.5rem;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol {
+  margin: 1em 0;
+}
+
+/* General */
+.page {
+  padding: 1rem;
+}
+
+#container {
+  display: flex;
+  margin: 0 auto;
+  width: 50%;
+  flex-direction: column;
+}
+
+input[type="submit"] {
+  border: 1px solid black;
+  background-color: white;
+  padding: 1em;
+}
+
+.pageTitle {
+  display: flex;
+  justify-content: center;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1000px) {
+  #container {
+    width: 100%;
+  }
+}

@@ -1,0 +1,16 @@
+button.btnComp {
+  border: 2px solid black;
+  background: white;
+  color: black;
+  cursor: pointer;
+  font-family: "Trispace", sans-serif;
+  padding: 0.5em;
+  margin: 1em;
+  border-radius: 5px;
+}
+
+@media screen and (max-width: 550px) {
+  button.btnComp {
+    font-size: 1.2em;
+  }
+}

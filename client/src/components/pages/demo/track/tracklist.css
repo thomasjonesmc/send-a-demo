@@ -1,0 +1,23 @@
+.trackContainer {
+  border: 1px solid black;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.infoColumn {
+  flex: 1;
+  border-right: 1px solid black;
+  background-color: white;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.audioColumn {
+  flex: 4;
+  background-color: rgb(228, 228, 228);
+}
+
+.controls {
+  flex-basis: 100%;
+  background-color: tomato;
+}

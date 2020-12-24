@@ -17,7 +17,7 @@ export default function NewTrack(props) {
   };
 
   return (
-    <form className="bg-white rounded px-8 pt-6 mb-4" onSubmit={submit}>
+    <form id="container" onSubmit={submit}>
       <div className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-2"
@@ -32,13 +32,8 @@ export default function NewTrack(props) {
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
       </div>
-      <div>
-        <input
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="submit"
-          value="create track"
-          // onClick={(e) => props.onClick()}
-        />
+      <div className="pageTitle">
+        <button type="submit">Create New Track</button>
       </div>
     </form>
   );

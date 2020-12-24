@@ -40,7 +40,7 @@ ol {
 #container {
   display: flex;
   margin: 0 auto;
-  width: 60%;
+  width: 50%;
   flex-direction: column;
 }
 

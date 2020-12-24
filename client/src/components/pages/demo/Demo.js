@@ -36,8 +36,8 @@ export default function DemoHub() {
 
   if (appState.loading) {
     return (
-      <div className="container">
-        <h1>🎹 🎤 🎵 </h1>
+      <div id="container">
+        <h1 className="pageTitle">🎹 🎤 🎵 </h1>
         {errorMsg && (
           <ErrorNotice
             message={errorMsg}
@@ -49,13 +49,13 @@ export default function DemoHub() {
   }
   if (appState.demo !== null) {
     return (
-      <div className="container">
-        <h1>{appState.demo.demoTitle}</h1>
+      <div id="container">
+        <h1 className="pageTitle">{appState.demo.demoTitle}</h1>
         <hr></hr>
 
-        <div>
+        <div className="pageTitle">
           <button
-            id="btnComp"
+            className="btnComp"
             type="button"
             value="New Track +"
             onClick={() => setShowNewTrack(!showNewTrack)}
@@ -74,7 +74,7 @@ export default function DemoHub() {
           )}
         </div>
 
-        <div id="demoContainer" className="flex pt-5">
+        <div id="demoContainer">
           <TrackList
             tracks={appState.demo.tracks}
             demo={demoID}

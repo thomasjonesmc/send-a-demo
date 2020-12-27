@@ -34,6 +34,10 @@ export default function DemoHub() {
     }
   }, [setAppState, demoID, showNewTrack, appState.loading]);
 
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+  }, []);
+
   if (appState.loading) {
     return (
       <div id="container">
@@ -80,9 +84,6 @@ export default function DemoHub() {
             demo={demoID}
             onDelete={() => setAppState({ loading: true })}
           />
-          {/* {appState.demo.tracks.map((track) => {
-              return <TrackList track={track} />;
-            })} */}
         </div>
       </div>
     );

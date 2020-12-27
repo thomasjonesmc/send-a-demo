@@ -1,4 +1,4 @@
-button.btnComp {
+.btnComp {
   border: 2px solid black;
   background: white;
   color: black;
@@ -9,8 +9,32 @@ button.btnComp {
   border-radius: 5px;
 }
 
+.bigBtn {
+  border: 2px solid black;
+  background: white;
+  color: black;
+  cursor: pointer;
+  font-family: "Trispace", sans-serif;
+  padding: 1.25em;
+  margin: 1.25em;
+  border-radius: 5px;
+}
+.smallBtn {
+  border: 2px solid black;
+  background: white;
+  color: black;
+  cursor: pointer;
+  font-family: "Trispace", sans-serif;
+  padding: 0.75em;
+  margin-bottom: 0.5em;
+  border-radius: 5px;
+}
+
 @media screen and (max-width: 550px) {
-  button.btnComp {
+  .btnComp {
     font-size: 1.2em;
+  }
+  .bigBtn {
+    font-size: 1.4em;
   }
 }

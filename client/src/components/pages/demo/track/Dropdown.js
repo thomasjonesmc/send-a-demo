@@ -1,5 +1,7 @@
 import Axios from "axios";
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 export default function Dropdown(props) {
   const [showMenu, setShowMenu] = useState(false);
@@ -34,20 +36,17 @@ export default function Dropdown(props) {
 
   return (
     <div>
-      <button
-        onClick={() => setShowMenu(!showMenu)}
-        className="mx-auto bg-white border-solid border border-gray-700 hover:bg-gray-200 text-black px-1 rounded"
-      >
+      <button onClick={() => setShowMenu(!showMenu)} className="smallBtn">
         ...
       </button>
 
       {showMenu ? (
         <div className="menu py-3">
           <button
-            className="mx-auto bg-white border-solid border border-red-400 hover:bg-gray-200 text-black  py-2 rounded"
+            className="btnComp"
             onClick={(e) => deleteTrack(e, props.track)}
           >
-            Delete
+            <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>
       ) : null}

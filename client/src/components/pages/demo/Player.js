@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import * as Tone from "tone";
 
 export default function Player(props) {
@@ -18,9 +20,11 @@ export default function Player(props) {
 
   useEffect(() => {
     setAllArePlaying(props.isPlaying);
-    allArePlaying
-      ? player.current.start() && setIsPlaying(true)
-      : player.current.stop() && setIsPlaying(false);
+    if (player.current) {
+      allArePlaying
+        ? player.current.start() && setIsPlaying(true)
+        : player.current.stop() && setIsPlaying(false);
+    }
   }, [props.isPlaying, allArePlaying]);
 
   console.log(player);
@@ -30,13 +34,21 @@ export default function Player(props) {
   };
   return (
     <div className="pageTitle">
-      <button
-        disabled={!isLoaded}
-        className="btnComp"
-        onClick={() => handleClick()}
-      >
-        {isPlaying ? "Pause" : "Play"}
-      </button>
+      {props.track.trackSignedURL ? (
+        <button
+          disabled={!isLoaded}
+          className="btnComp"
+          onClick={() => handleClick()}
+        >
+          {isPlaying ? (
+            <FontAwesomeIcon icon={faPause} />
+          ) : (
+            <FontAwesomeIcon icon={faPlay} />
+          )}
+        </button>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

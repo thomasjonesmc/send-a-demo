@@ -10,6 +10,7 @@
   background-color: white;
   word-break: break-word;
   overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .audioColumn {
@@ -17,7 +18,27 @@
   background-color: rgb(228, 228, 228);
 }
 
-.controls {
+.break {
   flex-basis: 100%;
-  background-color: tomato;
+}
+.controls {
+  border-top: 1px solid black;
+  flex: 4;
+  flex-direction: row;
+}
+
+.infoSmall {
+  flex: 1;
+  border-top: 1px solid black;
+}
+
+.recBtn {
+  border: 2px solid red;
+  background: white;
+  color: red;
+  cursor: pointer;
+  font-family: "Trispace", sans-serif;
+  padding: 0.5em;
+  margin: 1em;
+  border-radius: 5px;
 }

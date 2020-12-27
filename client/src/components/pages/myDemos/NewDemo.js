@@ -25,7 +25,7 @@ export default function CreateDemo() {
   };
 
   return (
-    <div id="container">
+    <div id="">
       <form className="formContainer" onSubmit={submit}>
         <div className="mb-4">
           <label className="pageTitle" htmlFor="demoTitle">

@@ -141,7 +141,6 @@ router.post("/new-track/:id", async (req, res) => {
 
 router.post("/add-signed-URL", auth, async (req, res) => {
   try {
-    console.log(req);
     Track.findByIdAndUpdate(
       req.body._id,
       {

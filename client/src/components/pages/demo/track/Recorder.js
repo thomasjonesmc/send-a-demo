@@ -82,22 +82,20 @@ export default function Recorder(props) {
   };
 
   return (
-    <div>
-      <button
-        className="recBtn"
-        onClick={() => {
-          props.trackIsRecording();
-          setIsRecording(!isRecording);
-          if (!isRecording) {
-            start();
-          } else {
-            stop(props.track._id);
-          }
-        }}
-      >
-        {!isRecording ? "Start " : "Stop "}
-        <FontAwesomeIcon icon={faMicrophone} size="lg" color="red" />
-      </button>
-    </div>
+    <button
+      className="recBtn"
+      onClick={() => {
+        props.trackIsRecording();
+        setIsRecording(!isRecording);
+        if (!isRecording) {
+          start();
+        } else {
+          stop(props.track._id);
+        }
+      }}
+    >
+      {!isRecording ? "Start " : "Stop "}
+      <FontAwesomeIcon icon={faMicrophone} size="lg" color="red" />
+    </button>
   );
 }

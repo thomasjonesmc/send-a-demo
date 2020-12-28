@@ -27,13 +27,18 @@ export default function Player(props) {
     }
   }, [props.isPlaying, allArePlaying]);
 
+  useEffect(() => {
+    if (player.current) {
+      player.current.volume.value = props.volume;
+    }
+  }, [props.volume]);
   console.log(player);
   let handleClick = () => {
     setIsPlaying(!isPlaying);
     !isPlaying ? player.current.start() : player.current.stop();
   };
   return (
-    <div className="pageTitle">
+    <>
       {props.track.trackSignedURL ? (
         <button
           disabled={!isLoaded}
@@ -49,6 +54,6 @@ export default function Player(props) {
       ) : (
         ""
       )}
-    </div>
+    </>
   );
 }

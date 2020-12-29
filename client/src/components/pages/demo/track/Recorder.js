@@ -4,8 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 
-export default function Recorder(props) {
+export default function Recorder({
+  track,
+  demoId,
+  localTrackState: [localTrack, setLocalTrack],
+  setLocalBuffer,
+  onUpload,
+  trackIsRecording,
+}) {
   const [isRecording, setIsRecording] = useState(false);
+  const [file, setFile] = useState(null);
   let token = localStorage.getItem("auth-token");
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
@@ -30,8 +38,10 @@ export default function Recorder(props) {
           type: blob.type,
           lastModified: Date.now(),
         });
-        console.log(file);
-        handleAudioFile(file);
+        //setting the file to the
+        setFile(file);
+        setLocalBuffer(file);
+        // handleAudioFile(file);
       })
       .catch((e) => {
         console.error(e);
@@ -40,7 +50,7 @@ export default function Recorder(props) {
 
   let handleAudioFile = (audio) => {
     let file = audio;
-    let fileName = `${props.demoId}/${audio.name}`;
+    let fileName = `${demoId}/${audio.name}`;
     let fileType = audio.type;
     let url;
 
@@ -68,29 +78,64 @@ export default function Recorder(props) {
         Axios.post(
           "/demos/add-signed-URL",
           {
-            _id: props.track._id,
+            _id: track._id,
             URL: url,
           },
           { headers: { "x-auth-token": token } }
         );
         console.log("Signed URL added to Track");
-        props.onUpload();
+        onUpload();
       })
       .catch((e) => {
         alert(JSON.stringify(e));
       });
   };
 
+  if (!track.trackSignedURL && !localTrack) {
+    return (
+      <RecordButton
+        track={track}
+        trackIsRecording={trackIsRecording}
+        recordingState={[isRecording, setIsRecording]}
+        start={start}
+        stop={stop}
+      />
+    );
+  } else if (localTrack) {
+    return (
+      <>
+        <UploadButton file={file} handleAudioFile={handleAudioFile} />
+        <RemoveLocalAudioButton localTrackState={[setLocalTrack]} />
+      </>
+    );
+  } else {
+    return (
+      <DeleteAudioFromS3
+        track={track}
+        path={`${demoId}/${track._id}`}
+        onDelete={onUpload}
+      />
+    );
+  }
+}
+
+const RecordButton = ({
+  track,
+  trackIsRecording,
+  recordingState: [isRecording, setIsRecording],
+  start,
+  stop,
+}) => {
   return (
     <button
       className="recBtn"
       onClick={() => {
-        props.trackIsRecording();
+        trackIsRecording();
         setIsRecording(!isRecording);
         if (!isRecording) {
           start();
         } else {
-          stop(props.track._id);
+          stop(track._id);
         }
       }}
     >
@@ -98,4 +143,53 @@ export default function Recorder(props) {
       <FontAwesomeIcon icon={faMicrophone} size="lg" color="red" />
     </button>
   );
-}
+};
+
+const UploadButton = ({ file, handleAudioFile }) => {
+  return (
+    <button className="uploadBtn" onClick={() => handleAudioFile(file)}>
+      Upload
+    </button>
+  );
+};
+
+const RemoveLocalAudioButton = ({ localTrackState: [setLocalTrack] }) => {
+  return (
+    <button className="recBtn" onClick={() => setLocalTrack(null)}>
+      Delete Audio
+    </button>
+  );
+};
+
+const DeleteAudioFromS3 = ({ track, path, onDelete }) => {
+  let token = localStorage.getItem("auth-token");
+  const deleteFromS3 = async () => {
+    try {
+      Axios.post(`/delete-track-s3`, {
+        key: path,
+      }).then(() =>
+        Axios.post(
+          "/demos/remove-s3-url",
+          {
+            _id: track._id,
+          },
+          { headers: { "x-auth-token": token } }
+        )
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  return (
+    <button
+      className="recBtn"
+      onClick={() => {
+        deleteFromS3(track._id);
+        onDelete();
+      }}
+    >
+      Delete Audio
+    </button>
+  );
+};

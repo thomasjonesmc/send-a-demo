@@ -14,9 +14,20 @@ export default function Player(props) {
       player.current = new Tone.Player(
         props.track.trackSignedURL
       ).toDestination();
+    } else if (props.localTrack) {
+      new Tone.Buffer(props.localTrack, (buffer) => {
+        player.current = new Tone.Player(buffer).toDestination();
+      });
     }
     setIsLoaded(true);
-  }, [props.track]);
+    return () => {
+      player.current.stop();
+    };
+  }, [props.track, props.localTrack]);
+
+  useEffect(() => {
+    if (player.current && player.current.isPlaying) player.current.stop();
+  }, []);
 
   useEffect(() => {
     setAllArePlaying(props.isPlaying);
@@ -32,14 +43,14 @@ export default function Player(props) {
       player.current.volume.value = props.volume;
     }
   }, [props.volume]);
-  console.log(player);
   let handleClick = () => {
     setIsPlaying(!isPlaying);
     !isPlaying ? player.current.start() : player.current.stop();
   };
+
   return (
     <>
-      {props.track.trackSignedURL ? (
+      {props.track.trackSignedURL || props.localTrack ? (
         <button
           disabled={!isLoaded}
           className="btnComp"

@@ -19,7 +19,8 @@ export default function TrackList(props) {
     try {
       if (recording) setIsPlaying(true);
       if (!recording) {
-        setTrackIsRecording({ track: null });
+        setTrackIsRecording({ recording: false, track: null });
+        // setIsPlaying(false);
       }
     } catch (e) {
       console.log(e);
@@ -93,9 +94,14 @@ const Controls = ({
   const [trackIsRecording, setTrackIsRecording] = recordingState;
   //volume is measured from -20 to 20 db, initial state is 0
   const [volume, setVolume] = useState(0);
-
+  const [localTrack, setLocalTrack] = useState(null);
   const handleChange = (event) => {
     setVolume(event.target.value);
+  };
+  const handleFileChange = (file) => {
+    // console.log(file);
+    const fileLocation = URL.createObjectURL(file);
+    setLocalTrack(fileLocation);
   };
 
   return (
@@ -107,6 +113,8 @@ const Controls = ({
           <Recorder
             track={track}
             demoId={props.demo}
+            localTrackState={[localTrack, setLocalTrack]}
+            setLocalBuffer={handleFileChange}
             onUpload={props.onDelete}
             trackIsRecording={() =>
               setTrackIsRecording({
@@ -117,16 +125,16 @@ const Controls = ({
           />
         </>
       )}
-      {track.trackSignedURL ? (
+      {track.trackSignedURL || localTrack ? (
         <>
-          <Player isPlaying={isPlaying} track={track} volume={volume} />
-          <VolumeSlider
-            value={volume}
-            min={-20}
-            max={20}
-            step={1}
-            onChange={handleChange}
+          <Player
+            isPlaying={isPlaying}
+            track={track}
+            localTrack={localTrack}
+            volume={volume}
+            trackBeingRecorded={trackIsRecording.track}
           />
+          <VolumeSlider value={volume} onChange={handleChange} />
         </>
       ) : (
         ""

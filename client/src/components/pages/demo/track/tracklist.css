@@ -42,3 +42,13 @@
   margin: 1em;
   border-radius: 5px;
 }
+.uploadBtn {
+  border: 2px solid green;
+  background: white;
+  color: green;
+  cursor: pointer;
+  font-family: "Trispace", sans-serif;
+  padding: 0.5em;
+  margin: 1em;
+  border-radius: 5px;
+}

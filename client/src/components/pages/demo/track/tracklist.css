@@ -32,7 +32,7 @@
   border-top: 1px solid black;
 }
 
-.recBtn {
+.redBtn {
   border: 2px solid red;
   background: white;
   color: red;
@@ -42,10 +42,21 @@
   margin: 1em;
   border-radius: 5px;
 }
-.uploadBtn {
+.greenBtn {
   border: 2px solid green;
   background: white;
   color: green;
+  cursor: pointer;
+  font-family: "Trispace", sans-serif;
+  padding: 0.5em;
+  margin: 1em;
+  border-radius: 5px;
+}
+
+.blackBtn {
+  border: 2px solid black;
+  background: white;
+  color: black;
   cursor: pointer;
   font-family: "Trispace", sans-serif;
   padding: 0.5em;

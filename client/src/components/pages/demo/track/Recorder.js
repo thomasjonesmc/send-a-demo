@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import MicRecorder from "mic-recorder-to-mp3";
+// import opusRecorder from "opus-recorder";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
@@ -9,14 +10,21 @@ export default function Recorder({
   demoId,
   localTrackState: [localTrack, setLocalTrack],
   setLocalBuffer,
-  onUpload,
+  refreshDemo,
   trackIsRecording,
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const [file, setFile] = useState(null);
   let token = localStorage.getItem("auth-token");
 
-  const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
+  const recorder = useMemo(
+    () =>
+      new MicRecorder({
+        bitRate: 128,
+        encodeAfterRecordCheck: true,
+      }),
+    []
+  );
 
   let start = () => {
     recorder
@@ -38,27 +46,38 @@ export default function Recorder({
           type: blob.type,
           lastModified: Date.now(),
         });
-        //setting the file to the
         setFile(file);
         setLocalBuffer(file);
-        // handleAudioFile(file);
       })
       .catch((e) => {
         console.error(e);
       });
   };
 
-  let handleAudioFile = (audio) => {
+  // const recorder = useMemo(() => new opusRecorder(), []);
+
+  // let start = () => {
+  //   recorder
+  //     .start()
+  //     .then(console.log("Recording..."))
+  //     .catch((e) => console.log(e));
+  // };
+
+  // let stop = () => {
+  //   recorder.stop().then((data) => console.log(data));
+  // };
+
+  let handleAudioFile = async (audio) => {
     let file = audio;
     let fileName = `${demoId}/${audio.name}`;
     let fileType = audio.type;
     let url;
 
-    Axios.post("/sign-file", {
+    await Axios.post("/sign-file", {
       fileName: fileName,
       fileType: fileType,
     })
-      .then((res) => {
+      .then(async (res) => {
         const returnData = res.data.data.returnData;
         const signedRequest = returnData.signedRequest;
         url = returnData.url;
@@ -67,8 +86,9 @@ export default function Recorder({
             "Content-Type": fileType,
           },
         };
-        Axios.put(signedRequest, file, options)
-          .then((result) => {}, console.log("file uploaded"))
+        console.log(`Uploading file...`);
+        await Axios.put(signedRequest, file, options)
+          .then((result) => {}, console.log("File uploaded"))
           .catch((e) => {
             alert("Error: " + JSON.stringify(e));
           });
@@ -84,10 +104,10 @@ export default function Recorder({
           { headers: { "x-auth-token": token } }
         );
         console.log("Signed URL added to Track");
-        onUpload();
+        refreshDemo();
       })
       .catch((e) => {
-        alert(JSON.stringify(e));
+        alert("Unexpected error: " + JSON.stringify(e));
       });
   };
 
@@ -113,7 +133,7 @@ export default function Recorder({
       <DeleteAudioFromS3
         track={track}
         path={`${demoId}/${track._id}`}
-        onDelete={onUpload}
+        refreshDemo={refreshDemo}
       />
     );
   }
@@ -128,7 +148,7 @@ const RecordButton = ({
 }) => {
   return (
     <button
-      className="recBtn"
+      className="redBtn"
       onClick={() => {
         trackIsRecording();
         setIsRecording(!isRecording);
@@ -147,7 +167,7 @@ const RecordButton = ({
 
 const UploadButton = ({ file, handleAudioFile }) => {
   return (
-    <button className="uploadBtn" onClick={() => handleAudioFile(file)}>
+    <button className="greenBtn" onClick={() => handleAudioFile(file)}>
       Upload
     </button>
   );
@@ -155,27 +175,30 @@ const UploadButton = ({ file, handleAudioFile }) => {
 
 const RemoveLocalAudioButton = ({ localTrackState: [setLocalTrack] }) => {
   return (
-    <button className="recBtn" onClick={() => setLocalTrack(null)}>
+    <button className="redBtn" onClick={() => setLocalTrack(null)}>
       Delete Audio
     </button>
   );
 };
 
-const DeleteAudioFromS3 = ({ track, path, onDelete }) => {
+const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
   let token = localStorage.getItem("auth-token");
   const deleteFromS3 = async () => {
     try {
-      Axios.post(`/delete-track-s3`, {
+      console.log(`Deleting ${path}...`);
+      await Axios.post(`/delete-track-s3`, {
         key: path,
-      }).then(() =>
-        Axios.post(
+      }).then(async () => {
+        console.log(`${path} deleted from AWS`);
+        console.log(`Removing URL information from track...`);
+        await Axios.post(
           "/demos/remove-s3-url",
           {
             _id: track._id,
           },
           { headers: { "x-auth-token": token } }
-        )
-      );
+        );
+      });
     } catch (err) {
       console.log(err);
     }
@@ -183,10 +206,9 @@ const DeleteAudioFromS3 = ({ track, path, onDelete }) => {
 
   return (
     <button
-      className="recBtn"
-      onClick={() => {
-        deleteFromS3(track._id);
-        onDelete();
+      className="redBtn"
+      onClick={async () => {
+        await deleteFromS3(track._id).then(refreshDemo);
       }}
     >
       Delete Audio

@@ -10,6 +10,7 @@ export default function Dropdown(props) {
   const deleteTrack = async (e, track) => {
     e.preventDefault();
     try {
+      console.log(`Deleting ${track.trackTitle}...`);
       await Axios.delete(`/demos/delete-track/`, {
         headers: {
           "x-auth-token": token,
@@ -18,7 +19,8 @@ export default function Dropdown(props) {
           _id: track._id,
         },
       }).then(deleteFromS3);
-      props.onDelete();
+      console.log(`${track.trackTitle} removed!`);
+      props.refreshDemo();
     } catch (err) {
       console.log(err);
     }

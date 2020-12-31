@@ -5,9 +5,13 @@ import "components/pages/demo/track/tracklist.css";
 import Player from "components/pages/demo/Player";
 import Dropdown from "components/pages/demo/track/Dropdown";
 import Recorder from "components/pages/demo/track/Recorder";
-import VolumeSlider from "./VolumeSlider";
+import AudioTimeline from "components/pages/demo/track/AudioTimeline";
+import VolumeSlider from "components/pages/demo/track/VolumeSlider";
+import * as Tone from "tone";
 
 export default function TrackList(props) {
+  //Tone.start() enables audio to be played on mobile browsers
+  Tone.start();
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackIsRecording, setTrackIsRecording] = useState({
     recording: false,
@@ -33,6 +37,7 @@ export default function TrackList(props) {
 
       {props.tracks.map((track) => (
         <Track
+          key={track._id}
           track={track}
           playingState={[isPlaying, setIsPlaying]}
           recordingState={[trackIsRecording, setTrackIsRecording]}
@@ -43,24 +48,33 @@ export default function TrackList(props) {
   );
 }
 
-const PlayAllButton = ({ playingState: [isPlaying, setIsPlaying] }) => (
-  <div className="pageTitle">
-    <button onClick={() => setIsPlaying(!isPlaying)} className="bigBtn">
-      {isPlaying ? (
-        <FontAwesomeIcon icon={faPause} />
-      ) : (
-        <FontAwesomeIcon icon={faPlay} />
-      )}
-    </button>
-  </div>
-);
+const PlayAllButton = ({ playingState: [isPlaying, setIsPlaying] }) => {
+  useEffect(() => {
+    isPlaying ? Tone.Transport.start() : Tone.Transport.pause();
+  }, [isPlaying]);
+
+  return (
+    <div className="pageTitle">
+      {/* <button onClick={() => Tone.start()}>Enable Sound</button> */}
+      <button onClick={() => setIsPlaying(!isPlaying)} className="bigBtn">
+        {isPlaying ? (
+          <FontAwesomeIcon icon={faPause} />
+        ) : (
+          <FontAwesomeIcon icon={faPlay} />
+        )}
+      </button>
+    </div>
+  );
+};
 
 const Track = ({ track, playingState, recordingState, ...props }) => {
   return (
     <div key={track._id} className="trackContainer">
       <InfoColumn track={track} playingState={playingState} {...props} />
 
-      <div className="audioColumn"></div>
+      <div className="audioColumn">
+        <AudioTimeline playingState={playingState.isPlaying} />
+      </div>
       <div className="break"></div>
       <div className="infoSmall">&nbsp;</div>
 
@@ -80,7 +94,11 @@ const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => (
     <p>{track.trackAuthor}</p>
     <div>{/* <Player isPlaying={isPlaying} track={track} /> */}</div>
     <div>
-      <Dropdown demo={props.demo} track={track} onDelete={props.onDelete} />
+      <Dropdown
+        demo={props.demo}
+        track={track}
+        refreshDemo={props.refreshDemo}
+      />
     </div>
   </div>
 );
@@ -115,7 +133,7 @@ const Controls = ({
             demoId={props.demo}
             localTrackState={[localTrack, setLocalTrack]}
             setLocalBuffer={handleFileChange}
-            onUpload={props.onDelete}
+            refreshDemo={props.refreshDemo}
             trackIsRecording={() =>
               setTrackIsRecording({
                 recording: !trackIsRecording.recording,

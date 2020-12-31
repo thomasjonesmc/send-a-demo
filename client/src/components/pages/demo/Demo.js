@@ -1,5 +1,5 @@
 import Axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ErrorNotice from "components/reusable/ErrorNotice";
 import NewTrack from "components/pages/demo/track/NewTrack";
 import TrackList from "components/pages/demo/track/TrackList";
@@ -16,16 +16,20 @@ export default function DemoHub() {
   const params = new URLSearchParams(document.location.search.substring(1));
   const demoID = params.get("demo");
 
+  let loadingTimeout = useRef(null);
+
   useEffect(() => {
     try {
       const getDemo = async () => {
         await Axios.get("/demos/get-demo-by-id", {
           params: { id: demoID },
         }).then((res) => {
-          setAppState({
-            loading: false,
-            demo: res.data,
-          });
+          loadingTimeout.current = setTimeout(() => {
+            setAppState({
+              loading: false,
+              demo: res.data,
+            });
+          }, 750);
         });
       };
       getDemo();
@@ -82,7 +86,7 @@ export default function DemoHub() {
           <TrackList
             tracks={appState.demo.tracks}
             demo={demoID}
-            onDelete={() => setAppState({ loading: true })}
+            refreshDemo={() => setAppState({ loading: true })}
           />
         </div>
       </div>

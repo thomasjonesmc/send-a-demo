@@ -1,3 +1,5 @@
+/* Slider styling taken from w3 schools */
+
 .slider {
   -webkit-appearance: none;
   width: 50%;
@@ -16,7 +18,7 @@
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #4caf50;
+  background: cyan;
   cursor: pointer;
 }
 
@@ -24,6 +26,6 @@
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #4caf50;
+  background: cyan;
   cursor: pointer;
 }

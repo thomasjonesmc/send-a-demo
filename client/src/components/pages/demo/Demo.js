@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import ErrorNotice from "components/reusable/ErrorNotice";
 import NewTrack from "components/pages/demo/track/NewTrack";
 import TrackList from "components/pages/demo/track/TrackList";
+import { Button } from "components/reusable/button/Button";
 
 export default function DemoHub() {
   const [appState, setAppState] = useState({
@@ -62,14 +63,9 @@ export default function DemoHub() {
         <hr></hr>
 
         <div className="pageTitle">
-          <button
-            className="btnComp"
-            type="button"
-            value="New Track +"
-            onClick={() => setShowNewTrack(!showNewTrack)}
-          >
+          <Button onClick={() => setShowNewTrack(!showNewTrack)}>
             {showNewTrack ? "Close" : "New Track +"}
-          </button>
+          </Button>
         </div>
         <div>
           {showNewTrack ? (

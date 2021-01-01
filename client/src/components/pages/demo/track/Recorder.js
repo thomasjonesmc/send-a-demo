@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from "react";
 import MicRecorder from "mic-recorder-to-mp3";
-// import opusRecorder from "opus-recorder";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
+import { RedButton, GreenButton } from "components/reusable/button/Button";
 
 export default function Recorder({
   track,
@@ -54,19 +54,6 @@ export default function Recorder({
       });
   };
 
-  // const recorder = useMemo(() => new opusRecorder(), []);
-
-  // let start = () => {
-  //   recorder
-  //     .start()
-  //     .then(console.log("Recording..."))
-  //     .catch((e) => console.log(e));
-  // };
-
-  // let stop = () => {
-  //   recorder.stop().then((data) => console.log(data));
-  // };
-
   let handleAudioFile = async (audio) => {
     let file = audio;
     let fileName = `${demoId}/${audio.name}`;
@@ -113,19 +100,29 @@ export default function Recorder({
 
   if (!track.trackSignedURL && !localTrack) {
     return (
-      <RecordButton
-        track={track}
-        trackIsRecording={trackIsRecording}
-        recordingState={[isRecording, setIsRecording]}
-        start={start}
-        stop={stop}
-      />
+      <RedButton
+        className="redBtn"
+        onClick={() => {
+          trackIsRecording();
+          setIsRecording(!isRecording);
+          if (!isRecording) {
+            start();
+          } else {
+            stop(track._id);
+            setIsRecording(false);
+            trackIsRecording();
+          }
+        }}
+      >
+        {!isRecording ? "Start " : "Stop "}
+        <FontAwesomeIcon icon={faMicrophone} size="lg" color="red" />
+      </RedButton>
     );
   } else if (localTrack) {
     return (
       <>
-        <UploadButton file={file} handleAudioFile={handleAudioFile} />
-        <RemoveLocalAudioButton localTrackState={[setLocalTrack]} />
+        <GreenButton onClick={() => handleAudioFile(file)}>Upload</GreenButton>
+        <RedButton onClick={() => setLocalTrack(null)}>Delete Audio</RedButton>
       </>
     );
   } else {
@@ -138,48 +135,6 @@ export default function Recorder({
     );
   }
 }
-
-const RecordButton = ({
-  track,
-  trackIsRecording,
-  recordingState: [isRecording, setIsRecording],
-  start,
-  stop,
-}) => {
-  return (
-    <button
-      className="redBtn"
-      onClick={() => {
-        trackIsRecording();
-        setIsRecording(!isRecording);
-        if (!isRecording) {
-          start();
-        } else {
-          stop(track._id);
-        }
-      }}
-    >
-      {!isRecording ? "Start " : "Stop "}
-      <FontAwesomeIcon icon={faMicrophone} size="lg" color="red" />
-    </button>
-  );
-};
-
-const UploadButton = ({ file, handleAudioFile }) => {
-  return (
-    <button className="greenBtn" onClick={() => handleAudioFile(file)}>
-      Upload
-    </button>
-  );
-};
-
-const RemoveLocalAudioButton = ({ localTrackState: [setLocalTrack] }) => {
-  return (
-    <button className="redBtn" onClick={() => setLocalTrack(null)}>
-      Delete Audio
-    </button>
-  );
-};
 
 const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
   let token = localStorage.getItem("auth-token");
@@ -205,13 +160,12 @@ const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
   };
 
   return (
-    <button
-      className="redBtn"
+    <RedButton
       onClick={async () => {
         await deleteFromS3(track._id).then(refreshDemo);
       }}
     >
       Delete Audio
-    </button>
+    </RedButton>
   );
 };

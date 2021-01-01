@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import * as Tone from "tone";
 
-export default function AudioTimeline(playingState, props) {
-  const [demoCurrentTime, setDemoCurrentTime] = useState(null);
+export default function AudioTimeline(playingState, track, ...props) {
+  const [demoCurrentTime, setDemoCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(playingState);
   const [time, setTime] = useState(Date.now());
   let tone = Tone.Transport;
@@ -23,8 +23,8 @@ export default function AudioTimeline(playingState, props) {
     };
   }, [isPlaying, playingState, tone.seconds]);
   return (
-    <>
+    <div className="waveform">
       <p>{demoCurrentTime}</p>
-    </>
+    </div>
   );
 }

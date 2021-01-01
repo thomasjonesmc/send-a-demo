@@ -1,4 +1,8 @@
-.btnComp {
+.btnComp,
+.bigBtn,
+.smallBtn,
+.redBtn,
+.greenBtn {
   border: 2px solid black;
   background: white;
   color: black;
@@ -10,24 +14,24 @@
 }
 
 .bigBtn {
-  border: 2px solid black;
-  background: white;
-  color: black;
-  cursor: pointer;
-  font-family: "Trispace", sans-serif;
   padding: 1.25em;
   margin: 1.25em;
-  border-radius: 5px;
 }
+
 .smallBtn {
-  border: 2px solid black;
-  background: white;
-  color: black;
-  cursor: pointer;
-  font-family: "Trispace", sans-serif;
   padding: 0.75em;
   margin-bottom: 0.5em;
   border-radius: 5px;
+}
+
+.redBtn {
+  border: 2px solid red;
+  color: red;
+}
+
+.greenBtn {
+  border: 2px solid green;
+  color: green;
 }
 
 @media screen and (max-width: 550px) {

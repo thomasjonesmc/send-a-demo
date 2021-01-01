@@ -7,6 +7,7 @@ import Dropdown from "components/pages/demo/track/Dropdown";
 import Recorder from "components/pages/demo/track/Recorder";
 import AudioTimeline from "components/pages/demo/track/AudioTimeline";
 import VolumeSlider from "components/pages/demo/track/VolumeSlider";
+import { Button } from "components/reusable/button/Button";
 import * as Tone from "tone";
 
 export default function TrackList(props) {
@@ -55,14 +56,13 @@ const PlayAllButton = ({ playingState: [isPlaying, setIsPlaying] }) => {
 
   return (
     <div className="pageTitle">
-      {/* <button onClick={() => Tone.start()}>Enable Sound</button> */}
-      <button onClick={() => setIsPlaying(!isPlaying)} className="bigBtn">
+      <Button onClick={() => setIsPlaying(!isPlaying)} className="bigBtn">
         {isPlaying ? (
           <FontAwesomeIcon icon={faPause} />
         ) : (
           <FontAwesomeIcon icon={faPlay} />
         )}
-      </button>
+      </Button>
     </div>
   );
 };
@@ -73,7 +73,7 @@ const Track = ({ track, playingState, recordingState, ...props }) => {
       <InfoColumn track={track} playingState={playingState} {...props} />
 
       <div className="audioColumn">
-        <AudioTimeline playingState={playingState.isPlaying} />
+        <AudioTimeline playingState={playingState.isPlaying} track={track} />
       </div>
       <div className="break"></div>
       <div className="infoSmall">&nbsp;</div>
@@ -106,11 +106,11 @@ const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => (
 const Controls = ({
   track,
   recordingState,
-  playingState: [isPlaying],
+  playingState: [isPlaying, setIsPlaying],
   ...props
 }) => {
   const [trackIsRecording, setTrackIsRecording] = recordingState;
-  //volume is measured from -20 to 20 db, initial state is 0
+  //volume is measured from -20 to 20 db on slider
   const [volume, setVolume] = useState(0);
   const [localTrack, setLocalTrack] = useState(null);
   const handleChange = (event) => {
@@ -125,7 +125,9 @@ const Controls = ({
   return (
     <div className="controls">
       {trackIsRecording.recording && trackIsRecording.track !== track ? (
-        <button className="btnComp">Recording...</button>
+        <Button className="btnComp" disabled="disabled">
+          Recording...
+        </Button>
       ) : (
         <>
           <Recorder
@@ -134,12 +136,15 @@ const Controls = ({
             localTrackState={[localTrack, setLocalTrack]}
             setLocalBuffer={handleFileChange}
             refreshDemo={props.refreshDemo}
-            trackIsRecording={() =>
+            trackIsRecording={() => {
               setTrackIsRecording({
                 recording: !trackIsRecording.recording,
                 track: track,
-              })
-            }
+              });
+              if (!recordingState.trackIsRecording) {
+                setIsPlaying(false);
+              }
+            }}
           />
         </>
       )}

@@ -1,12 +1,8 @@
+import { Button } from "components/reusable/button/Button";
 import React, { useEffect, useState, useRef } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import * as Tone from "tone";
 
 export default function Player(props) {
-  // const [isLoaded, setIsLoaded] = useState(false);
-  // const [allArePlaying, setAllArePlaying] = useState(props.isPlaying);
-  // const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const player = useRef(null);
 
@@ -23,7 +19,8 @@ export default function Player(props) {
       });
     }
     return () => {
-      player.current.stop();
+      player.current.disconnect();
+      player.current = null;
     };
   }, [props.track, props.localTrack]);
 
@@ -31,53 +28,19 @@ export default function Player(props) {
     if (player.current && player.current.isPlaying) player.current.stop();
   }, []);
 
-  // useEffect(() => {
-  //   setAllArePlaying(props.isPlaying);
-  //   if (player.current) {
-  //     allArePlaying ? Tone.Transport.start() : Tone.Transport.pause();
-  //     // ? Tone.Transport.start() && setIsPlaying(true)
-  //     // : Tone.Transport.pause() && setIsPlaying(false);
-  //   }
-  // }, [props.isPlaying, allArePlaying]);
-
   useEffect(() => {
     if (player.current) {
       isMuted
-        ? (player.current.volume.value = -100)
+        ? (player.current.volume.value = -400)
         : (player.current.volume.value = props.volume);
     }
   }, [props.volume, isMuted]);
 
-  // let handleClick = () => {
-  //   setIsPlaying(!isPlaying);
-  //   !isPlaying ? player.current.start() : player.current.stop();
-  // };
-
   return (
     <>
-      <button
-        className="blackBtn"
-        onClick={() => {
-          setIsMuted(!isMuted);
-        }}
-      >
+      <Button onClick={() => setIsMuted(!isMuted)}>
         {!isMuted ? "Mute" : "Unmute"}
-      </button>
-      {/* {props.track.trackSignedURL || props.localTrack ? (
-        <button
-          disabled={!isLoaded}
-          className="btnComp"
-          onClick={() => handleClick()}
-        >
-          {isPlaying ? (
-            <FontAwesomeIcon icon={faPause} />
-          ) : (
-            <FontAwesomeIcon icon={faPlay} />
-          )}
-        </button>
-      ) : (
-        ""
-      )} */}
+      </Button>
     </>
   );
 }

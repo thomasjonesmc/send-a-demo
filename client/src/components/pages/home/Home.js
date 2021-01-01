@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
-import Button from "components/reusable/button//Button";
+import { Button } from "components/reusable/button/Button";
 import UserContext from "context/UserContext";
 import "components/pages/home/home.css";
 
@@ -21,8 +21,8 @@ export default function Home() {
               <h2>Welcome to Send A Demo!</h2>
               <h3>To get started making/sharing demos, register or sign in!</h3>
               <div id="homeBtns">
-                <Button name="Register" path="/register" />
-                <Button name="Sign in" path="/login" />
+                <Button path="/register">Register</Button>
+                <Button path="/login">Login</Button>
               </div>
             </div>
             <div id="homeBody">

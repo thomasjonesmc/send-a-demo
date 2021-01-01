@@ -1,7 +1,7 @@
 import Axios from "axios";
 import React, { useContext, useEffect, useState, useRef } from "react";
 import UserContext from "../../../context/UserContext";
-import Button from "components/reusable/button/Button";
+import { Button } from "components/reusable/button/Button";
 import DemoList from "components/pages/myDemos/RenderDemos";
 import "components/pages/myDemos/mydemos.css";
 
@@ -42,7 +42,7 @@ export default function MyDemos() {
       </div>
       <hr></hr>
       <div id="newDemo">
-        <Button name="New Demo +" path="/new-demo" />
+        <Button path="/new-demo">New Demo +</Button>
       </div>
       <div>
         {appState.loading ? (

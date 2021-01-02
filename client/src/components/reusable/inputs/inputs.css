@@ -1,0 +1,12 @@
+.underlinedTextInput {
+  padding: 0.5rem 0 0.2rem 0;
+  margin-bottom: 1.5rem;
+  display: flex;
+  width: 100%;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  background-color: white;
+  border: none;
+  border-bottom: 5px solid black;
+  border-radius: 0px;
+}

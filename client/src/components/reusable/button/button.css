@@ -35,8 +35,10 @@
 }
 
 @media screen and (max-width: 550px) {
-  .btnComp {
-    font-size: 1.2em;
+  .btnComp,
+  .redBtn,
+  .greenBtn {
+    font-size: 1em;
   }
   .bigBtn {
     font-size: 1.4em;

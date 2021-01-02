@@ -12,7 +12,6 @@
     "axios": "^0.21.0",
     "dotenv": "^8.2.0",
     "mic-recorder-to-mp3": "github:picasocro1/mic-recorder-to-mp3#encode-after-record",
-    "opus-recorder": "^8.0.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
@@ -23,7 +22,8 @@
     "start": "HTTPS=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "(cd ../server && npm start) & npm start"
   },
   "eslintConfig": {
     "extends": [

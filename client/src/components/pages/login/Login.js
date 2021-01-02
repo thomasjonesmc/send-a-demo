@@ -3,7 +3,9 @@ import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import UserContext from "context/UserContext";
 import ErrorNotice from "components/reusable/ErrorNotice";
-import "components/pages/login/login.css";
+import "components/pages/login/login-register.css";
+import { UnderlinedTextInput } from "components/reusable/inputs/Inputs";
+import { Button } from "components/reusable/button/Button";
 
 export default function Login() {
   const [email, setEmail] = useState();
@@ -31,27 +33,19 @@ export default function Login() {
       <h2 className="pageTitle">Login</h2>
       <form id="form" onSubmit={submit}>
         <div>
-          <label className="lbl" htmlFor="email">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <label htmlFor="email">Email</label>
+          <UnderlinedTextInput id="email" type="email" onChange={setEmail} />
         </div>
         <div>
-          <label className="lbl" htmlFor="password">
-            Password
-          </label>
-          <input
+          <label htmlFor="password">Password</label>
+          <UnderlinedTextInput
             id="password"
             type="password"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={setPassword}
           />
         </div>
         <div className="btnDiv">
-          <button type="submit">Login</button>
+          <Button type="submit">Login</Button>
         </div>
       </form>
       {errorMsg && (

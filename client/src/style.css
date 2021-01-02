@@ -44,12 +44,6 @@ ol {
   flex-direction: column;
 }
 
-input[type="submit"] {
-  border: 1px solid black;
-  background-color: white;
-  padding: 1em;
-}
-
 .pageTitle {
   display: flex;
   justify-content: center;

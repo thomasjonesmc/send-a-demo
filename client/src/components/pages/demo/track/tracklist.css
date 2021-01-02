@@ -1,12 +1,6 @@
-.centerTrack {
-  display: flex;
-  justify-self: center;
-  flex-direction: column;
-}
-
 .trackContainer {
   display: flex;
-  margin-top: 20px;
+  /* margin-top: 20px; */
   border-radius: 15px;
   width: 95%;
   flex-wrap: wrap;
@@ -15,8 +9,8 @@
     0 0 0 rgba(0, 0, 0, 0.12);
 }
 
-.trackContainer + .trackContainer {
-  margin-top: 20px;
+.centerInDiv + .centerInDiv {
+  margin-top: 5px;
 }
 
 .trackContainer:last-of-type {

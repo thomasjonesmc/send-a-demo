@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import { FaPlay, FaPause } from "react-icons/fa";
 import "components/pages/demo/track/tracklist.css";
 import Player from "components/pages/demo/Player";
 import Dropdown from "components/pages/demo/track/Dropdown";
@@ -34,17 +33,15 @@ export default function TrackList(props) {
   return (
     <div>
       <PlayAllButton playingState={[isPlaying, setIsPlaying]} />
-      <div className="centerTrack">
-        {props.tracks.map((track) => (
-          <Track
-            key={track._id}
-            track={track}
-            playingState={[isPlaying, setIsPlaying]}
-            recordingState={[trackIsRecording, setTrackIsRecording]}
-            {...props}
-          />
-        ))}
-      </div>
+      {props.tracks.map((track) => (
+        <Track
+          key={track._id}
+          track={track}
+          playingState={[isPlaying, setIsPlaying]}
+          recordingState={[trackIsRecording, setTrackIsRecording]}
+          {...props}
+        />
+      ))}
     </div>
   );
 }
@@ -57,11 +54,7 @@ const PlayAllButton = ({ playingState: [isPlaying, setIsPlaying] }) => {
   return (
     <div className="centerInDiv">
       <Button onClick={() => setIsPlaying(!isPlaying)} className="bigBtn">
-        {isPlaying ? (
-          <FontAwesomeIcon icon={faPause} />
-        ) : (
-          <FontAwesomeIcon icon={faPlay} />
-        )}
+        {isPlaying ? <FaPause /> : <FaPlay />}
       </Button>
     </div>
   );

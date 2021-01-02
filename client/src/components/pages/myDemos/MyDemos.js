@@ -1,5 +1,6 @@
 import Axios from "axios";
 import React, { useContext, useEffect, useState, useRef } from "react";
+import { useHistory } from "react-router-dom";
 import UserContext from "../../../context/UserContext";
 import { Button } from "components/reusable/button/Button";
 import DemoList from "components/pages/myDemos/RenderDemos";
@@ -11,6 +12,8 @@ export default function MyDemos() {
     loading: true,
     demos: null,
   });
+
+  const history = useHistory();
 
   let loadingTimeout = useRef(null);
 
@@ -36,13 +39,13 @@ export default function MyDemos() {
   return (
     <div id="myDemosContainer">
       <div>
-        <h1 className="pageTitle">
+        <h1 className="centerInDiv" id="userNameHeading">
           {userData.user && `${userData.user.displayName}`}'s demos
         </h1>
       </div>
       <hr></hr>
       <div id="newDemo">
-        <Button path="/new-demo">New Demo +</Button>
+        <Button onClick={() => history.push("/new-demo")}>New Demo +</Button>
       </div>
       <div>
         {appState.loading ? (

@@ -18,7 +18,7 @@
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: cyan;
+  background: gray;
   cursor: pointer;
 }
 
@@ -26,6 +26,6 @@
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: cyan;
+  background: gray;
   cursor: pointer;
 }

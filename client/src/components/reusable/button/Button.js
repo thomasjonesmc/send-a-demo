@@ -1,17 +1,8 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import "components/reusable/button/button.css";
 
 export const Button = ({ path, ...props }) => {
-  const history = useHistory();
-  return (
-    <button
-      type="button"
-      className="btnComp"
-      onClick={() => history.push(path)}
-      {...props}
-    ></button>
-  );
+  return <button type="button" className="btnComp" {...props}></button>;
 };
 
 export const RedButton = ({ ...props }) => {

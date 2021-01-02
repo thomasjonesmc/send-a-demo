@@ -1,8 +1,7 @@
 import Axios from "axios";
 import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Button, RedButton } from "components/reusable/button/Button";
+import { FiTrash } from "react-icons/fi";
 
 export default function Dropdown(props) {
   const [showMenu, setShowMenu] = useState(false);
@@ -46,7 +45,7 @@ export default function Dropdown(props) {
       {showMenu ? (
         <div className="">
           <RedButton onClick={(e) => deleteTrack(e, props.track)}>
-            <FontAwesomeIcon icon={faTrash} />
+            <FiTrash />
           </RedButton>
         </div>
       ) : null}

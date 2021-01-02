@@ -1,5 +1,5 @@
 import Axios from "axios";
-import React, { useContext, useState, useRef, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import UserContext from "context/UserContext";
 import ErrorNotice from "components/reusable/ErrorNotice";
@@ -29,8 +29,8 @@ export default function CreateDemo() {
   return (
     <div id="">
       <form className="formContainer" onSubmit={submit}>
-        <div className="mb-4">
-          <label className="pageTitle" htmlFor="demoTitle">
+        <div>
+          <label className="centerInDiv" htmlFor="demoTitle">
             new demo title
           </label>
           <UnderlinedTextInput id="demoTitle" onChange={setDemoTitle} />

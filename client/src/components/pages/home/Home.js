@@ -21,8 +21,10 @@ export default function Home() {
               <h2>Welcome to Send A Demo!</h2>
               <h3>To get started making/sharing demos, register or sign in!</h3>
               <div id="homeBtns">
-                <Button path="/register">Register</Button>
-                <Button path="/login">Login</Button>
+                <Button onClick={() => history.push("/register")}>
+                  Register
+                </Button>
+                <Button onClick={() => history.push("/login")}>Login</Button>
               </div>
             </div>
             <div id="homeBody">

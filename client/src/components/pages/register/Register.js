@@ -37,7 +37,7 @@ export default function Register() {
 
   return (
     <div className="formContainer">
-      <h2 className="pageTitle">Register</h2>
+      <h2 className="centerInDiv">Register</h2>
       <form onSubmit={submit}>
         <div>
           <label htmlFor="email">Email</label>

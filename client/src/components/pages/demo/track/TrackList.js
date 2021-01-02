@@ -25,7 +25,6 @@ export default function TrackList(props) {
       if (recording) setIsPlaying(true);
       if (!recording) {
         setTrackIsRecording({ recording: false, track: null });
-        // setIsPlaying(false);
       }
     } catch (e) {
       console.log(e);
@@ -35,16 +34,17 @@ export default function TrackList(props) {
   return (
     <div>
       <PlayAllButton playingState={[isPlaying, setIsPlaying]} />
-
-      {props.tracks.map((track) => (
-        <Track
-          key={track._id}
-          track={track}
-          playingState={[isPlaying, setIsPlaying]}
-          recordingState={[trackIsRecording, setTrackIsRecording]}
-          {...props}
-        />
-      ))}
+      <div className="centerTrack">
+        {props.tracks.map((track) => (
+          <Track
+            key={track._id}
+            track={track}
+            playingState={[isPlaying, setIsPlaying]}
+            recordingState={[trackIsRecording, setTrackIsRecording]}
+            {...props}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -55,7 +55,7 @@ const PlayAllButton = ({ playingState: [isPlaying, setIsPlaying] }) => {
   }, [isPlaying]);
 
   return (
-    <div className="pageTitle">
+    <div className="centerInDiv">
       <Button onClick={() => setIsPlaying(!isPlaying)} className="bigBtn">
         {isPlaying ? (
           <FontAwesomeIcon icon={faPause} />
@@ -69,21 +69,23 @@ const PlayAllButton = ({ playingState: [isPlaying, setIsPlaying] }) => {
 
 const Track = ({ track, playingState, recordingState, ...props }) => {
   return (
-    <div key={track._id} className="trackContainer">
-      <InfoColumn track={track} playingState={playingState} {...props} />
+    <div className="centerInDiv">
+      <div key={track._id} className="trackContainer">
+        <InfoColumn track={track} playingState={playingState} {...props} />
 
-      <div className="audioColumn">
-        <AudioTimeline playingState={playingState.isPlaying} track={track} />
+        <div className="audioColumn">
+          <AudioTimeline playingState={playingState.isPlaying} track={track} />
+        </div>
+        <div className="break"></div>
+        <div className="infoSmall">&nbsp;</div>
+
+        <Controls
+          track={track}
+          recordingState={recordingState}
+          playingState={playingState}
+          {...props}
+        />
       </div>
-      <div className="break"></div>
-      <div className="infoSmall">&nbsp;</div>
-
-      <Controls
-        track={track}
-        recordingState={recordingState}
-        playingState={playingState}
-        {...props}
-      />
     </div>
   );
 };

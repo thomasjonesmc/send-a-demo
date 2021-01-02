@@ -4,6 +4,7 @@ import ErrorNotice from "components/reusable/ErrorNotice";
 import NewTrack from "components/pages/demo/track/NewTrack";
 import TrackList from "components/pages/demo/track/TrackList";
 import { Button } from "components/reusable/button/Button";
+import "./demo.css";
 
 export default function DemoHub() {
   const [appState, setAppState] = useState({
@@ -37,7 +38,7 @@ export default function DemoHub() {
     } catch (err) {
       err.response.data.msg && setErrorMsg(err.response.data.msg);
     }
-  }, [setAppState, demoID, showNewTrack, appState.loading]);
+  }, [setAppState, demoID, appState.loading]);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -46,7 +47,7 @@ export default function DemoHub() {
   if (appState.loading) {
     return (
       <div id="container">
-        <h1 className="pageTitle">🎹 🎤 🎵 </h1>
+        <h1 className="centerInDiv">🎹 🎤 🎵 </h1>
         {errorMsg && (
           <ErrorNotice
             message={errorMsg}
@@ -59,10 +60,10 @@ export default function DemoHub() {
   if (appState.demo !== null) {
     return (
       <div id="container">
-        <h1 className="pageTitle">{appState.demo.demoTitle}</h1>
-        <hr></hr>
-
-        <div className="pageTitle">
+        <h1 className="centerInDiv" id="demoTitleHeading">
+          {appState.demo.demoTitle}
+        </h1>
+        <div className="centerInDiv">
           <Button onClick={() => setShowNewTrack(!showNewTrack)}>
             {showNewTrack ? "Close" : "New Track +"}
           </Button>
@@ -71,12 +72,14 @@ export default function DemoHub() {
           {showNewTrack ? (
             <NewTrack
               demo={appState.demo}
-              onClick={(e) => setShowNewTrack(false)}
+              onClick={() => {
+                setShowNewTrack(false);
+                setAppState({ loading: true });
+              }}
             />
-          ) : (
-            ""
-          )}
+          ) : null}
         </div>
+        <hr></hr>
 
         <div id="demoContainer">
           <TrackList

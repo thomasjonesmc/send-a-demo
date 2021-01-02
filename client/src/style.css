@@ -10,28 +10,6 @@ body {
   font-family: "Trispace", sans-serif;
 }
 
-a {
-  color: #2d7c54;
-  text-decoration: unset;
-}
-
-ul {
-  margin-left: 1.5rem;
-  list-style: none;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-ul,
-ol {
-  margin: 1em 0;
-}
-
 /* General */
 .page {
   padding: 1rem;
@@ -44,7 +22,7 @@ ol {
   flex-direction: column;
 }
 
-.pageTitle {
+.centerInDiv {
   display: flex;
   justify-content: center;
 }

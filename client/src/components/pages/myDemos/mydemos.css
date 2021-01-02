@@ -5,6 +5,10 @@
   flex-direction: column;
 }
 
+#userNameHeading {
+  padding: 20px 0;
+}
+
 #newDemo {
   margin: 0 auto;
 }

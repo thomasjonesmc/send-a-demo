@@ -1,10 +1,8 @@
 import Axios from "axios";
-import React, { useState } from "react";
-import { Button, RedButton } from "components/reusable/button/Button";
-import { FiTrash } from "react-icons/fi";
+import React from "react";
+import { RedButton } from "components/reusable/button/Button";
 
 export default function Dropdown(props) {
-  const [showMenu, setShowMenu] = useState(false);
   const token = localStorage.getItem("auth-token");
 
   const deleteTrack = async (e, track) => {
@@ -37,18 +35,10 @@ export default function Dropdown(props) {
   };
 
   return (
-    <div>
-      <Button onClick={() => setShowMenu(!showMenu)} className="smallBtn">
-        ...
-      </Button>
-
-      {showMenu ? (
-        <div className="">
-          <RedButton onClick={(e) => deleteTrack(e, props.track)}>
-            <FiTrash />
-          </RedButton>
-        </div>
-      ) : null}
+    <div className="dropdownDiv">
+      <RedButton onClick={(e) => deleteTrack(e, props.track)}>
+        Delete Track
+      </RedButton>
     </div>
   );
 }

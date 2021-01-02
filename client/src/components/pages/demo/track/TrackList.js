@@ -90,20 +90,31 @@ const Track = ({ track, playingState, recordingState, ...props }) => {
   );
 };
 
-const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => (
-  <div className="infoColumn">
-    <h4>{track.trackTitle}</h4>
-    <p>{track.trackAuthor}</p>
-    <div>{/* <Player isPlaying={isPlaying} track={track} /> */}</div>
-    <div>
-      <Dropdown
-        demo={props.demo}
-        track={track}
-        refreshDemo={props.refreshDemo}
-      />
+const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => {
+  const [showMenu, setShowMenu] = useState();
+  return (
+    <div className="infoColumn">
+      <h4>{track.trackTitle}</h4>
+      <p>{track.trackAuthor}</p>
+      <div>{/* <Player isPlaying={isPlaying} track={track} /> */}</div>
+      <div>
+        <Button onClick={() => setShowMenu(!showMenu)} className="smallBtn">
+          ...
+        </Button>
+
+        <div className="dropdownParent">
+          {showMenu ? (
+            <Dropdown
+              demo={props.demo}
+              track={track}
+              refreshDemo={props.refreshDemo}
+            />
+          ) : null}
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Controls = ({
   track,

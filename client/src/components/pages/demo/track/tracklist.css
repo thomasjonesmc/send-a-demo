@@ -54,3 +54,24 @@
   flex: 1;
   border-top: 1px solid black;
 }
+
+.dropdownParent {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.dropdownDiv {
+  position: absolute;
+  display: flex;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.034), 0 0 20px rgba(0, 0, 0, 0.048),
+    0 0 0 rgba(0, 0, 0, 0.06), 0 0 0, 0 20px 20px rgba(0, 0, 0, 0.086),
+    0 0 0 rgba(0, 0, 0, 0.12);
+  background: white;
+  border-radius: 10px;
+}
+
+@media screen and (max-width: 550px) {
+  .dropdownDiv {
+    margin-left: 100px;
+  }
+}

@@ -8,14 +8,14 @@
   color: black;
   cursor: pointer;
   font-family: "Trispace", sans-serif;
-  padding: 0.5em;
-  margin: 1em;
+  padding: 8px;
+  margin: 11px;
   border-radius: 5px;
 }
 
 .bigBtn {
-  padding: 1.25em;
-  margin: 1.25em;
+  padding: 20px;
+  margin: 13px;
 }
 
 .smallBtn {

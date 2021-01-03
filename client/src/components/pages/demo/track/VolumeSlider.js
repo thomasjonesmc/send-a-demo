@@ -15,7 +15,7 @@ export default function VolumeSlider(props) {
         max={20}
         step={1}
         value={props.value}
-        onChange={props.volume}
+        onChange={props.onChange}
         {...props}
       />
       <span>

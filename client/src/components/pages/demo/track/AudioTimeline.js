@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import * as Tone from "tone";
 
-export default function AudioTimeline(playingState, track, ...props) {
+export default function AudioTimeline(
+  playingState,
+  track,
+  scrubberTime,
+  ...props
+) {
   const [demoCurrentTime, setDemoCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(playingState);
-  const [time, setTime] = useState(Date.now());
+  const [, setTime] = useState(Date.now());
   let tone = Tone.Transport;
 
   useEffect(() => {

@@ -41,7 +41,15 @@ export default function DemoHub() {
   }, [setAppState, demoID, appState.loading]);
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    let stream;
+    navigator.mediaDevices
+      .getUserMedia({ audio: true, video: false })
+      .then((audioStream) => {
+        stream = audioStream;
+      });
+    return () => {
+      if (stream) stream.getAudioTracks()[0].stop();
+    };
   }, []);
 
   if (appState.loading) {

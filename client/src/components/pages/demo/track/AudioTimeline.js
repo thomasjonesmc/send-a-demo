@@ -28,8 +28,10 @@ export default function AudioTimeline(
     };
   }, [isPlaying, playingState, tone.seconds]);
   return (
-    <div className="waveform">
-      <p>{demoCurrentTime}</p>
+    <div className="audioColumn">
+      <div className="waveform">
+        <p>{demoCurrentTime}</p>
+      </div>
     </div>
   );
 }

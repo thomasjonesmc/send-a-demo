@@ -1,9 +1,8 @@
 import React, { useMemo, useState } from "react";
 import MicRecorder from "mic-recorder-to-mp3";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import { RedButton, GreenButton } from "components/reusable/button/Button";
+import { BiMicrophone } from "react-icons/bi";
 
 export default function Recorder({
   track,
@@ -15,6 +14,7 @@ export default function Recorder({
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   let token = localStorage.getItem("auth-token");
 
   const recorder = useMemo(
@@ -59,7 +59,7 @@ export default function Recorder({
     let fileName = `${demoId}/${audio.name}`;
     let fileType = audio.type;
     let url;
-
+    setUploading(true);
     await Axios.post("/sign-file", {
       fileName: fileName,
       fileType: fileType,
@@ -115,13 +115,15 @@ export default function Recorder({
         }}
       >
         {!isRecording ? "Start " : "Stop "}
-        <FontAwesomeIcon icon={faMicrophone} size="lg" color="red" />
+        <BiMicrophone />
       </RedButton>
     );
   } else if (localTrack) {
     return (
       <>
-        <GreenButton onClick={() => handleAudioFile(file)}>Upload</GreenButton>
+        <GreenButton onClick={() => handleAudioFile(file)}>
+          {uploading ? "Uploading..." : "Upload"}
+        </GreenButton>
         <RedButton onClick={() => setLocalTrack(null)}>Delete Audio</RedButton>
       </>
     );
@@ -138,6 +140,17 @@ export default function Recorder({
 
 const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
   let token = localStorage.getItem("auth-token");
+  const [deleteingAudio, setDeleteingAudio] = useState(false);
+  let confirmPopup = async (trackId) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the audio from your track ${track.trackTitle}?`
+      )
+    ) {
+      setDeleteingAudio(true);
+      await deleteFromS3(trackId).then(refreshDemo);
+    }
+  };
   const deleteFromS3 = async () => {
     try {
       console.log(`Deleting ${path}...`);
@@ -162,10 +175,10 @@ const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
   return (
     <RedButton
       onClick={async () => {
-        await deleteFromS3(track._id).then(refreshDemo);
+        await confirmPopup(track._id);
       }}
     >
-      Delete Audio
+      {deleteingAudio ? "Deleting..." : "Delete Audio"}
     </RedButton>
   );
 };

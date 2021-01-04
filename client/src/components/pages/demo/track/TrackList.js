@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { FaPlay, FaPause } from "react-icons/fa";
+import React, { useState, useEffect, useRef } from "react";
+import Axios from "axios";
 import "components/pages/demo/track/tracklist.css";
-import Player from "components/pages/demo/Player";
-import Dropdown from "components/pages/demo/track/Dropdown";
-import Recorder from "components/pages/demo/track/Recorder";
+import PlayAllButton from "components/pages/demo/track/PlayAllButton";
+import Dropdown from "components/reusable/dropdown/Dropdown";
 import AudioTimeline from "components/pages/demo/track/AudioTimeline";
-import VolumeSlider from "components/pages/demo/track/VolumeSlider";
-import { Button } from "components/reusable/button/Button";
+import Controls from "components/pages/demo/track/Controls";
+import { Button, RedButton } from "components/reusable/button/Button";
+import fetchTracks from "utils/fetchTracks";
 import * as Tone from "tone";
 
-export default function TrackList(props) {
+export default function TrackList({ tracks, demoid, ...props }) {
   //Tone.start() enables audio to be played on mobile browsers
-  Tone.start();
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackIsRecording, setTrackIsRecording] = useState({
     recording: false,
     track: null,
   });
   const recording = trackIsRecording.recording;
+  const [loading, setLoading] = useState(true);
+  const tracksAndPlayers = useRef(null);
+  const demoLength = useRef(0);
 
   useEffect(() => {
     try {
@@ -30,45 +33,63 @@ export default function TrackList(props) {
     }
   }, [recording, isPlaying]);
 
-  return (
-    <div>
-      <PlayAllButton playingState={[isPlaying, setIsPlaying]} />
-      {props.tracks.map((track) => (
-        <Track
-          key={track._id}
-          track={track}
+  useEffect(() => {
+    let mapTracksAndPlayers = async () => {
+      await fetchTracks(tracks).then((fetchedResults) => {
+        tracksAndPlayers.current = fetchedResults;
+        console.log(tracksAndPlayers.current);
+      });
+    };
+
+    let getDemoLength = async () => {
+      if (tracksAndPlayers.current !== null) {
+        let hasPlayer = tracksAndPlayers.current.filter((data) => data[1]);
+        let players = hasPlayer.map((data) => data[1]);
+        console.log(players);
+        players.forEach((player) => {
+          if (player.buffer.duration > demoLength.current) {
+            demoLength.current = player.buffer.duration;
+          }
+          console.log(player.buffer.duration);
+        });
+        setLoading(false);
+        Tone.start();
+      }
+    };
+
+    mapTracksAndPlayers().then(getDemoLength());
+  }, [tracks]);
+
+  if (loading) {
+    return "Loading";
+  } else {
+    return (
+      <div>
+        <PlayAllButton
           playingState={[isPlaying, setIsPlaying]}
-          recordingState={[trackIsRecording, setTrackIsRecording]}
-          {...props}
+          demoLength={demoLength.current}
         />
-      ))}
-    </div>
-  );
+        {tracksAndPlayers.current.map((track) => (
+          <Track
+            key={track[0]._id}
+            player={track[1]}
+            track={track[0]}
+            playingState={[isPlaying, setIsPlaying]}
+            recordingState={[trackIsRecording, setTrackIsRecording]}
+            {...props}
+          />
+        ))}
+      </div>
+    );
+  }
 }
 
-const PlayAllButton = ({ playingState: [isPlaying, setIsPlaying] }) => {
-  useEffect(() => {
-    isPlaying ? Tone.Transport.start() : Tone.Transport.pause();
-  }, [isPlaying]);
-
-  return (
-    <div className="centerInDiv">
-      <Button onClick={() => setIsPlaying(!isPlaying)} className="bigBtn">
-        {isPlaying ? <FaPause /> : <FaPlay />}
-      </Button>
-    </div>
-  );
-};
-
-const Track = ({ track, playingState, recordingState, ...props }) => {
+const Track = ({ track, playingState, recordingState, player, ...props }) => {
   return (
     <div className="centerInDiv">
       <div key={track._id} className="trackContainer">
         <InfoColumn track={track} playingState={playingState} {...props} />
-
-        <div className="audioColumn">
-          <AudioTimeline playingState={playingState.isPlaying} track={track} />
-        </div>
+        <AudioTimeline playingState={playingState.isPlaying} track={track} />
         <div className="break"></div>
         <div className="infoSmall">&nbsp;</div>
 
@@ -76,6 +97,7 @@ const Track = ({ track, playingState, recordingState, ...props }) => {
           track={track}
           recordingState={recordingState}
           playingState={playingState}
+          player={player}
           {...props}
         />
       </div>
@@ -85,11 +107,49 @@ const Track = ({ track, playingState, recordingState, ...props }) => {
 
 const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => {
   const [showMenu, setShowMenu] = useState();
+  const token = localStorage.getItem("auth-token");
+
+  let confirmPopup = (track) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete your track ${track.trackTitle}?`
+      )
+    ) {
+      deleteTrack(track);
+    }
+  };
+
+  const deleteTrack = async (track) => {
+    try {
+      console.log(`Deleting ${track.trackTitle}...`);
+      await Axios.delete(`/demos/delete-track/`, {
+        headers: {
+          "x-auth-token": token,
+        },
+        data: {
+          _id: track._id,
+        },
+      }).then(deleteFromS3);
+      console.log(`${track.trackTitle} removed!`);
+      props.refreshDemo();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteFromS3 = async () => {
+    try {
+      Axios.post(`/delete-track-s3`, {
+        key: `${props.demo}/${props.track._id}`,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="infoColumn">
       <h4>{track.trackTitle}</h4>
       <p>{track.trackAuthor}</p>
-      <div>{/* <Player isPlaying={isPlaying} track={track} /> */}</div>
       <div>
         <Button onClick={() => setShowMenu(!showMenu)} className="smallBtn">
           ...
@@ -97,77 +157,14 @@ const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => {
 
         <div className="dropdownParent">
           {showMenu ? (
-            <Dropdown
-              demo={props.demo}
-              track={track}
-              refreshDemo={props.refreshDemo}
-            />
+            <Dropdown>
+              <RedButton onClick={(e) => confirmPopup(track)}>
+                Delete Track
+              </RedButton>
+            </Dropdown>
           ) : null}
         </div>
       </div>
-    </div>
-  );
-};
-
-const Controls = ({
-  track,
-  recordingState,
-  playingState: [isPlaying, setIsPlaying],
-  ...props
-}) => {
-  const [trackIsRecording, setTrackIsRecording] = recordingState;
-  //volume is measured from -20 to 20 db on slider
-  const [volume, setVolume] = useState(0);
-  const [localTrack, setLocalTrack] = useState(null);
-  const handleChange = (event) => {
-    setVolume(event.target.value);
-  };
-  const handleFileChange = (file) => {
-    // console.log(file);
-    const fileLocation = URL.createObjectURL(file);
-    setLocalTrack(fileLocation);
-  };
-
-  return (
-    <div className="controls">
-      {trackIsRecording.recording && trackIsRecording.track !== track ? (
-        <Button className="btnComp" disabled="disabled">
-          Recording...
-        </Button>
-      ) : (
-        <>
-          <Recorder
-            track={track}
-            demoId={props.demo}
-            localTrackState={[localTrack, setLocalTrack]}
-            setLocalBuffer={handleFileChange}
-            refreshDemo={props.refreshDemo}
-            trackIsRecording={() => {
-              setTrackIsRecording({
-                recording: !trackIsRecording.recording,
-                track: track,
-              });
-              if (!recordingState.trackIsRecording) {
-                setIsPlaying(false);
-              }
-            }}
-          />
-        </>
-      )}
-      {track.trackSignedURL || localTrack ? (
-        <>
-          <Player
-            isPlaying={isPlaying}
-            track={track}
-            localTrack={localTrack}
-            volume={volume}
-            trackBeingRecorded={trackIsRecording.track}
-          />
-          <VolumeSlider value={volume} onChange={handleChange} />
-        </>
-      ) : (
-        ""
-      )}
     </div>
   );
 };

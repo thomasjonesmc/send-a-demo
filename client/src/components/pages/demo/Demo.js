@@ -31,7 +31,7 @@ export default function DemoHub() {
               loading: false,
               demo: res.data,
             });
-          }, 750);
+          }, 500);
         });
       };
       getDemo();
@@ -92,7 +92,7 @@ export default function DemoHub() {
         <div id="demoContainer">
           <TrackList
             tracks={appState.demo.tracks}
-            demo={demoID}
+            demoid={demoID}
             refreshDemo={() => setAppState({ loading: true })}
           />
         </div>

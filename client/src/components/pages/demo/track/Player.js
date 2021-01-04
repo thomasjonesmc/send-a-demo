@@ -7,37 +7,32 @@ export default function Player({
   localTrack,
   volume,
   trackBeingRecorded,
+  player,
   ...props
 }) {
   const [isMuted, setIsMuted] = useState(false);
-  const player = useRef(null);
+  const tonePlayer = useRef(null);
 
   useEffect(() => {
     if (track.trackSignedURL) {
-      player.current = new Tone.Player(track.trackSignedURL, () => {
-        player.current.sync().start(0).toDestination();
-      });
+      tonePlayer.current = player.sync().start(0).toDestination();
     } else if (localTrack) {
       new Tone.Buffer(localTrack, (buffer) => {
-        player.current = new Tone.Player(buffer).toDestination();
-        player.current.sync().start(0);
+        tonePlayer.current = new Tone.Player(buffer).toDestination();
+        tonePlayer.current.sync().start(0);
       });
     }
     return () => {
-      player.current.disconnect();
-      player.current = null;
+      tonePlayer.current.disconnect();
+      tonePlayer.current = null;
     };
-  }, [track, localTrack]);
-
-  // useEffect(() => {
-  //   if (player.current && player.current.isPlaying) player.current.stop();
-  // }, []);
+  }, [track, localTrack, player]);
 
   useEffect(() => {
-    if (player.current) {
+    if (tonePlayer.current) {
       isMuted
-        ? (player.current.volume.value = -400)
-        : (player.current.volume.value = volume);
+        ? (tonePlayer.current.volume.value = -400)
+        : (tonePlayer.current.volume.value = volume);
     }
   }, [volume, isMuted]);
 

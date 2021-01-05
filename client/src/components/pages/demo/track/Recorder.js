@@ -1,8 +1,16 @@
 import React, { useMemo, useState } from "react";
-import MicRecorder from "mic-recorder-to-mp3";
+// import MicRecorder from "mic-recorder-to-mp3";
 import Axios from "axios";
 import { RedButton, GreenButton } from "components/reusable/button/Button";
 import { BiMicrophone } from "react-icons/bi";
+import {
+  encodeMp3,
+  exportWav,
+  startRecording,
+  stopRecording,
+} from "utils/recorderUtils";
+
+import rec from "recorderjs";
 
 export default function Recorder({
   track,
@@ -17,41 +25,21 @@ export default function Recorder({
   const [uploading, setUploading] = useState(false);
   let token = localStorage.getItem("auth-token");
 
-  const recorder = useMemo(
-    () =>
-      new MicRecorder({
-        bitRate: 128,
-        encodeAfterRecordCheck: true,
-      }),
-    []
-  );
-
   let start = () => {
-    recorder
-      .start()
-      .then(() => {
-        console.log("recording");
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    startRecording();
   };
 
-  let stop = (trackId) => {
-    recorder
-      .stop()
-      .getMp3()
-      .then(([buffer, blob]) => {
-        const file = new File(buffer, `${trackId}.mp3`, {
-          type: blob.type,
-          lastModified: Date.now(),
-        });
-        setFile(file);
-        setLocalBuffer(file);
-      })
-      .catch((e) => {
-        console.error(e);
+  let stop = async (trackId) => {
+    await stopRecording().then((res) => console.log(res));
+    let wavBlob = await exportWav();
+    encodeMp3(wavBlob).then((mp3blob) => {
+      const file = new File(mp3blob, `${trackId}.mp3`, {
+        type: mp3blob.type,
+        lastModified: Date.now(),
       });
+      setFile(file);
+      setLocalBuffer(file);
+    });
   };
 
   let handleAudioFile = async (audio) => {

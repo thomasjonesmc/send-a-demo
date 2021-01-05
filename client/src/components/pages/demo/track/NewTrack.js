@@ -1,6 +1,9 @@
 import React, { useState, useContext } from "react";
 import Axios from "axios";
 import UserContext from "context/UserContext";
+import UnderlinedTextInput from "components/reusable/inputs/Inputs";
+import { Button } from "components/reusable/button/Button";
+import "./newTrack.css";
 
 export default function NewTrack(props) {
   const [trackTitle, setTrackTitle] = useState("");
@@ -17,24 +20,18 @@ export default function NewTrack(props) {
   };
 
   return (
-    <form id="container" onSubmit={submit}>
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="trackTitle"
-        >
-          Track Name
-        </label>
-        <input
-          id="trackTitle"
-          type="text"
-          onChange={(e) => setTrackTitle(e.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        />
+    <div className="newTrackParent">
+      <div id="newTrackDiv">
+        <form style={{ width: "75%" }} onSubmit={submit}>
+          <div>
+            <label htmlFor="newTrackTitle">Track Name:</label>
+            <UnderlinedTextInput id="newTrackTitle" onChange={setTrackTitle} />
+          </div>
+          <div className="centerInDiv">
+            <Button type="submit">Create New Track</Button>
+          </div>
+        </form>
       </div>
-      <div className="pageTitle">
-        <button type="submit">Create New Track</button>
-      </div>
-    </form>
+    </div>
   );
 }

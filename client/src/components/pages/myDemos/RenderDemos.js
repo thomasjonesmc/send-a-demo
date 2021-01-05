@@ -7,9 +7,9 @@ const DemoList = (props) => {
   const history = useHistory();
   if (!demos || demos.length === 0)
     return (
-      <div id="container">
-        <h1 className="">You don't have any demos yet!</h1>
-        <p className="">Time to get cooking 🍔 </p>
+      <div style={{ textAlign: "center" }}>
+        <h1>You don't have any demos yet!</h1>
+        <p>Time to get cooking 🍔 </p>
       </div>
     );
 
@@ -21,19 +21,19 @@ const DemoList = (props) => {
         };
         return (
           <div key={demo._id} className="demo" onClick={(e) => linkTo(demo)}>
-            <div className="demoText">
-              <h3>{demo.demoTitle}</h3>
-              <p>
+            <div>
+              <h3 className="demoTitle">{demo.demoTitle}</h3>
+              <p className="demoText">
                 author: <strong>{demo.displayName}</strong>
               </p>
-              <p>
+              <p className="demoText">
                 created:
                 <strong>
                   {" "}
                   {new Date(demo.createdOn).toLocaleDateString()}
                 </strong>
               </p>
-              <p>
+              <p className="demoText">
                 last modified:
                 <strong>
                   {" "}

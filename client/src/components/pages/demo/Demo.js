@@ -1,8 +1,10 @@
 import Axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ErrorNotice from "components/reusable/ErrorNotice";
 import NewTrack from "components/pages/demo/track/NewTrack";
 import TrackList from "components/pages/demo/track/TrackList";
+import { Button } from "components/reusable/button/Button";
+import "./demo.css";
 
 export default function DemoHub() {
   const [appState, setAppState] = useState({
@@ -16,28 +18,43 @@ export default function DemoHub() {
   const params = new URLSearchParams(document.location.search.substring(1));
   const demoID = params.get("demo");
 
+  let loadingTimeout = useRef(null);
+
   useEffect(() => {
     try {
       const getDemo = async () => {
-        await Axios.get("/demos/get-demo-by-id", {
+        const demo = await Axios.get("/demos/get-demo-by-id", {
           params: { id: demoID },
-        }).then((res) => {
+        });
+        loadingTimeout.current = setTimeout(() => {
           setAppState({
             loading: false,
-            demo: res.data,
+            demo: demo.data,
           });
-        });
+        }, 500);
       };
       getDemo();
     } catch (err) {
       err.response.data.msg && setErrorMsg(err.response.data.msg);
     }
-  }, [setAppState, demoID, showNewTrack, appState.loading]);
+  }, [setAppState, demoID, appState.loading]);
+
+  useEffect(() => {
+    let stream;
+    navigator.mediaDevices
+      .getUserMedia({ audio: true, video: false })
+      .then((audioStream) => {
+        stream = audioStream;
+      });
+    return () => {
+      if (stream) stream.getAudioTracks()[0].stop();
+    };
+  }, []);
 
   if (appState.loading) {
     return (
       <div id="container">
-        <h1 className="pageTitle">🎹 🎤 🎵 </h1>
+        <h1 className="centerInDiv">🎹 🎤 🎵 </h1>
         {errorMsg && (
           <ErrorNotice
             message={errorMsg}
@@ -50,39 +67,33 @@ export default function DemoHub() {
   if (appState.demo !== null) {
     return (
       <div id="container">
-        <h1 className="pageTitle">{appState.demo.demoTitle}</h1>
-        <hr></hr>
-
-        <div className="pageTitle">
-          <button
-            className="btnComp"
-            type="button"
-            value="New Track +"
-            onClick={() => setShowNewTrack(!showNewTrack)}
-          >
+        <h1 className="centerInDiv" id="demoTitleHeading">
+          {appState.demo.demoTitle}
+        </h1>
+        <div className="centerInDiv">
+          <Button onClick={() => setShowNewTrack(!showNewTrack)}>
             {showNewTrack ? "Close" : "New Track +"}
-          </button>
+          </Button>
         </div>
         <div>
           {showNewTrack ? (
             <NewTrack
               demo={appState.demo}
-              onClick={(e) => setShowNewTrack(false)}
+              onClick={() => {
+                setShowNewTrack(false);
+                setAppState({ loading: true });
+              }}
             />
-          ) : (
-            ""
-          )}
+          ) : null}
         </div>
+        <hr></hr>
 
         <div id="demoContainer">
           <TrackList
             tracks={appState.demo.tracks}
-            demo={demoID}
-            onDelete={() => setAppState({ loading: true })}
+            demoid={demoID}
+            refreshDemo={() => setAppState({ loading: true })}
           />
-          {/* {appState.demo.tracks.map((track) => {
-              return <TrackList track={track} />;
-            })} */}
         </div>
       </div>
     );

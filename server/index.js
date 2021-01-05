@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const { sign_s3, retrieveTrack, delete_track } = require("./routes/s3Router");
 
 //Setup Express
 
@@ -37,3 +38,5 @@ mongoose.connect(
 //set up routes
 app.use("/users", require("./routes/userRouter"));
 app.use("/demos", require("./routes/demoRouter"));
+app.use("/sign-file", sign_s3);
+app.use("/delete-track-s3", delete_track);

@@ -1,14 +1,14 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 import "components/reusable/button/button.css";
 
-export default function Button(props) {
-  const history = useHistory();
-  const link = () => history.push(props.path);
+export const Button = ({ path, ...props }) => {
+  return <button type="button" className="btnComp" {...props}></button>;
+};
 
-  return (
-    <button type="button" className="btnComp" value={props.name} onClick={link}>
-      {props.name}
-    </button>
-  );
-}
+export const RedButton = ({ ...props }) => {
+  return <Button className="redBtn" {...props} />;
+};
+
+export const GreenButton = ({ ...props }) => {
+  return <Button className="greenBtn" {...props} />;
+};

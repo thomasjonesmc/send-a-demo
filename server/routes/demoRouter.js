@@ -139,6 +139,46 @@ router.post("/new-track/:id", async (req, res) => {
   }
 });
 
+router.post("/add-signed-URL", auth, async (req, res) => {
+  try {
+    Track.findByIdAndUpdate(
+      req.body._id,
+      {
+        trackSignedURL: req.body.URL,
+      },
+      (err, data) => {
+        if (err) {
+          res.json(err);
+        } else {
+          res.json(data);
+        }
+      }
+    );
+  } catch (err) {
+    res.json(err);
+  }
+});
+
+router.post("/remove-s3-url", auth, async (req, res) => {
+  try {
+    Track.findByIdAndUpdate(
+      req.body._id,
+      {
+        trackSignedURL: null,
+      },
+      (err, data) => {
+        if (err) {
+          res.json(err);
+        } else {
+          res.json(data);
+        }
+      }
+    );
+  } catch (err) {
+    res.json(err);
+  }
+});
+
 router.delete("/delete-track", auth, async (req, res) => {
   try {
     await Track.findByIdAndDelete(req.body).catch((err) => {

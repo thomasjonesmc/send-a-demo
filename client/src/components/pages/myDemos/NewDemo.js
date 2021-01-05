@@ -3,6 +3,8 @@ import React, { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import UserContext from "context/UserContext";
 import ErrorNotice from "components/reusable/ErrorNotice";
+import UnderlinedTextInput from "components/reusable/inputs/Inputs";
+import { Button } from "components/reusable/button/Button";
 
 export default function CreateDemo() {
   const { userData } = useContext(UserContext);
@@ -25,21 +27,16 @@ export default function CreateDemo() {
   };
 
   return (
-    <div id="container">
+    <div id="">
       <form className="formContainer" onSubmit={submit}>
-        <div className="mb-4">
-          <label className="pageTitle" htmlFor="demoTitle">
+        <div>
+          <label className="centerInDiv" htmlFor="demoTitle">
             new demo title
           </label>
-          <input
-            id="demoTitle"
-            type="text"
-            onChange={(e) => setDemoTitle(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
+          <UnderlinedTextInput id="demoTitle" onChange={setDemoTitle} />
         </div>
         <div className="btnDiv">
-          <button type="submit">New Demo +</button>
+          <Button type="submit">New Demo +</Button>
         </div>
       </form>
       {errorMsg && (

@@ -21,7 +21,7 @@ export default function App() {
           <Route exact path="/register" component={Register} />
           <Route exact path="/my-demos" component={MyDemos} />
           <Route exact path="/new-demo" component={NewDemo} />
-          <Route exact path="/demo/:path" component={Demo} />
+          <Route exact path="/demos/:demoID" component={Demo} />
           <Route path="/" render={() => <div>404</div>} />
         </Switch>
       </UserProvider>

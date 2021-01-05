@@ -41,9 +41,10 @@ router.post("/new-demo", async (req, res) => {
   }
 });
 
-router.get("/get-demo-by-id", async (req, res) => {
+router.get("/:id", async (req, res) => {
+
   try {
-    demo = await Demo.findOne({ _id: req.query.id }).populate({
+    demo = await Demo.findOne({ _id: req.params.id }).populate({
       path: "tracks",
       model: Track,
     });

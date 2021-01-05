@@ -1,101 +1,40 @@
-import Axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
-import ErrorNotice from "components/reusable/ErrorNotice";
+import React, { useState } from "react";
 import NewTrack from "components/pages/demo/track/NewTrack";
-import TrackList from "components/pages/demo/track/TrackList";
 import { Button } from "components/reusable/button/Button";
+import { useDemo } from "./useDemo";
+import { useParams } from "react-router-dom";
 import "./demo.css";
 
 export default function DemoHub() {
-  const [appState, setAppState] = useState({
-    loading: true,
-    demo: null,
-  });
-
-  const [errorMsg, setErrorMsg] = useState();
+  
+  // lets us extract the demo id from the route parameters
+  const { demoID } = useParams();
+  
   const [showNewTrack, setShowNewTrack] = useState(false);
+  const { demo, error, loading } = useDemo(demoID);
 
-  const params = new URLSearchParams(document.location.search.substring(1));
-  const demoID = params.get("demo");
-
-  let loadingTimeout = useRef(null);
-
-  useEffect(() => {
-    try {
-      const getDemo = async () => {
-        const demo = await Axios.get("/demos/get-demo-by-id", {
-          params: { id: demoID },
-        });
-        loadingTimeout.current = setTimeout(() => {
-          setAppState({
-            loading: false,
-            demo: demo.data,
-          });
-        }, 500);
-      };
-      getDemo();
-    } catch (err) {
-      err.response.data.msg && setErrorMsg(err.response.data.msg);
-    }
-  }, [setAppState, demoID, appState.loading]);
-
-  useEffect(() => {
-    let stream;
-    navigator.mediaDevices
-      .getUserMedia({ audio: true, video: false })
-      .then((audioStream) => {
-        stream = audioStream;
-      });
-    return () => {
-      if (stream) stream.getAudioTracks()[0].stop();
-    };
-  }, []);
-
-  if (appState.loading) {
-    return (
-      <div id="container">
-        <h1 className="centerInDiv">🎹 🎤 🎵 </h1>
-        {errorMsg && (
-          <ErrorNotice
-            message={errorMsg}
-            clearError={() => setErrorMsg(undefined)}
-          />
-        )}
+  if (loading) return null;
+  if (!demo) return <div>No Demo Found</div>
+ 
+  return (
+    <div>
+      <div>{error}</div>
+      <h1 className="centerInDiv" id="demoTitleHeading">
+        {demo.demoTitle}
+      </h1>
+      <div className="centerInDiv">
+        <Button onClick={() => setShowNewTrack(!showNewTrack)}>
+          {showNewTrack ? "Close" : "New Track +"}
+        </Button>
       </div>
-    );
-  }
-  if (appState.demo !== null) {
-    return (
-      <div id="container">
-        <h1 className="centerInDiv" id="demoTitleHeading">
-          {appState.demo.demoTitle}
-        </h1>
-        <div className="centerInDiv">
-          <Button onClick={() => setShowNewTrack(!showNewTrack)}>
-            {showNewTrack ? "Close" : "New Track +"}
-          </Button>
-        </div>
-        <div>
-          {showNewTrack ? (
-            <NewTrack
-              demo={appState.demo}
-              onClick={() => {
-                setShowNewTrack(false);
-                setAppState({ loading: true });
-              }}
-            />
-          ) : null}
-        </div>
-        <hr></hr>
-
-        <div id="demoContainer">
-          <TrackList
-            tracks={appState.demo.tracks}
-            demoid={demoID}
-            refreshDemo={() => setAppState({ loading: true })}
-          />
-        </div>
+      <div>
+        {showNewTrack ? (
+          <NewTrack demo={demo} onClick={() => setShowNewTrack(false)} />
+        ) : null}
       </div>
-    );
-  }
+    
+      <div></div>
+
+    </div>
+  );
 }

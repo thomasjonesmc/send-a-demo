@@ -16,7 +16,7 @@ export default function Login() {
   const history = useHistory();
 
   const submit = async (e) => {
-    e.preventDefault(); //stops the page from reloading upon form submission
+    e.preventDefault();
     try {
       const loginUser = { email, password };
       const loginRes = await Axios.post("users/login", loginUser);

@@ -24,16 +24,9 @@ export const startRecording = () => {
 };
 
 export const stopRecording = () => {
-  let promise = new Promise((resolve, reject) => {
-    rec.stop();
-    if (!rec.recording) {
-      resolve("finished recording");
-    } else {
-      reject("error on stopping recording");
-    }
-  });
+  rec.stop();
 
-  return promise;
+  return "Recording stopped.";
 };
 
 export const exportWav = () => {
@@ -56,6 +49,8 @@ export const encodeMp3 = async (wavBlob) => {
 
   samples = new Int16Array(wavBuffer);
   sampleBlockSize = 1152;
+
+  //mp3encoder takes in # of channels, sample rate (defined above), and kbps
   let mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, 128);
 
   for (let i = 0; i < samples.length; i += sampleBlockSize) {
@@ -70,8 +65,6 @@ export const encodeMp3 = async (wavBlob) => {
   if (mp3buf.length > 0) {
     mp3Data.push(new Int8Array(mp3buf));
   }
-
-  //mp3encoder takes in # of channels, sample rate (defined above), and kbps
 
   let mp3Blob = new Blob(mp3Data, { type: "audio/mp3" });
 

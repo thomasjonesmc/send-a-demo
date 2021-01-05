@@ -23,16 +23,15 @@ export default function DemoHub() {
   useEffect(() => {
     try {
       const getDemo = async () => {
-        await Axios.get("/demos/get-demo-by-id", {
+        const demo = await Axios.get("/demos/get-demo-by-id", {
           params: { id: demoID },
-        }).then((res) => {
-          loadingTimeout.current = setTimeout(() => {
-            setAppState({
-              loading: false,
-              demo: res.data,
-            });
-          }, 500);
         });
+        loadingTimeout.current = setTimeout(() => {
+          setAppState({
+            loading: false,
+            demo: demo.data,
+          });
+        }, 500);
       };
       getDemo();
     } catch (err) {

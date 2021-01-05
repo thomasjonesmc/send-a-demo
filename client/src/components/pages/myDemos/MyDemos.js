@@ -21,17 +21,12 @@ export default function MyDemos() {
 
   useEffect(() => {
     const getUserDemos = async () => {
-      await Axios.get("demos/get-demo-list", {
+      const userDemos = await Axios.get("demos/get-demo-list", {
         headers: { "x-auth-token": token },
-      })
-        .then((res) => {
-          loadingTimeout.current = setTimeout(() => {
-            setAppState({ loading: false, demos: res.data });
-          }, 750);
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
+      });
+      loadingTimeout.current = setTimeout(() => {
+        setAppState({ loading: false, demos: userDemos.data });
+      }, 750);
     };
     getUserDemos();
   }, [setAppState, token]);

@@ -15,7 +15,7 @@ export default function NewTrack(props) {
     try {
       const newTrack = { trackTitle, trackAuthor: userData.user.displayName };
       await Axios.post(`/demos/new-track/${props.demo._id}`, newTrack);
-      await props.onClick();
+      props.onClick();
     } catch (e) {}
   };
 

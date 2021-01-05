@@ -35,22 +35,18 @@ export default function TrackList({ tracks, demoid, ...props }) {
 
   useEffect(() => {
     let mapTracksAndPlayers = async () => {
-      await fetchTracks(tracks).then((fetchedResults) => {
-        tracksAndPlayers.current = fetchedResults;
-        console.log(tracksAndPlayers.current);
-      });
+      const fetchedResults = await fetchTracks(tracks);
+      tracksAndPlayers.current = fetchedResults;
     };
 
     let getDemoLength = async () => {
       if (tracksAndPlayers.current !== null) {
         let hasPlayer = tracksAndPlayers.current.filter((data) => data[1]);
         let players = hasPlayer.map((data) => data[1]);
-        console.log(players);
         players.forEach((player) => {
           if (player.buffer.duration > demoLength.current) {
             demoLength.current = player.buffer.duration;
           }
-          console.log(player.buffer.duration);
         });
         setLoading(false);
         Tone.start();
@@ -74,6 +70,7 @@ export default function TrackList({ tracks, demoid, ...props }) {
             key={track[0]._id}
             player={track[1]}
             track={track[0]}
+            demoid={demoid}
             playingState={[isPlaying, setIsPlaying]}
             recordingState={[trackIsRecording, setTrackIsRecording]}
             {...props}
@@ -84,11 +81,23 @@ export default function TrackList({ tracks, demoid, ...props }) {
   }
 }
 
-const Track = ({ track, playingState, recordingState, player, ...props }) => {
+const Track = ({
+  track,
+  playingState,
+  recordingState,
+  player,
+  demoid,
+  ...props
+}) => {
   return (
     <div className="centerInDiv">
       <div key={track._id} className="trackContainer">
-        <InfoColumn track={track} playingState={playingState} {...props} />
+        <InfoColumn
+          track={track}
+          demoid={demoid}
+          playingState={playingState}
+          {...props}
+        />
         <AudioTimeline playingState={playingState.isPlaying} track={track} />
         <div className="break"></div>
         <div className="infoSmall">&nbsp;</div>
@@ -98,6 +107,7 @@ const Track = ({ track, playingState, recordingState, player, ...props }) => {
           recordingState={recordingState}
           playingState={playingState}
           player={player}
+          demoid={demoid}
           {...props}
         />
       </div>
@@ -105,7 +115,7 @@ const Track = ({ track, playingState, recordingState, player, ...props }) => {
   );
 };
 
-const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => {
+const InfoColumn = ({ track, playingState: [isPlaying], demoid, ...props }) => {
   const [showMenu, setShowMenu] = useState();
   const token = localStorage.getItem("auth-token");
 
@@ -129,7 +139,8 @@ const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => {
         data: {
           _id: track._id,
         },
-      }).then(deleteFromS3);
+      });
+      await deleteFromS3();
       console.log(`${track.trackTitle} removed!`);
       props.refreshDemo();
     } catch (err) {
@@ -139,8 +150,8 @@ const InfoColumn = ({ track, playingState: [isPlaying], ...props }) => {
 
   const deleteFromS3 = async () => {
     try {
-      Axios.post(`/delete-track-s3`, {
-        key: `${props.demo}/${props.track._id}`,
+      await Axios.post(`/delete-track-s3`, {
+        key: `${demoid}/${track._id}`,
       });
     } catch (err) {
       console.log(err);

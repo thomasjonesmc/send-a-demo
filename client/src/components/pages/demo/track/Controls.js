@@ -9,6 +9,7 @@ export default function Controls({
   recordingState,
   playingState: [isPlaying, setIsPlaying],
   player,
+  demoid,
   ...props
 }) {
   const [trackIsRecording, setTrackIsRecording] = recordingState;
@@ -19,7 +20,6 @@ export default function Controls({
     setVolume(event.target.value);
   };
   const handleFileChange = (file) => {
-    // console.log(file);
     const fileLocation = URL.createObjectURL(file);
     setLocalTrack(fileLocation);
   };
@@ -35,7 +35,7 @@ export default function Controls({
         <>
           <Recorder
             track={track}
-            demoId={props.demoid}
+            demoid={demoid}
             localTrackState={[localTrack, setLocalTrack]}
             setLocalBuffer={handleFileChange}
             refreshDemo={props.refreshDemo}

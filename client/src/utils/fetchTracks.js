@@ -9,15 +9,10 @@ export const fetchTracks = async (tracks) => {
       return [track];
     }
   });
-  const results = await Promise.all(promises);
 
-  let playersAndTracks = results;
+  const playersAndTracks = await Promise.all(promises);
 
-  return playersAndTracks.map((result) => {
-    return {
-      ...result,
-    };
-  });
+  return playersAndTracks.map((result) => result);
 };
 
 export default fetchTracks;

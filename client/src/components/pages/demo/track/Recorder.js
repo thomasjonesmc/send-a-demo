@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-// import MicRecorder from "mic-recorder-to-mp3";
+import React, { useState } from "react";
+
 import Axios from "axios";
 import { RedButton, GreenButton } from "components/reusable/button/Button";
 import { BiMicrophone } from "react-icons/bi";
@@ -10,11 +10,9 @@ import {
   stopRecording,
 } from "utils/recorderUtils";
 
-import rec from "recorderjs";
-
 export default function Recorder({
   track,
-  demoId,
+  demoid,
   localTrackState: [localTrack, setLocalTrack],
   setLocalBuffer,
   refreshDemo,
@@ -30,60 +28,53 @@ export default function Recorder({
   };
 
   let stop = async (trackId) => {
-    await stopRecording().then((res) => console.log(res));
+    console.log(stopRecording());
     let wavBlob = await exportWav();
-    encodeMp3(wavBlob).then((mp3blob) => {
-      const file = new File(mp3blob, `${trackId}.mp3`, {
-        type: mp3blob.type,
-        lastModified: Date.now(),
-      });
-      setFile(file);
-      setLocalBuffer(file);
+    let mp3Blob = await encodeMp3(wavBlob);
+
+    const file = new File(mp3Blob, `${trackId}.mp3`, {
+      type: mp3Blob.type,
+      lastModified: Date.now(),
     });
+    setFile(file);
+    setLocalBuffer(file);
   };
 
   let handleAudioFile = async (audio) => {
     let file = audio;
-    let fileName = `${demoId}/${audio.name}`;
+    let fileName = `${demoid}/${audio.name}`;
     let fileType = audio.type;
     let url;
     setUploading(true);
-    await Axios.post("/sign-file", {
+
+    console.log("Signing file...");
+    const signFile = await Axios.post("/sign-file", {
       fileName: fileName,
       fileType: fileType,
-    })
-      .then(async (res) => {
-        const returnData = res.data.data.returnData;
-        const signedRequest = returnData.signedRequest;
-        url = returnData.url;
-        const options = {
-          headers: {
-            "Content-Type": fileType,
-          },
-        };
-        console.log(`Uploading file...`);
-        await Axios.put(signedRequest, file, options)
-          .then((result) => {}, console.log("File uploaded"))
-          .catch((e) => {
-            alert("Error: " + JSON.stringify(e));
-          });
-      })
-      .then(() => {
-        console.log(url);
-        Axios.post(
-          "/demos/add-signed-URL",
-          {
-            _id: track._id,
-            URL: url,
-          },
-          { headers: { "x-auth-token": token } }
-        );
-        console.log("Signed URL added to Track");
-        refreshDemo();
-      })
-      .catch((e) => {
-        alert("Unexpected error: " + JSON.stringify(e));
-      });
+    });
+    const returnData = signFile.data.data.returnData;
+    const signedRequest = returnData.signedRequest;
+    url = returnData.url;
+    const options = {
+      headers: {
+        "Content-Type": fileType,
+      },
+    };
+
+    console.log("Uploading file...");
+    await Axios.put(signedRequest, file, options);
+
+    console.log(url);
+    Axios.post(
+      "/demos/add-signed-URL",
+      {
+        _id: track._id,
+        URL: url,
+      },
+      { headers: { "x-auth-token": token } }
+    );
+    console.log("Signed URL added to Track");
+    refreshDemo();
   };
 
   if (!track.trackSignedURL && !localTrack) {
@@ -119,7 +110,7 @@ export default function Recorder({
     return (
       <DeleteAudioFromS3
         track={track}
-        path={`${demoId}/${track._id}`}
+        path={`${demoid}/${track._id}`}
         refreshDemo={refreshDemo}
       />
     );
@@ -136,7 +127,8 @@ const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
       )
     ) {
       setDeleteingAudio(true);
-      await deleteFromS3(trackId).then(refreshDemo);
+      await deleteFromS3(trackId);
+      refreshDemo();
     }
   };
   const deleteFromS3 = async () => {
@@ -144,17 +136,17 @@ const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
       console.log(`Deleting ${path}...`);
       await Axios.post(`/delete-track-s3`, {
         key: path,
-      }).then(async () => {
-        console.log(`${path} deleted from AWS`);
-        console.log(`Removing URL information from track...`);
-        await Axios.post(
-          "/demos/remove-s3-url",
-          {
-            _id: track._id,
-          },
-          { headers: { "x-auth-token": token } }
-        );
       });
+      console.log(`${path} deleted from AWS`);
+      console.log(`Removing URL information from track...`);
+      await Axios.post(
+        "/demos/remove-s3-url",
+        {
+          _id: track._id,
+        },
+        { headers: { "x-auth-token": token } }
+      );
+      console.log("Done.");
     } catch (err) {
       console.log(err);
     }

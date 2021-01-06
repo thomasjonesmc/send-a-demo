@@ -1,0 +1,39 @@
+.errorNotice {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0px;
+    border-radius: 8px;
+    border: 2px dashed black;
+    position: relative;
+}
+
+.errorNotice > div {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.errorNotice span {
+    margin-left: 5px;
+}
+
+.errorNoticeExclamation {
+    color: rgb(207, 0, 0);
+}
+
+.errorNoticeButton {
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: larger;
+    background-color: transparent;
+    border: none;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

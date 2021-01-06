@@ -2,49 +2,41 @@ import Axios from "axios";
 import React, { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import UserContext from "context/UserContext";
-import ErrorNotice from "components/reusable/ErrorNotice";
-import UnderlinedTextInput from "components/reusable/inputs/Inputs";
+import ErrorNotice from "components/reusable/error/Error";
 import { Button } from "components/reusable/button/Button";
+import { Form, FormInput } from "components/reusable/form/Form";
 
 export default function CreateDemo() {
   const { userData } = useContext(UserContext);
   const history = useHistory();
 
-  const [userId] = useState(userData.user.id);
-  const [displayName] = useState(userData.user.displayName);
-  const [demoTitle, setDemoTitle] = useState();
-  const [errorMsg, setErrorMsg] = useState();
+  const [demoTitle, setDemoTitle] = useState("");
+  const [error, setError] = useState(null);
 
   const submit = async (e) => {
-    e.preventDefault();
+
+    if (demoTitle === "") return setError("Select a Demo Title");
+
     try {
-      const newDemo = { userId, displayName, demoTitle };
-      const newDemoRes = await Axios.post("demos/new-demo", newDemo);
-      history.push(`/demo/path/?demo=${newDemoRes.data._id}`);
+      const newDemoRes = await Axios.post("/demos/new-demo", {
+        userId: userData.user.id,
+        displayName: userData.user.displayName,
+        demoTitle
+      });
+      
+      history.push(`/demos/${newDemoRes.data._id}`);
     } catch (e) {
-      e.response.data.msg && setErrorMsg(e.response.data.msg);
+      e.response.data.msg && setError(e.response.data.msg);
     }
   };
 
   return (
-    <div id="">
-      <form className="formContainer" onSubmit={submit}>
-        <div>
-          <label className="centerInDiv" htmlFor="demoTitle">
-            new demo title
-          </label>
-          <UnderlinedTextInput id="demoTitle" onChange={setDemoTitle} />
-        </div>
-        <div className="btnDiv">
-          <Button type="submit">New Demo +</Button>
-        </div>
-      </form>
-      {errorMsg && (
-        <ErrorNotice
-          message={errorMsg}
-          clearError={() => setErrorMsg(undefined)}
-        />
-      )}
-    </div>
+    <Form title="New Demo Title" onSubmit={submit}>
+      <FormInput name="demoTitle" onChange={setDemoTitle} autoFocus />
+      <div className="center">
+        <Button type="submit">Create New Demo</Button>
+      </div>
+      {error && <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>}
+    </Form>
   );
 }

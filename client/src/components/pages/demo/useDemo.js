@@ -27,9 +27,7 @@ export const useDemo = (demoID) => {
 
     useEffect(() => {
     
-        Axios.get(`/demos/${demoID}`, {
-            params: { id: demoID },
-        })
+        Axios.get(`/demos/${demoID}`)
             .then(res => {
                 setDemo(res.data);
                 setLoading(false);

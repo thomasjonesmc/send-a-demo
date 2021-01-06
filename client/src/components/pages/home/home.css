@@ -1,46 +1,35 @@
 #homeHeader {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 150px 0;
+  align-items: center;
   text-align: center;
+  padding: 150px 0;
+  color: white;
   background: linear-gradient(45deg, #00fdff, #ff45d7, #ffe245);
   background-size: 600% 600%;
   -webkit-animation: AnimatedGradient 17s ease infinite;
   -moz-animation: AnimatedGradient 17s ease infinite;
   animation: AnimatedGradient 17s ease infinite;
-  color: white;
 }
 
-#homeHeader img {
-  margin: auto;
-  padding-left: 2rem;
-}
-
-#homeHeader > h3 {
+#homeHeader h3 {
   padding-top: 1rem;
   font-weight: 400;
-  width: 90%;
-  margin: auto;
-}
-
-#homeBtns {
-  padding-top: 2em;
-  margin: auto;
 }
 
 #homeBody {
-  padding-top: 2em;
+  padding: 20px;
   margin: auto;
-  width: 90%;
+  max-width: 900px;
 }
 
-#homeBody > div + div {
-  padding-top: 1.5em;
+#homeBody h2 {
+  margin-bottom: 5px;
 }
 
-#homeBody > div > p {
-  padding-top: 0.5em;
+/* gives the bottom p tag of every home message a 20px margin bottom, except the last one */
+#homeBody div:not(:last-child) p {
+  margin-bottom: 20px;
 }
 
 /* Keyframes for gradient */

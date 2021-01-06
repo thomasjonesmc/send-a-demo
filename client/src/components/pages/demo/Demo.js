@@ -17,23 +17,17 @@ export default function DemoHub() {
   if (!demo) return <div>No Demo Found</div>
  
   return (
-    <div>
+    <div className="demoPage">
       <div>{error}</div>
-      <h1 className="centerInDiv" id="demoTitleHeading">
+      <h1 id="demoTitleHeading">
         {demo.demoTitle}
       </h1>
-      <div className="centerInDiv">
-        <Button onClick={() => setShowNewTrack(!showNewTrack)}>
-          {showNewTrack ? "Close" : "New Track +"}
-        </Button>
-      </div>
-      <div>
-        {showNewTrack ? (
-          <NewTrack demo={demo} onClick={() => setShowNewTrack(false)} />
-        ) : null}
-      </div>
-    
-      <div></div>
+      <Button onClick={() => setShowNewTrack(!showNewTrack)}>
+        {showNewTrack ? "Close" : "New Track +"}
+      </Button>
+
+      {showNewTrack && <NewTrack demo={demo} onClick={() => setShowNewTrack(false)} />}
+       
 
     </div>
   );

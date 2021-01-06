@@ -41,19 +41,6 @@ router.post("/new-demo", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
-
-  try {
-    demo = await Demo.findOne({ _id: req.params.id }).populate({
-      path: "tracks",
-      model: Track,
-    });
-    res.json(demo);
-  } catch (err) {
-    res.status(400).json({ msg: err.message });
-  }
-});
-
 router.get("/get-demo-list", auth, async (req, res) => {
   let featuredDemos = [];
   try {
@@ -84,6 +71,19 @@ router.get("/get-demo-list", auth, async (req, res) => {
     res.json(userDemos);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+
+  try {
+    demo = await Demo.findOne({ _id: req.params.id }).populate({
+      path: "tracks",
+      model: Track,
+    });
+    res.json(demo);
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
   }
 });
 

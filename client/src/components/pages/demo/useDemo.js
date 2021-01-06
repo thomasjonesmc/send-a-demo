@@ -1,12 +1,15 @@
 import Axios from "axios";
-const { useEffect, useState } = require("react");
+import { useEffect, useState } from "react";
+import * as Tone from "tone";
 
-export const useDemo = (demoID) => {
+export const useDemo = (demoId) => {
 
     const [ demo, setDemo ] = useState(null);
+    const [ tracks, setTracks ] = useState([]);
     const [ error, setError ] = useState(null);
     const [ loading, setLoading ] = useState(true);
     
+    // on first time page load we ask the user for microphone permissions
     useEffect(() => {
         let stream = null;
 
@@ -25,21 +28,41 @@ export const useDemo = (demoID) => {
         
     }, []);
 
+    // any time the demoID changes, we fetch the demo with the changed ID
     useEffect(() => {
     
-        Axios.get(`/demos/${demoID}`)
-            .then(res => {
-                setDemo(res.data);
+        (async () => {
+
+            try {
+                const { data: demo } = await Axios.get(`/demos/${demoId}`);
+                setDemo(demo);
+                setTracks(demo.tracks.map(track => {
+
+                    let player = null;
+
+                    if (track.trackSignedURL) {
+                        player = new Tone.Player(track.trackSignedURL).toDestination();
+                        // Tone.loaded().then(() => player.start());
+                        // console.log(player);
+                    }
+
+                    return {
+                        player,
+                        ...track
+                    }
+                }));
                 setLoading(false);
                 setError(null);
-            })
-            .catch(err => {
+
+            } catch (err) {
                 setDemo(null);
+                setTracks([]);
                 setLoading(false);
                 setError(err.message);
-            });
+            }
+        })();
             
-    }, [demoID]);
+    }, [demoId]);
 
-    return { demo, error, loading };
+    return { demo, tracks, error, loading };
 }

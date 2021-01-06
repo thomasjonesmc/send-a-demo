@@ -9,6 +9,8 @@ export default function NewTrack(props) {
   const [trackTitle, setTrackTitle] = useState("");
   const { userData } = useContext(UserContext);
 
+  console.log(props.demo._id);
+
   const submit = async (e) => {
     e.preventDefault();
     if (trackTitle === "") return;

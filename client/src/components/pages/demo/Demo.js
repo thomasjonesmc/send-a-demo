@@ -5,13 +5,14 @@ import { useDemo } from "./useDemo";
 import { useParams } from "react-router-dom";
 import "./demo.css";
 
-export default function DemoHub() {
+
+export default function Demo() {
   
   // lets us extract the demo id from the route parameters
-  const { demoID } = useParams();
+  const { demoId } = useParams();
   
   const [showNewTrack, setShowNewTrack] = useState(false);
-  const { demo, error, loading } = useDemo(demoID);
+  const { demo, error, loading, tracks } = useDemo(demoId);
 
   if (loading) return null;
   if (!demo) return <div>No Demo Found</div>
@@ -28,7 +29,12 @@ export default function DemoHub() {
 
       {showNewTrack && <NewTrack demo={demo} onClick={() => setShowNewTrack(false)} />}
        
-
+      {tracks.map(t => (
+        <div style={{padding: "10px", margin: "10px 0px", border: "1px solid gray"}}>
+          <div style={{padding: "10px", borderBottom: "2px solid black"}}>{t.trackTitle}</div>
+          <div style={{padding: "10px", borderBottom: "2px solid black"}}>{t.trackAuthor}</div>
+        </div>
+      ))}
     </div>
   );
 }

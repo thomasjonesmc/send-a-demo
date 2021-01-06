@@ -100,6 +100,8 @@ router.post("/new-track/:id", async (req, res) => {
   try {
     const trackPath = req.params.id;
 
+    console.log("TRACK PATH: ", trackPath);
+
     let trackTitle = req.body.trackTitle;
     let trackAuthor = req.body.trackAuthor;
 
@@ -110,6 +112,8 @@ router.post("/new-track/:id", async (req, res) => {
     });
 
     newTrack.trackPath += `/${newTrack._id}`;
+
+    console.log("NEW TRACK: ", newTrack);
 
     const saveTrack = async () => {
       await newTrack.save((err) => {

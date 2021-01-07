@@ -120,6 +120,7 @@ export default function Recorder({
 const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
   let token = localStorage.getItem("auth-token");
   const [deleteingAudio, setDeleteingAudio] = useState(false);
+
   let confirmPopup = async (trackId) => {
     if (
       window.confirm(
@@ -131,6 +132,7 @@ const DeleteAudioFromS3 = ({ track, path, refreshDemo }) => {
       refreshDemo();
     }
   };
+  
   const deleteFromS3 = async () => {
     try {
       console.log(`Deleting ${path}...`);

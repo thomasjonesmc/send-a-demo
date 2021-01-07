@@ -1,10 +1,9 @@
 const router = require("express").Router();
-const { JsonWebTokenError } = require("jsonwebtoken");
 const auth = require("../middleware/auth");
 const Demo = require("../models/demoModel");
 const Track = require("../models/trackModel");
 const User = require("../models/userModel");
-const jwt = require("jsonwebtoken");
+const s3 = require("../s3");
 
 router.post("/new-demo", async (req, res) => {
   try {
@@ -184,23 +183,26 @@ router.post("/remove-s3-url", auth, async (req, res) => {
   }
 });
 
-router.delete("/delete-track", auth, async (req, res) => {
+// TODO: add auth middleware back
+router.delete("/:demoId/track/:trackId", async (req, res) => {
   try {
-    await Track.findByIdAndDelete(req.body).catch((err) => {
-      res.status(400).json({ error: err.message });
-    });
 
-    Demo.findOneAndUpdate(
+    const { demoId, trackId } = req.params;
+
+    console.log(req.params);
+    
+    await Track.findByIdAndDelete(req.body);
+
+    const demo = Demo.findOneAndUpdate(
       { tracks: req.body._id },
       { $pull: { tracks: req.body._id } },
       { new: true }
-    )
-      .then((demo) => {
-        res.json(demo);
-      })
-      .catch((err) => {
-        res.status(400).json({ error: err.message });
-      });
+    );
+
+    await s3.deleteFile(`${demoId}/${trackId}`);
+     
+    res.json(demo);
+
   } catch (err) {
     res.status(500).status.json({ error: err.message });
   }

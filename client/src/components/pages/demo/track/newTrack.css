@@ -1,7 +1,9 @@
 .newTrackParent {
   display: flex;
   justify-content: center;
+  z-index: 999999; /* so it appears on top of anything, 999999 is an arbitrary big number */
 }
+
 #newTrackDiv {
   position: absolute;
   display: flex;

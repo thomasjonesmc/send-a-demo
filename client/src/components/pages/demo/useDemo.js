@@ -37,17 +37,8 @@ export const useDemo = (demoId) => {
                 const { data: demo } = await Axios.get(`/demos/${demoId}`);
                 setDemo(demo);
                 setTracks(demo.tracks.map(track => {
-
-                    let player = null;
-
-                    if (track.trackSignedURL) {
-                        player = new Tone.Player(track.trackSignedURL).toDestination();
-                        // Tone.loaded().then(() => player.start());
-                        // console.log(player);
-                    }
-
                     return {
-                        player,
+                        player: track.trackSignedURL ? new Tone.Player(track.trackSignedURL).toDestination() : null,
                         ...track
                     }
                 }));

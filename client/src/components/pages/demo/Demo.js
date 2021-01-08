@@ -2,21 +2,17 @@ import React, { useState } from "react";
 import NewTrack from "components/pages/demo/track/NewTrack";
 import { Button } from "components/reusable/button/Button";
 import { useDemo } from "./useDemo";
-import { useParams } from "react-router-dom";
 import { Track } from "./track2/Track";
 import { FaPlay, FaPause } from "react-icons/fa";
 import "./demo.css";
 
-export default function Demo() {
-  
-  // lets us extract the demo id from the route parameters
-  const { demoId } = useParams();
+export default function Demo({location}) {
   
   const [showNewTrack, setShowNewTrack] = useState(false);
-  const { demo, error, loading, tracks } = useDemo(demoId);
+  const { demo, error, loading, tracks, recorder, setTracks } = useDemo(location.state);
   const [ playing, setPlaying ] = useState(false);
 
-  if (loading) return null;
+  if (loading) return <span className="center">Loading Demos... 🎸</span>;
   if (!demo) return <div>No Demo Found</div>
  
   return (
@@ -41,7 +37,7 @@ export default function Demo() {
 
       {showNewTrack && <NewTrack demo={demo} onClick={() => setShowNewTrack(false)} />}
        
-      {tracks.map(t => <Track key={t._id} track={t} playing={playing} />)}
+      {tracks.map(t => <Track key={t._id} track={t} playing={playing} recorder={recorder} tracksState={[tracks, setTracks]} />)}
     </div>
   );
 }

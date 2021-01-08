@@ -34,9 +34,8 @@ router.get("/get-demo-list", auth, async (req, res) => {
 
     const userId = req.user;
 
-    console.log(req.user);
-
     const userDemos = await Demo.aggregate([
+      // only get demos where the user is a creator or contributor
       { 
         $match: {
           $or : [
@@ -45,6 +44,7 @@ router.get("/get-demo-list", auth, async (req, res) => {
           ]
         }
       },
+      // get the User document that the creator Id refers to
       {
         $lookup: {
           from: "users",
@@ -53,9 +53,11 @@ router.get("/get-demo-list", auth, async (req, res) => {
           as: "creator"
         }
       },
+      // move that creator document out of an array and into the userDemo we return
       {
         $unwind: "$creator"
       },
+      // convert all the track ids in the tracks array to track objects, notice the "as" has the same name as the existing "tracks" array, so it overwrites it
       {
         $lookup: {
           from: "tracks",
@@ -64,6 +66,7 @@ router.get("/get-demo-list", auth, async (req, res) => {
           as: "tracks"
         }
       }, 
+      // converts all user ids in the "contributors" array to user objects, also overwrites existing users array
       {
         $lookup: {
           from: "users",
@@ -72,6 +75,7 @@ router.get("/get-demo-list", auth, async (req, res) => {
           as: "contributors"
         }
       },
+      // ignore the passwords and the creatorId since the creatorId gets stored in the creator object
       {
         $project: {
           "contributors.password": 0,
@@ -80,8 +84,6 @@ router.get("/get-demo-list", auth, async (req, res) => {
         }
       }
     ]);
-
-    console.log(userDemos);
 
     res.json(userDemos);
   } catch (err) {

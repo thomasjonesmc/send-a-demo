@@ -16,9 +16,11 @@ export default function Controls({
   //volume is measured from -20 to 20 db on slider
   const [volume, setVolume] = useState(0);
   const [localTrack, setLocalTrack] = useState(null);
+  
   const handleChange = (event) => {
     setVolume(event.target.value);
   };
+
   const handleFileChange = (file) => {
     const fileLocation = URL.createObjectURL(file);
     setLocalTrack(fileLocation);

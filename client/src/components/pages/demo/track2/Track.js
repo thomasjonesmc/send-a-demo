@@ -6,8 +6,9 @@ import { FaTimes } from 'react-icons/fa';
 import Axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ErrorNotice from 'components/reusable/error/Error';
+import { encodeMp3 } from 'utils/recorderUtils';
 
-export const Track = ({track, playing, recorder, tracksState}) => {
+export const Track = ({track, recorder, playingState, tracksState}) => {
 
     const { demoId } = useParams();
     const token = localStorage.getItem("auth-token");
@@ -17,12 +18,12 @@ export const Track = ({track, playing, recorder, tracksState}) => {
     const [ hasAudio, setHasAudio ] = useState(!!track.trackSignedURL);
     const [ recording, setRecording ] = useState(false);
     const [ file, setFile ] = useState(null);    
-    const [ tracks, setTracks ] = tracksState;
     const [ uploading, setUploading ] = useState(false);
     const [ volume, setVolume ] = useState(0);
+    const [ tracks, setTracks ] = tracksState;
+    const [ playing, setPlaying ] = playingState;
 
     useEffect(() => {
-
         if (track.player) {
             Tone.loaded().then(() => {
                 playing ? track.player.start() : track.player.stop();
@@ -77,6 +78,7 @@ export const Track = ({track, playing, recorder, tracksState}) => {
     const startRecording = () => {
         recorder.record();
         setRecording(true);
+        setPlaying(true);
     }
 
     const stopRecording = async () => {

@@ -37,7 +37,7 @@ export default function Demo({location}) {
 
       {showNewTrack && <NewTrack demo={demo} onClick={() => setShowNewTrack(false)} />}
        
-      {tracks.map(t => <Track key={t._id} track={t} playing={playing} recorder={recorder} tracksState={[tracks, setTracks]} />)}
+      {tracks.map(t => <Track key={t._id} track={t} recorder={recorder} playingState={[playing, setPlaying]} tracksState={[tracks, setTracks]} />)}
     </div>
   );
 }

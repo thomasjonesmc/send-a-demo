@@ -23,7 +23,7 @@ export default function Demo() {
     <div className="demoPage">
       <div>{error}</div>
 
-      <h1 id="demoTitleHeading">{demo.demoTitle}</h1>
+      <h1 id="demoTitleHeading">{demo.title}</h1>
 
       <div className="center">
         <Button onClick={() => setShowNewTrack(!showNewTrack)}>

@@ -20,7 +20,7 @@ const DemoList = (props) => {
     <>
       {demos.map((demo) => (
         <div key={demo._id} className="demo" onClick={(e) => history.push(`/demos/${demo._id}`)}>
-          <h3 className="demoTitle">{demo.demoTitle}</h3>
+          <h3 className="demoTitle">{demo.title}</h3>
           <DemoText label="author" value={demo.displayName} />
           <DemoText label="created" value={new Date(demo.createdOn).toLocaleDateString()} />
           <DemoText label="last modified" value={new Date(demo.modifiedOn).toLocaleDateString()} />

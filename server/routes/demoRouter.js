@@ -4,68 +4,84 @@ const Demo = require("../models/demoModel");
 const Track = require("../models/trackModel");
 const User = require("../models/userModel");
 const s3 = require("../s3");
+const { ObjectId } = require('mongoose').Types;
 
 router.post("/new-demo", async (req, res) => {
   try {
-    let { userId, demoTitle, displayName } = req.body;
+    let { creatorId, title } = req.body;
 
-    let demoPath = `${displayName}/`;
-    let createdOn = new Date();
-    let modifiedOn = new Date();
-    let tracks = [];
+    console.log(creatorId, title);
 
     //validating input
-
-    if (!demoTitle || !userId)
+    if (!title || !creatorId) {
       return res.status(400).json({
         msg: "Please select a title for your demo before submitting!",
       });
+    }
 
-    const newDemo = new Demo({
-      userId,
-      demoTitle,
-      displayName,
-      demoPath,
-      createdOn,
-      modifiedOn,
-      tracks,
-    });
+    const demo = await new Demo({ creatorId, title }).save();
 
-    newDemo.demoPath += `${newDemo._id}`;
-
-    const savedDemo = await newDemo.save();
-    res.json(savedDemo);
+    res.json(demo);
   } catch (err) {
+    console.log(err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
 router.get("/get-demo-list", auth, async (req, res) => {
-  let featuredDemos = [];
+
   try {
-    const user = await User.findById(req.user);
-    userDemos = await Demo.find({ displayName: user.displayName }).sort({
-      modifiedOn: "desc",
-    });
-    featuredTracks = await Track.find({ trackAuthor: user.displayName });
 
-    for (let track of Object.entries(featuredTracks)) {
-      let featuredDemo = await Demo.findOne({
-        tracks: track[1]._id,
-        displayName: { $ne: track[1].trackAuthor },
-      });
+    const userId = req.user;
 
-      if (featuredDemo !== null) {
-        featuredDemos.push(featuredDemo);
+    console.log(req.user);
+
+    const userDemos = await Demo.aggregate([
+      { 
+        $match: {
+          $or : [
+            { creatorId: ObjectId(userId) },
+            { contributors: ObjectId(userId) }
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "creatorId",
+          foreignField: "_id",
+          as: "creator"
+        }
+      },
+      {
+        $unwind: "$creator"
+      },
+      {
+        $lookup: {
+          from: "tracks",
+          localField: "tracks",
+          foreignField: "_id",
+          as: "tracks"
+        }
+      }, 
+      {
+        $lookup: {
+          from: "users",
+          localField: "contributors",
+          foreignField: "_id",
+          as: "contributors"
+        }
+      },
+      {
+        $project: {
+          "contributors.password": 0,
+          "creator.password": 0,
+          "creatorId": 0
+        }
       }
-    }
-    if (featuredDemos !== null) {
-      let uniqueFeaturedDemos = featuredDemos.filter(function ({ _id }) {
-        return !this[_id] && (this[_id] = _id);
-      }, {});
+    ]);
 
-      userDemos = [...userDemos, ...uniqueFeaturedDemos];
-    }
+    console.log(userDemos);
 
     res.json(userDemos);
   } catch (err) {
@@ -183,28 +199,34 @@ router.post("/remove-s3-url", auth, async (req, res) => {
   }
 });
 
-// TODO: add auth middleware back
-router.delete("/:demoId/track/:trackId", async (req, res) => {
+router.delete("/:demoId/tracks/:trackId", auth, async (req, res) => {
   try {
 
     const { demoId, trackId } = req.params;
 
     console.log(req.params);
     
-    await Track.findByIdAndDelete(req.body);
+    const track = await Track.findByIdAndDelete(trackId);
+
+    console.log('DELETED TRACK', track);
 
     const demo = Demo.findOneAndUpdate(
-      { tracks: req.body._id },
-      { $pull: { tracks: req.body._id } },
+      { tracks: trackId },
+      { $pull: { tracks: trackId } },
       { new: true }
     );
 
-    await s3.deleteFile(`${demoId}/${trackId}`);
+    console.log('UPDATED DEMO', demo);
+
+    const deletedS3 = await s3.deleteFile(`${demoId}/${trackId}`);
+
+    console.log('DELETED S3', deletedS3);
      
     res.json(demo);
 
   } catch (err) {
-    res.status(500).status.json({ error: err.message });
+    console.log('ERROR MESSAGE', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 

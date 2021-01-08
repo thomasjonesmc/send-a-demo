@@ -19,9 +19,8 @@ export default function CreateDemo() {
 
     try {
       const newDemoRes = await Axios.post("/demos/new-demo", {
-        userId: userData.user.id,
-        displayName: userData.user.displayName,
-        demoTitle
+        creatorId: userData.user.id,
+        title: demoTitle
       });
       
       history.push(`/demos/${newDemoRes.data._id}`);

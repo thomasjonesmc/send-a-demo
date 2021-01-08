@@ -4,10 +4,16 @@ import './track.css';
 import * as Tone from 'tone';
 import { VolumeSlider } from './VolumeSlider';
 import { FaEllipsisH, FaTimes } from 'react-icons/fa';
+import Axios from 'axios';
+import { useParams } from 'react-router-dom';
+import ErrorNotice from 'components/reusable/error/Error';
 
 export const Track = ({track, playing}) => {
 
     const [ showOptions, setShowOptions ] = useState(false);
+    const [ error, setError ] = useState(null);
+    const { demoId } = useParams();
+    const token = localStorage.getItem("auth-token");
 
     const controlButtonStyle = {
         marginLeft: "10px"
@@ -22,9 +28,15 @@ export const Track = ({track, playing}) => {
         }
     }, [playing, track.player]);
 
-    const deleteTrack = () => {
+    const deleteTrack = async () => {
         if (window.confirm("Remove this track?")) {
-            console.log("Track Removed");
+            Axios.delete(`/demos/${demoId}/tracks/${track._id}`, {
+                headers: { "x-auth-token": token },
+            })
+            .then(res => {
+                if (res.data.error) { throw new Error(res.data.error); }
+            })
+            .catch(err => setError(err.message));
         }
     }
 
@@ -34,7 +46,7 @@ export const Track = ({track, playing}) => {
         }
     }
 
-    return (
+    return <>
         <div className="trackContainer">
 
             <div className="trackTop">
@@ -60,6 +72,11 @@ export const Track = ({track, playing}) => {
                 </>}
                 {!showOptions && <VolumeSlider />}
             </div>
+
         </div>
-    )
+
+        {error && <div style={{padding: "0px 15px"}}>
+            <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>
+        </div>}
+    </>
 }

@@ -1,4 +1,3 @@
-import { RedButton } from 'components/reusable/button/Button';
 import React, { useEffect, useState } from 'react';
 import './track.css';
 import * as Tone from 'tone';
@@ -17,14 +16,10 @@ export const Track = ({track, playing, recorder, tracksState}) => {
     const [ error, setError ] = useState(null);
     const [ hasAudio, setHasAudio ] = useState(!!track.trackSignedURL);
     const [ recording, setRecording ] = useState(false);
-    const [ volume, setVolume ] = useState(0);
     const [ file, setFile ] = useState(null);    
     const [ tracks, setTracks ] = tracksState;
-
-
-    const controlButtonStyle = {
-        marginLeft: "10px"
-    }
+    const [ uploading, setUploading ] = useState(false);
+    const [ volume, setVolume ] = useState(0);
 
     useEffect(() => {
 
@@ -53,6 +48,32 @@ export const Track = ({track, playing, recorder, tracksState}) => {
         }
     }
 
+    const uploadFile = async () => {
+        setUploading(true);
+
+        const s3SignedFile = await Axios.post(`/s3/signed-url`, {
+            fileName: `${demoId}/${file.name}`,
+            fileType: file.type
+        });
+
+        const { signedUrl, url } = s3SignedFile.data;
+        
+        console.log("SIGNED FILE", s3SignedFile);
+        console.log("FILE", file);
+        console.log("SIGNED URL", signedUrl);
+        console.log("URL", url);
+
+        await Axios.put(signedUrl, file, { headers : { "Content-Type": file.type } } );
+
+        await Axios.post(`/demos/add-signed-url`, 
+            { _id: track._id, URL: url },
+            { headers: { "x-auth-token": token } }
+        );
+
+        setFile(null);
+        setUploading(false);
+    }
+
     const startRecording = () => {
         recorder.record();
         setRecording(true);
@@ -67,25 +88,45 @@ export const Track = ({track, playing, recorder, tracksState}) => {
             recorder.exportWAV((blob, err) => blob ? resolve(blob) : reject(err));
         });
 
-        const file = new File([blob], `${track._id}.mp3`, {
+        const localFile = new File([blob], `${track._id}.mp3`, {
             type: blob.type,
             lastModified: Date.now()
         });
 
-        setFile(file);
+        setFile(localFile);
+        
+        const fileLocation = URL.createObjectURL(localFile);
+        
+        setTracks(tracks.map(t => {
+            if (t._id === track._id) {
+                const player = new Tone.Player(fileLocation).toDestination();
+                return { ...track, player }
+            } 
+            return t;
+        }));
 
-        const fileLocation = URL.createObjectURL(file);
-    
-        new Tone.Buffer(fileLocation, (buffer) => {
-            setTracks(tracks.map(t => {
-                if (t._id === track._id) {
-                    const player = new Tone.Player(buffer).toDestination();
-                    return { ...track, player }
-                } else {
-                    return t
-                }
-            }))
-        });
+        setHasAudio(true);
+    }
+
+    const volumeChange = (e) => {
+        if (track.player) {
+            setVolume(parseInt(e.target.value));
+            track.player.volume.value = parseInt(e.target.value);
+        }
+    }
+
+    const volumeMute = () => {
+        if (track.player) {
+            setVolume(-20);
+            track.player.volume.value = -20;
+        }
+    }
+
+    const volumeMax = () => {
+        if (track.player) {
+            setVolume(20);
+            track.player.volume.value = 20;
+        }
     }
 
     return <>
@@ -107,13 +148,13 @@ export const Track = ({track, playing, recorder, tracksState}) => {
 
             <div className="trackControls">
                
-                {hasAudio && <RedButton onClick={deleteAudio} style={controlButtonStyle}>Delete Audio</RedButton>}
                 <button onClick={startRecording} disabled={recording}>Start</button>
                 <button onClick={stopRecording} disabled={!recording}>Stop</button>
                 
-                {file && <button onClick={() => 0} disabled={recording}>Upload</button>}
+                {file && <button onClick={uploadFile} disabled={recording || uploading}>Upload</button>}
+                {hasAudio && <button onClick={deleteAudio}>Delete Audio</button>}
                 
-                <VolumeSlider onChange={e => setVolume(parseInt(e.target.value))}/>
+                <VolumeSlider value={volume} onChange={volumeChange} onMute={volumeMute} onMax={volumeMax} />
             </div>
 
         </div>

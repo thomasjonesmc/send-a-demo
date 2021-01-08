@@ -1,28 +1,26 @@
-import { Button, RedButton } from 'components/reusable/button/Button';
+import { RedButton } from 'components/reusable/button/Button';
 import React, { useEffect, useState } from 'react';
 import './track.css';
 import * as Tone from 'tone';
 import { VolumeSlider } from './VolumeSlider';
-import { FaEllipsisH, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 import Axios from 'axios';
 import { useParams } from 'react-router-dom';
 import ErrorNotice from 'components/reusable/error/Error';
-import { encodeMp3 } from 'utils/recorderUtils';
 
 export const Track = ({track, playing, recorder, tracksState}) => {
 
     const { demoId } = useParams();
     const token = localStorage.getItem("auth-token");
 
-    const [ showOptions, setShowOptions ] = useState(false);
+    // const [ showOptions, setShowOptions ] = useState(false);
     const [ error, setError ] = useState(null);
     const [ hasAudio, setHasAudio ] = useState(!!track.trackSignedURL);
     const [ recording, setRecording ] = useState(false);
     const [ volume, setVolume ] = useState(0);
+    const [ file, setFile ] = useState(null);    
     const [ tracks, setTracks ] = tracksState;
 
-
-    console.log(track._id);
 
     const controlButtonStyle = {
         marginLeft: "10px"
@@ -55,56 +53,39 @@ export const Track = ({track, playing, recorder, tracksState}) => {
         }
     }
 
-    const startStopClick = async () => {
+    const startRecording = () => {
+        recorder.record();
+        setRecording(true);
+    }
 
-        if (recorder.recording) {
-            recorder.stop();
-            setRecording(false);
+    const stopRecording = async () => {
+        setRecording(false);
+        recorder.stop();
 
-            // recorder utils exportWav
-            const wavBlob = await new Promise((resolve, reject) => {
-                recorder.exportWAV((blob) => {
-                  if (blob) {
-                    resolve(blob);
-                  } else {
-                    reject("Rejected");
-                  }
-                });
-            });
+        // get the blob from exportWAV
+        const blob = await new Promise((resolve, reject) => {
+            recorder.exportWAV((blob, err) => blob ? resolve(blob) : reject(err));
+        });
 
-            // imported from recorder utils, ideally move this closer to the component
-            const mp3Blob = await encodeMp3(wavBlob);
+        const file = new File([blob], `${track._id}.mp3`, {
+            type: blob.type,
+            lastModified: Date.now()
+        });
 
-            const file = new File(mp3Blob, `${track._id}.mp3`, {
-                type: mp3Blob.type,
-                lastModified: Date.now()
-            });
+        setFile(file);
 
-            const fileLocation = URL.createObjectURL(file);
-        
-            new Tone.Buffer(fileLocation, (buffer) => {
-                setTracks(tracks.map(t => {
-                    if (t._id === track._id) {
-
-                        const player = new Tone.Player(buffer).toDestination();
-
-                        return {
-                            ...track,
-                            player,
-                        }
-                    } else {
-                        return t
-                    }
-                }))
-            });
-            
-
-        } else {
-            recorder.record();
-            setRecording(true);
-        }
-
-        console.log(recorder);
+        const fileLocation = URL.createObjectURL(file);
+    
+        new Tone.Buffer(fileLocation, (buffer) => {
+            setTracks(tracks.map(t => {
+                if (t._id === track._id) {
+                    const player = new Tone.Player(buffer).toDestination();
+                    return { ...track, player }
+                } else {
+                    return t
+                }
+            }))
+        });
     }
 
     return <>
@@ -125,14 +106,14 @@ export const Track = ({track, playing, recorder, tracksState}) => {
             </div>
 
             <div className="trackControls">
-                <Button onClick={() => setShowOptions(s => !s)}>
-                    {showOptions ? <FaTimes/> : <FaEllipsisH/>}
-                </Button>
-                {showOptions && <>
-                    {hasAudio && <RedButton onClick={deleteAudio} style={controlButtonStyle}>Delete Audio</RedButton>}
-                    {!hasAudio && <RedButton onClick={startStopClick} style={controlButtonStyle}>{recording ? `Stop` : `Start`}</RedButton>}
-                </>}
-                {!showOptions && <VolumeSlider onChange={e => setVolume(parseInt(e.target.value))}/>}
+               
+                {hasAudio && <RedButton onClick={deleteAudio} style={controlButtonStyle}>Delete Audio</RedButton>}
+                <button onClick={startRecording} disabled={recording}>Start</button>
+                <button onClick={stopRecording} disabled={!recording}>Stop</button>
+                
+                {file && <button onClick={() => 0} disabled={recording}>Upload</button>}
+                
+                <VolumeSlider onChange={e => setVolume(parseInt(e.target.value))}/>
             </div>
 
         </div>

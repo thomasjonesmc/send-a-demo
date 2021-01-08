@@ -24,7 +24,7 @@ export const useDemo = (locationState) => {
                 stream = audioStream;
                 const audioContext = new AudioContext();
                 const input = audioContext.createMediaStreamSource(stream);
-                setRecorder(new Recorder(input, { numChannels: 1 }));
+                setRecorder(new Recorder(input, { numChannels: 1, mimeType: 'audio/mp3' }));
 
             })
             .catch(err => {

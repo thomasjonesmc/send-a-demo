@@ -13,15 +13,24 @@
 .trackWave {
     background-color: lightgray;
     padding: 20px;
-    flex: 1;
+    flex: 4;
     position: relative;
 }
 
 .trackInfo {
     padding: 20px;
     border-right: 2px solid gray;
-    max-width: 150px;
+    flex: 1;
+    min-width: 150px;
     text-align: center;
+}
+
+.trackInfo h3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of lines to show */
+    -webkit-box-orient: vertical;
 }
 
 .trackControls {

@@ -117,8 +117,6 @@ router.post("/new-track/:id", async (req, res) => {
   try {
     const trackPath = req.params.id;
 
-    console.log("TRACK PATH: ", trackPath);
-
     let trackTitle = req.body.trackTitle;
     let trackAuthor = req.body.trackAuthor;
 
@@ -130,19 +128,7 @@ router.post("/new-track/:id", async (req, res) => {
 
     newTrack.trackPath += `/${newTrack._id}`;
 
-    console.log("NEW TRACK: ", newTrack);
-
-    const saveTrack = async () => {
-      await newTrack.save((err) => {
-        if (err)
-          return res
-            .status(400)
-            .json({ error: `error on saving track : ${err.message}` });
-      });
-    };
-
-    saveTrack();
-    // Track.create(newTrack);
+    const returnTrack = await newTrack.save();
 
     return Demo.findOneAndUpdate(
       { _id: req.params.id },
@@ -150,12 +136,11 @@ router.post("/new-track/:id", async (req, res) => {
       { new: true }
     )
       .then((demo) => {
-        res.json(demo);
+        res.json(returnTrack);
       })
       .catch((err) => {
         res.status(400).json({ error: err.message });
       });
-    //const savedTrack = await newTrack.save();
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -228,6 +213,23 @@ router.delete("/:demoId/tracks/:trackId", auth, async (req, res) => {
 
   } catch (err) {
     console.log('ERROR MESSAGE', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/:demoId/tracks/:trackId/audio', async (req, res) => {
+  try{
+    const { demoId, trackId } = req.params;
+  
+    await s3.deleteFile(`${demoId}/${trackId}`);
+  
+    const changedTrack = await Track.findByIdAndUpdate(
+      trackId, { trackSignedURL: null }
+    );
+
+    res.json({ ...changedTrack.toObject(), trackSignedURL: null });
+  } catch (err) {
+    console.log('ERROR', err.message);
     res.status(500).json({ error: err.message });
   }
 });

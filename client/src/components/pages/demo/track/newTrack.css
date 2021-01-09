@@ -19,3 +19,27 @@
   border-radius: 15px;
   min-width: 350px;
 }
+
+.newTrackDiv form {
+  position: relative;
+}
+
+.newTrackExitButton {
+  position: absolute;
+  z-index: 999999998;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: larger;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.newTrackExitButton:hover {
+  color: rgb(75, 75, 75);
+  cursor: pointer;
+}

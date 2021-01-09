@@ -28,16 +28,20 @@ const getSignedUrl = async (fileName, fileType) => {
     }
 }
 
-const deleteFile = (key) => {
+const deleteFile = async (key) => {
     const s3 = new aws.S3();
+
+    console.log(key);
 
     const params = {
         Bucket: BUCKET,
-        Key: `${key}.mp3`,
+        Key: `${key}`,
     };
 
+    console.log(params);
+
     return new Promise((resolve, reject) => {
-        s3.deleteBucket(params, (err, data) => {
+        s3.deleteObject(params, (err, data) => {
             if (err) return reject(err);
             resolve(data);
         });

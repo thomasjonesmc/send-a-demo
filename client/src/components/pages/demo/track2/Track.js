@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 import ErrorNotice from 'components/reusable/error/Error';
 import { encodeMp3 } from 'utils/recorderUtils';
 
-export const Track = ({track, recorder, playingState, tracksState}) => {
+export const Track = ({track, recorder, playingState, tracksState, demo}) => {
 
     const { demoId } = useParams();
     const token = localStorage.getItem("auth-token");
@@ -43,17 +43,41 @@ export const Track = ({track, recorder, playingState, tracksState}) => {
         }
     }
 
-    const deleteAudio = () => {
+    const deleteAudio = async () => {
         if (window.confirm("Remove track audio?")) {
-            console.log("Track Audio Removed");
+            if (track.trackSignedURL) {
+                // delete from aws!!!
+                const { data: changedTrack} = await Axios.delete(`/demos/${demoId}/tracks/${track._id}/audio`)
+
+                console.log('CHANGED TRACK', changedTrack);
+
+                setTracks(tracks.map(t => {
+                    if (t._id === track._id) {
+                        return { ...changedTrack, player: null }
+                    } 
+                    return t;
+                }));
+
+            } else {
+                setTracks(tracks.map(t => {
+                    if (t._id === track._id) {
+                        return { ...track, player: null }
+                    } 
+                    return t;
+                }));
+            }
+
+            setHasAudio(false);
+            setFile(null);
         }
     }
 
     const uploadFile = async () => {
         setUploading(true);
 
+    
         const s3SignedFile = await Axios.post(`/s3/signed-url`, {
-            fileName: `${demoId}/${file.name}`,
+            fileName: `${demoId}/${track._id}`,
             fileType: file.type
         });
 
@@ -71,6 +95,14 @@ export const Track = ({track, recorder, playingState, tracksState}) => {
             { headers: { "x-auth-token": token } }
         );
 
+        setTracks(tracks => tracks.map(t => {
+            if (t._id === track._id) {
+                console.log({ ...track, trackSignedURL: signedUrl });
+                return { ...track, trackSignedURL: signedUrl }
+            } 
+            return t;
+        }))
+
         setFile(null);
         setUploading(false);
     }
@@ -83,6 +115,8 @@ export const Track = ({track, recorder, playingState, tracksState}) => {
 
     const stopRecording = async () => {
         setRecording(false);
+        setPlaying(false);
+
         recorder.stop();
 
         // get the blob from exportWAV
@@ -90,7 +124,7 @@ export const Track = ({track, recorder, playingState, tracksState}) => {
             recorder.exportWAV((blob, err) => blob ? resolve(blob) : reject(err));
         });
 
-        const localFile = new File([blob], `${track._id}.mp3`, {
+        const localFile = new File([blob], `${track._id}.wav`, {
             type: blob.type,
             lastModified: Date.now()
         });
@@ -107,6 +141,7 @@ export const Track = ({track, recorder, playingState, tracksState}) => {
             return t;
         }));
 
+        recorder.clear();
         setHasAudio(true);
     }
 
@@ -150,8 +185,11 @@ export const Track = ({track, recorder, playingState, tracksState}) => {
 
             <div className="trackControls">
                
-                <button onClick={startRecording} disabled={recording}>Start</button>
-                <button onClick={stopRecording} disabled={!recording}>Stop</button>
+               {/* recorder is null if the user does not allow recording in browser. don't let user click start if its null */}
+               {recorder && !hasAudio && <>
+                   <button onClick={startRecording} disabled={recording}>Start</button>
+                    <button onClick={stopRecording} disabled={!recording}>Stop</button>
+               </>}
                 
                 {file && <button onClick={uploadFile} disabled={recording || uploading}>Upload</button>}
                 {hasAudio && <button onClick={deleteAudio}>Delete Audio</button>}

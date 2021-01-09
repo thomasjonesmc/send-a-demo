@@ -3,6 +3,7 @@
   max-width: 900px;
   display: flex;
   flex-direction: column;
+  padding: 0px 15px;
 }
 
 #demoTitleHeading {

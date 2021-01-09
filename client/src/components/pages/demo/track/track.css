@@ -1,5 +1,5 @@
 .trackContainer {
-    margin: 15px ;
+    margin: 15px 0px;
     box-shadow: 0px 0px 8px 2px lightgray;
     border-radius: 15px;
     overflow: hidden;
@@ -53,6 +53,17 @@
     cursor: pointer;
     font-size: large;
 }
+
+/* temporary style so it looks a bit nicer */
+.trackControlButton {
+    padding: 5px;
+    cursor: pointer;
+    background-color: transparent;
+    border: 1px solid gray;
+    margin-right: 5px;
+    border-radius: 5px;
+}
+
 
 /* Volume Slider */
 .volumeSliderContainer {

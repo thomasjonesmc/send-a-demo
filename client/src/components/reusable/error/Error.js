@@ -1,5 +1,5 @@
 import React from "react";
-import { FaExclamationCircle } from "react-icons/fa";
+import { FaExclamationCircle, FaTimes } from "react-icons/fa";
 import './error.css';
 
 export default function ErrorNotice({clearError, children, ...props}) {
@@ -9,7 +9,9 @@ export default function ErrorNotice({clearError, children, ...props}) {
         <FaExclamationCircle className="errorNoticeExclamation"/>
         <span>{children}</span>
       </div>
-      <button className="errorNoticeButton" type="button" onClick={clearError}>X</button>
+      <button className="errorNoticeButton" type="button" onClick={clearError}>
+        <FaTimes />
+      </button>
     </div>
   );
 }

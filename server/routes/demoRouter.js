@@ -6,28 +6,6 @@ const User = require("../models/userModel");
 const s3 = require("../s3");
 const { ObjectId } = require('mongoose').Types;
 
-router.post("/new-demo", async (req, res) => {
-  try {
-    let { creatorId, title } = req.body;
-
-    console.log(creatorId, title);
-
-    //validating input
-    if (!title || !creatorId) {
-      return res.status(400).json({
-        msg: "Please select a title for your demo before submitting!",
-      });
-    }
-
-    const demo = await new Demo({ creatorId, title }).save();
-
-    res.json(demo);
-  } catch (err) {
-    console.log(err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
 router.get("/get-demo-list", auth, async (req, res) => {
 
   try {
@@ -98,18 +76,27 @@ router.get("/:id", async (req, res) => {
       path: "tracks",
       model: Track,
     });
+
     res.json(demo);
   } catch (err) {
     res.status(400).json({ msg: err.message });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.post("/new-demo", async (req, res) => {
   try {
-    const { id } = req.params;
+    let { creatorId, title } = req.body;
 
-    const deletedDemo = await Demo.findByIdAndDelete(id);
-    res.json(deletedDemo);
+    //validating input
+    if (!title || !creatorId) {
+      return res.status(400).json({
+        msg: "Please select a title for your demo before submitting!",
+      });
+    }
+
+    const demo = await new Demo({ creatorId, title }).save();
+
+    res.json(demo);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -131,39 +118,37 @@ router.post("/:id/new-track", async (req, res) => {
 
     const returnTrack = await newTrack.save();
 
-    return Demo.findOneAndUpdate(
+    await Demo.findOneAndUpdate(
       { _id: req.params.id },
       { $push: { tracks: newTrack._id } },
       { new: true }
-    )
-      .then((demo) => {
-        res.json(returnTrack);
-      })
-      .catch((err) => {
-        res.status(400).json({ error: err.message });
-      });
+    );
+  
+    res.json(returnTrack);
+ 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.post("/add-signed-URL", auth, async (req, res) => {
+router.post("/add-signed-url", auth, async (req, res) => {
   try {
-    Track.findByIdAndUpdate(
-      req.body._id,
-      {
-        trackSignedURL: req.body.URL,
-      },
-      (err, data) => {
-        if (err) {
-          res.json(err);
-        } else {
-          res.json(data);
-        }
-      }
-    );
+    const { trackId, url } = req.body;
+    const track = await Track.findByIdAndUpdate(trackId, { trackSignedURL: url })
+    res.json(track);
   } catch (err) {
     res.json(err);
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedDemo = await Demo.findByIdAndDelete(id);
+    res.json(deletedDemo);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -185,7 +170,6 @@ router.delete("/:demoId/tracks/:trackId", auth, async (req, res) => {
     res.json(track);
 
   } catch (err) {
-    console.log('ERROR MESSAGE', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -202,7 +186,6 @@ router.delete('/:demoId/tracks/:trackId/audio', async (req, res) => {
 
     res.json({ ...changedTrack.toObject(), trackSignedURL: null });
   } catch (err) {
-    console.log('ERROR', err.message);
     res.status(500).json({ error: err.message });
   }
 });

@@ -10,12 +10,12 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null)
 
   const { setUser } = useContext(UserContext);
   const history = useHistory();
 
-  const submit = async (e) => {
+  const submit = async () => {
 
     if (email === "" || password === "") {
       return setError("Email and Password are required");

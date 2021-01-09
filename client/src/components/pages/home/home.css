@@ -12,6 +12,10 @@
   animation: AnimatedGradient 17s ease infinite;
 }
 
+#homeBtns {
+  display: flex;
+}
+
 #homeHeader h3 {
   padding-top: 1rem;
   font-weight: 400;

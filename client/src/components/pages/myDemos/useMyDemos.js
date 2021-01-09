@@ -16,7 +16,6 @@ export const useMyDemos = () => {
   
         Axios.get("/demos/get-demo-list", { headers: { "x-auth-token": token } })
         .then(res => {
-            console.log(res.data);
             loadingTimeout = setTimeout(() => {
                 setDemos(res.data);
                 setLoading(false);
@@ -33,5 +32,5 @@ export const useMyDemos = () => {
      
     }, []);
 
-    return { demos, loading, error };
+    return { demos, loading, error, setError };
 }

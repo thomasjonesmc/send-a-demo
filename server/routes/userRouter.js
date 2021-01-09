@@ -76,7 +76,7 @@ router.post("/login", async (req, res) => {
         id: user._id,
         displayName: user.displayName,
         email: user.email
-      },
+      }
     });
 
   } catch (err) {
@@ -111,7 +111,6 @@ router.get("/", auth, async (req, res) => {
     });
 
   } catch (err) {
-    console.log("SHITTER", err.message);
     res.status(500).json({ error: err.message});
   }
 

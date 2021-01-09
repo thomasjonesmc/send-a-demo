@@ -15,6 +15,7 @@ export default function App() {
     <BrowserRouter>
       <UserProvider>
         <Header />
+        <div id="app">
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
@@ -24,6 +25,7 @@ export default function App() {
           <Route exact path="/demos/:demoId" component={Demo} />
           <Route path="/" render={() => <div>404</div>} />
         </Switch>
+        </div>
       </UserProvider>
     </BrowserRouter>
   );

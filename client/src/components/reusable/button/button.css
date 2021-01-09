@@ -8,9 +8,14 @@
   color: black;
   cursor: pointer;
   font-family: "Trispace", sans-serif;
-  padding: 8px;
-  margin: 11px;
+  padding: 10px;
   border-radius: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bigBtn {

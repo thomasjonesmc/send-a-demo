@@ -1,13 +1,18 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const demoSchema = new mongoose.Schema({
-  userId: { type: String, required: true },
-  demoTitle: { type: String, required: true },
-  displayName: { type: String, required: true },
-  demoPath: { type: String, required: true },
-  createdOn: { type: Date, required: true },
-  modifiedOn: { type: Date, required: true },
-  tracks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Track" }],
+const demoSchema = new Schema({
+  creatorId: { type: Schema.Types.ObjectId, required: true },
+  title: { type: String, required: true },
+  createdOn: { type: Date, required: true, default: Date.now },
+  modifiedOn: { type: Date, required: true, default: Date.now },
+  tracks: {
+    type: [{ type: Schema.Types.ObjectId, ref: "track" }],
+    default: []
+  },
+  contributors: {
+    type: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    default: []
+  },
 });
 
-module.exports = Demo = mongoose.model("demo", demoSchema);
+module.exports = Demo = model("demo", demoSchema);

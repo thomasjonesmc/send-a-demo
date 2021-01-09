@@ -1,101 +1,85 @@
-import Axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
-import ErrorNotice from "components/reusable/ErrorNotice";
-import NewTrack from "components/pages/demo/track/NewTrack";
-import TrackList from "components/pages/demo/track/TrackList";
+import React, { useContext, useState } from "react";
 import { Button } from "components/reusable/button/Button";
+import { useDemo } from "./useDemo";
+import { Track } from "./track/Track";
+import { FaPlay, FaPause } from "react-icons/fa";
 import "./demo.css";
+import ErrorNotice from "components/reusable/error/Error";
+import { Form, FormInput } from "components/reusable/form/Form";
+import UserContext from "context/UserContext";
+import Axios from "axios";
+import { Popup } from "components/reusable/popup/Popup";
 
-export default function DemoHub() {
-  const [appState, setAppState] = useState({
-    loading: true,
-    demo: null,
-  });
-
-  const [errorMsg, setErrorMsg] = useState();
+export default function Demo({location}) {
+  
   const [showNewTrack, setShowNewTrack] = useState(false);
+  const { demo, error, loading, tracks, recorder, setTracks, setError } = useDemo(location.state);
+  const [ playing, setPlaying ] = useState(false);
 
-  const params = new URLSearchParams(document.location.search.substring(1));
-  const demoID = params.get("demo");
+  if (loading) return <span className="center">Loading Demos... 🎸</span>;
+  if (!demo) return <div>No Demo Found</div>
 
-  let loadingTimeout = useRef(null);
+  return (
+    <div className="demoPage">
 
-  useEffect(() => {
-    try {
-      const getDemo = async () => {
-        const demo = await Axios.get("/demos/get-demo-by-id", {
-          params: { id: demoID },
-        });
-        loadingTimeout.current = setTimeout(() => {
-          setAppState({
-            loading: false,
-            demo: demo.data,
-          });
-        }, 500);
-      };
-      getDemo();
-    } catch (err) {
-      err.response.data.msg && setErrorMsg(err.response.data.msg);
+      <h1 id="demoTitleHeading">{demo.title}</h1>
+
+      <div className="center">
+        <Button onClick={() => setShowNewTrack(true)}>
+          New Track +
+        </Button>
+      </div>
+
+      <hr style={{margin: "15px 0px"}}/>
+
+      <div className="center">
+        <Button onClick={() => setPlaying(p => !p)}>
+          {playing ? <FaPause /> : <FaPlay />}
+        </Button>
+      </div>
+
+      {error && <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>}
+
+      {showNewTrack && <Popup title="New Track" onExit={() => setShowNewTrack(false)}>
+        <NewTrack demoId={demo._id} setTracks={setTracks} setShowNewTrack={setShowNewTrack} />
+      </Popup>}
+       
+      {tracks.map(t => <Track key={t._id} track={t} demo={demo} recorder={recorder} playingState={[playing, setPlaying]} tracksState={[tracks, setTracks]} />)}
+  
+    </div>
+  );
+}
+
+export const NewTrack = ({demoId, setTracks, setShowNewTrack}) => {
+
+  const [trackTitle, setTrackTitle] = useState("");
+  const [ error, setError ] = useState(null);
+  const { user } = useContext(UserContext);
+
+  const onSubmit = () => {
+    if (trackTitle === "") {
+      return setError("Track title is required");
     }
-  }, [setAppState, demoID, appState.loading]);
+    
+    Axios.post(`/demos/${demoId}/new-track`, {trackTitle, trackAuthor: user.displayName})
+      .then(res => {
+        const newTrack = res.data;
+        setTracks(tracks => [...tracks, {...newTrack, player: null}]);
+      })
+      .catch(err => setError(err.message));
 
-  useEffect(() => {
-    let stream;
-    navigator.mediaDevices
-      .getUserMedia({ audio: true, video: false })
-      .then((audioStream) => {
-        stream = audioStream;
-      });
-    return () => {
-      if (stream) stream.getAudioTracks()[0].stop();
-    };
-  }, []);
-
-  if (appState.loading) {
-    return (
-      <div id="container">
-        <h1 className="centerInDiv">🎹 🎤 🎵 </h1>
-        {errorMsg && (
-          <ErrorNotice
-            message={errorMsg}
-            clearError={() => setErrorMsg(undefined)}
-          />
-        )}
-      </div>
-    );
+    setShowNewTrack(false);
   }
-  if (appState.demo !== null) {
-    return (
-      <div id="container">
-        <h1 className="centerInDiv" id="demoTitleHeading">
-          {appState.demo.demoTitle}
-        </h1>
-        <div className="centerInDiv">
-          <Button onClick={() => setShowNewTrack(!showNewTrack)}>
-            {showNewTrack ? "Close" : "New Track +"}
-          </Button>
-        </div>
-        <div>
-          {showNewTrack ? (
-            <NewTrack
-              demo={appState.demo}
-              onClick={() => {
-                setShowNewTrack(false);
-                setAppState({ loading: true });
-              }}
-            />
-          ) : null}
-        </div>
-        <hr></hr>
 
-        <div id="demoContainer">
-          <TrackList
-            tracks={appState.demo.tracks}
-            demoid={demoID}
-            refreshDemo={() => setAppState({ loading: true })}
-          />
-        </div>
+  return (
+    <Form onSubmit={onSubmit}>
+      <FormInput name="newTrackTitle" label="Track Title" onChange={setTrackTitle} autoFocus/>
+    
+      <div className="center">
+        <Button type="submit">Create New Track</Button>
       </div>
-    );
-  }
+
+      {error && <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>}
+    </Form>
+  )
 }

@@ -10,26 +10,7 @@ body {
   font-family: "Trispace", sans-serif;
 }
 
-/* General */
-.page {
-  padding: 1rem;
-}
-
-#container {
-  display: flex;
-  margin: 0 auto;
-  width: 50%;
-  flex-direction: column;
-}
-
-.centerInDiv {
+.center {
   display: flex;
   justify-content: center;
-}
-
-/* Media Queries */
-@media screen and (max-width: 1000px) {
-  #container {
-    width: 100%;
-  }
 }

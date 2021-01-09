@@ -1,48 +1,6 @@
 import lamejs from "lamejs";
-import Recorder from "recorderjs";
 
-let rec;
-let input;
-
-let audioContext;
-let sampleRate;
-
-audioContext = new AudioContext();
-
-export const startRecording = () => {
-  navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-    console.log("getUserMedia success, stream created");
-
-    input = audioContext.createMediaStreamSource(stream);
-    sampleRate = audioContext.sampleRate;
-    rec = new Recorder(input, { numChannels: 1 });
-
-    rec.record();
-
-    console.log("Recording...");
-  });
-};
-
-export const stopRecording = () => {
-  rec.stop();
-
-  return "Recording stopped.";
-};
-
-export const exportWav = () => {
-  let promise = new Promise((resolve, reject) => {
-    rec.exportWAV((blob) => {
-      if (blob) {
-        resolve(blob);
-      } else {
-        reject("Rejected");
-      }
-    });
-  });
-  return promise;
-};
-
-export const encodeMp3 = async (wavBlob) => {
+export const encodeMp3 = async (wavBlob, sampleRate) => {
   let samples, sampleBlockSize, sampleChunk, mp3buf;
   let mp3Data = [];
   let wavBuffer = await wavBlob.arrayBuffer();

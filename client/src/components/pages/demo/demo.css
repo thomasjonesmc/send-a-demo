@@ -1,3 +1,12 @@
+.demoPage {
+  margin: 0 auto;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  padding: 0px 15px;
+}
+
 #demoTitleHeading {
   padding: 20px 0;
+  text-align: center;
 }

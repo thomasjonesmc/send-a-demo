@@ -1,25 +1,9 @@
 #myDemosContainer {
-  display: flex;
   margin: 0 auto;
-  width: 50%;
-  flex-direction: column;
+  max-width: 800px;
+  padding: 0px 15px;
 }
 
 #userNameHeading {
   padding: 20px 0;
-}
-
-#newDemo {
-  margin: 0 auto;
-}
-
-#loading {
-  display: flex;
-  justify-content: center;
-}
-
-@media screen and (max-width: 700px) {
-  #myDemosContainer {
-    width: 100%;
-  }
 }

@@ -1,84 +1,67 @@
 const router = require("express").Router();
-const { JsonWebTokenError } = require("jsonwebtoken");
 const auth = require("../middleware/auth");
 const Demo = require("../models/demoModel");
 const Track = require("../models/trackModel");
 const User = require("../models/userModel");
-const jwt = require("jsonwebtoken");
-
-router.post("/new-demo", async (req, res) => {
-  try {
-    let { userId, demoTitle, displayName } = req.body;
-
-    let demoPath = `${displayName}/`;
-    let createdOn = new Date();
-    let modifiedOn = new Date();
-    let tracks = [];
-
-    //validating input
-
-    if (!demoTitle || !userId)
-      return res.status(400).json({
-        msg: "Please select a title for your demo before submitting!",
-      });
-
-    const newDemo = new Demo({
-      userId,
-      demoTitle,
-      displayName,
-      demoPath,
-      createdOn,
-      modifiedOn,
-      tracks,
-    });
-
-    newDemo.demoPath += `${newDemo._id}`;
-
-    const savedDemo = await newDemo.save();
-    res.json(savedDemo);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-router.get("/get-demo-by-id", async (req, res) => {
-  try {
-    demo = await Demo.findOne({ _id: req.query.id }).populate({
-      path: "tracks",
-      model: Track,
-    });
-    res.json(demo);
-  } catch (err) {
-    res.status(400).json({ msg: err.message });
-  }
-});
+const s3 = require("../s3");
+const { ObjectId } = require('mongoose').Types;
 
 router.get("/get-demo-list", auth, async (req, res) => {
-  let featuredDemos = [];
+
   try {
-    const user = await User.findById(req.user);
-    userDemos = await Demo.find({ displayName: user.displayName }).sort({
-      modifiedOn: "desc",
-    });
-    featuredTracks = await Track.find({ trackAuthor: user.displayName });
 
-    for (let track of Object.entries(featuredTracks)) {
-      let featuredDemo = await Demo.findOne({
-        tracks: track[1]._id,
-        displayName: { $ne: track[1].trackAuthor },
-      });
+    const userId = req.user;
 
-      if (featuredDemo !== null) {
-        featuredDemos.push(featuredDemo);
+    const userDemos = await Demo.aggregate([
+      // only get demos where the user is a creator or contributor
+      { 
+        $match: {
+          $or : [
+            { creatorId: ObjectId(userId) },
+            { contributors: ObjectId(userId) }
+          ]
+        }
+      },
+      // get the User document that the creator Id refers to
+      {
+        $lookup: {
+          from: "users",
+          localField: "creatorId",
+          foreignField: "_id",
+          as: "creator"
+        }
+      },
+      // move that creator document out of an array and into the userDemo we return
+      {
+        $unwind: "$creator"
+      },
+      // convert all the track ids in the tracks array to track objects, notice the "as" has the same name as the existing "tracks" array, so it overwrites it
+      {
+        $lookup: {
+          from: "tracks",
+          localField: "tracks",
+          foreignField: "_id",
+          as: "tracks"
+        }
+      }, 
+      // converts all user ids in the "contributors" array to user objects, also overwrites existing users array
+      {
+        $lookup: {
+          from: "users",
+          localField: "contributors",
+          foreignField: "_id",
+          as: "contributors"
+        }
+      },
+      // ignore the passwords and the creatorId since the creatorId gets stored in the creator object
+      {
+        $project: {
+          "contributors.password": 0,
+          "creator.password": 0,
+          "creatorId": 0
+        }
       }
-    }
-    if (featuredDemos !== null) {
-      let uniqueFeaturedDemos = featuredDemos.filter(function ({ _id }) {
-        return !this[_id] && (this[_id] = _id);
-      }, {});
-
-      userDemos = [...userDemos, ...uniqueFeaturedDemos];
-    }
+    ]);
 
     res.json(userDemos);
   } catch (err) {
@@ -86,21 +69,44 @@ router.get("/get-demo-list", auth, async (req, res) => {
   }
 });
 
-router.delete("/delete-demo", async (req, res) => {
+router.get("/:id", async (req, res) => {
+
   try {
-    const deletedDemo = await Demo.findByIdAndDelete(req.body);
-    res.json(deletedDemo);
+    demo = await Demo.findOne({ _id: req.params.id }).populate({
+      path: "tracks",
+      model: Track,
+    });
+
+    res.json(demo);
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+});
+
+router.post("/new-demo", async (req, res) => {
+  try {
+    let { creatorId, title } = req.body;
+
+    //validating input
+    if (!title || !creatorId) {
+      return res.status(400).json({
+        msg: "Please select a title for your demo before submitting!",
+      });
+    }
+
+    const demo = await new Demo({ creatorId, title }).save();
+
+    res.json(demo);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.post("/new-track/:id", async (req, res) => {
+router.post("/:id/new-track", async (req, res) => {
   try {
     const trackPath = req.params.id;
+    const { trackTitle, trackAuthor } = req.body;
 
-    let trackTitle = req.body.trackTitle;
-    let trackAuthor = req.body.trackAuthor;
 
     const newTrack = new Track({
       trackTitle,
@@ -110,94 +116,77 @@ router.post("/new-track/:id", async (req, res) => {
 
     newTrack.trackPath += `/${newTrack._id}`;
 
-    const saveTrack = async () => {
-      await newTrack.save((err) => {
-        if (err)
-          return res
-            .status(400)
-            .json({ error: `error on saving track : ${err.message}` });
-      });
-    };
+    const returnTrack = await newTrack.save();
 
-    saveTrack();
-    // Track.create(newTrack);
-
-    return Demo.findOneAndUpdate(
+    await Demo.findOneAndUpdate(
       { _id: req.params.id },
       { $push: { tracks: newTrack._id } },
       { new: true }
-    )
-      .then((demo) => {
-        res.json(demo);
-      })
-      .catch((err) => {
-        res.status(400).json({ error: err.message });
-      });
-    //const savedTrack = await newTrack.save();
+    );
+  
+    res.json(returnTrack);
+ 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.post("/add-signed-URL", auth, async (req, res) => {
+router.post("/add-signed-url", auth, async (req, res) => {
   try {
-    Track.findByIdAndUpdate(
-      req.body._id,
-      {
-        trackSignedURL: req.body.URL,
-      },
-      (err, data) => {
-        if (err) {
-          res.json(err);
-        } else {
-          res.json(data);
-        }
-      }
-    );
+    const { trackId, url } = req.body;
+    const track = await Track.findByIdAndUpdate(trackId, { trackSignedURL: url })
+    res.json(track);
   } catch (err) {
     res.json(err);
   }
 });
 
-router.post("/remove-s3-url", auth, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    Track.findByIdAndUpdate(
-      req.body._id,
-      {
-        trackSignedURL: null,
-      },
-      (err, data) => {
-        if (err) {
-          res.json(err);
-        } else {
-          res.json(data);
-        }
-      }
-    );
+    const { id } = req.params;
+
+    const deletedDemo = await Demo.findByIdAndDelete(id);
+    res.json(deletedDemo);
   } catch (err) {
-    res.json(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-router.delete("/delete-track", auth, async (req, res) => {
+router.delete("/:demoId/tracks/:trackId", auth, async (req, res) => {
   try {
-    await Track.findByIdAndDelete(req.body).catch((err) => {
-      res.status(400).json({ error: err.message });
-    });
+
+    const { demoId, trackId } = req.params;
+    
+    const track = await Track.findByIdAndDelete(trackId);
 
     Demo.findOneAndUpdate(
-      { tracks: req.body._id },
-      { $pull: { tracks: req.body._id } },
+      { tracks: trackId },
+      { $pull: { tracks: trackId } },
       { new: true }
-    )
-      .then((demo) => {
-        res.json(demo);
-      })
-      .catch((err) => {
-        res.status(400).json({ error: err.message });
-      });
+    );
+
+    await s3.deleteFile(`${demoId}/${trackId}`);
+     
+    res.json(track);
+
   } catch (err) {
-    res.status(500).status.json({ error: err.message });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/:demoId/tracks/:trackId/audio', async (req, res) => {
+  try{
+    const { demoId, trackId } = req.params;
+  
+    await s3.deleteFile(`${demoId}/${trackId}`);
+  
+    const changedTrack = await Track.findByIdAndUpdate(
+      trackId, { trackSignedURL: null }
+    );
+
+    res.json({ ...changedTrack.toObject(), trackSignedURL: null });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

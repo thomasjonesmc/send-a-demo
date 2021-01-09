@@ -15,15 +15,17 @@ export default function App() {
     <BrowserRouter>
       <UserProvider>
         <Header />
+        <div id="app">
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/my-demos" component={MyDemos} />
           <Route exact path="/new-demo" component={NewDemo} />
-          <Route exact path="/demo/:path" component={Demo} />
+          <Route exact path="/demos/:demoId" component={Demo} />
           <Route path="/" render={() => <div>404</div>} />
         </Switch>
+        </div>
       </UserProvider>
     </BrowserRouter>
   );

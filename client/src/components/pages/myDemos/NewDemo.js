@@ -7,7 +7,7 @@ import { Button } from "components/reusable/button/Button";
 import { Form, FormInput } from "components/reusable/form/Form";
 
 export default function CreateDemo() {
-  const { userData } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const history = useHistory();
 
   const [demoTitle, setDemoTitle] = useState("");
@@ -19,7 +19,7 @@ export default function CreateDemo() {
 
     try {
       const newDemoRes = await Axios.post("/demos/new-demo", {
-        creatorId: userData.user.id,
+        creatorId: user.id,
         title: demoTitle
       });
       

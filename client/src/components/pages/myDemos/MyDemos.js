@@ -6,7 +6,7 @@ import { useMyDemos } from "./useMyDemos";
 import "components/pages/myDemos/mydemos.css";
 
 export default function MyDemos() {
-  const { userData } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   const { demos, loading, error } = useMyDemos(); 
 
@@ -16,7 +16,7 @@ export default function MyDemos() {
       {error && <div>{error}</div>}
 
       <h1 className="center" id="userNameHeading">
-        {userData.user && `${userData.user.displayName}`}'s demos
+        {user && `${user.displayName}`}'s demos
       </h1>
   
       <div className="center">

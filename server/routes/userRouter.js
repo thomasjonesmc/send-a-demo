@@ -56,25 +56,29 @@ router.post("/login", async (req, res) => {
 
     //validate
     if (!email || !password)
-      return res.status(400).json({ msg: "Not all fields have been entered." });
+      return res.status(400).json({ error: "Not all fields have been entered." });
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }, { __v: 0 });
+    
     if (!user)
       return res
         .status(400)
-        .json({ msg: "No account with this email has been found." });
+        .json({ error: "No account with this email has been found." });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
+    if (!isMatch) return res.status(400).json({ error: "Invalid credentials." });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+
     res.json({
       token,
       user: {
         id: user._id,
         displayName: user.displayName,
+        email: user.email
       },
     });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -89,29 +93,41 @@ router.delete("/delete", auth, async (req, res) => {
   }
 });
 
-router.post("/tokenIsValid", async (req, res) => {
+router.get("/", auth, async (req, res) => {
+
   try {
     const token = req.header("x-auth-token");
-    if (!token) return res.json(false);
 
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    if (!verified) return res.json(false);
+    const isValid = await tokenIsValid(token);
 
-    const user = await User.findById(verified.id);
-    if (!user) return res.json(false);
+    if (!isValid) throw new Error("Invalid token");
 
-    return res.json(true);
+    const user = await User.findById(req.user);
+
+    res.json({
+      displayName: user.displayName,
+      email: user.email,
+      id: user._id,
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log("SHITTER", err.message);
+    res.status(500).json({ error: err.message});
   }
+
 });
 
-router.get("/", auth, async (req, res) => {
-  const user = await User.findById(req.user);
-  res.json({
-    displayName: user.displayName,
-    id: user._id,
-  });
-});
+const tokenIsValid = async (token) => {
+
+  if (!token) return false;
+
+  const verified = jwt.verify(token, process.env.JWT_SECRET);
+  if (!verified) return false;
+
+  const user = await User.findById(verified.id);
+  if (!user) return false;
+
+  return true;
+}
 
 module.exports = router;

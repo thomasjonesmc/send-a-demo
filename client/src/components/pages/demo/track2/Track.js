@@ -136,6 +136,7 @@ export const Track = ({track, recorder, playingState, tracksState, demo}) => {
         setTracks(tracks.map(t => {
             if (t._id === track._id) {
                 const player = new Tone.Player(fileLocation).toDestination();
+                player.volume.value = volume;
                 return { ...track, player }
             } 
             return t;
@@ -146,22 +147,22 @@ export const Track = ({track, recorder, playingState, tracksState, demo}) => {
     }
 
     const volumeChange = (e) => {
+        setVolume(parseInt(e.target.value));
         if (track.player) {
-            setVolume(parseInt(e.target.value));
             track.player.volume.value = parseInt(e.target.value);
         }
     }
 
     const volumeMute = () => {
+        setVolume(-20);
         if (track.player) {
-            setVolume(-20);
             track.player.volume.value = -20;
         }
     }
 
     const volumeMax = () => {
+        setVolume(20);
         if (track.player) {
-            setVolume(20);
             track.player.volume.value = 20;
         }
     }
@@ -179,7 +180,8 @@ export const Track = ({track, recorder, playingState, tracksState, demo}) => {
                     <button onClick={deleteTrack} className="deleteTrackButton">
                         <FaTimes />
                     </button>
-                    {playing ? "Playing" : "Paused"}
+                    <div>{playing ? "Playing" : "Paused"}</div>
+                    <div>{track.player ? track.player.buffer.duration : null}</div>
                 </div>
             </div>
 

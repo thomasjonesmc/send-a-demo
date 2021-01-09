@@ -12,7 +12,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
-  const { setUserData } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const history = useHistory();
 
   const submit = async (e) => {
@@ -23,12 +23,12 @@ export default function Login() {
 
     try {
       const loginUser = { email, password };
-      const loginRes = await Axios.post("/users/login", loginUser);
-      setUserData({ token: loginRes.data.token, user: loginRes.data.user });
-      localStorage.setItem("auth-token", loginRes.data.token);
+      const { data: loginRes } = await Axios.post("/users/login", loginUser);
+      setUser(loginRes.user);
+      localStorage.setItem("auth-token", loginRes.token);
       history.push("/my-demos");
-    } catch (e) {
-      e.response.data.msg && setError(e.response.data.msg);
+    } catch (err) {
+      err.response.data.error && setError(err.response.data.error);
     }
   };
 

@@ -104,21 +104,22 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.delete("/delete-demo", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    const deletedDemo = await Demo.findByIdAndDelete(req.body);
+    const { id } = req.params;
+
+    const deletedDemo = await Demo.findByIdAndDelete(id);
     res.json(deletedDemo);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.post("/new-track/:id", async (req, res) => {
+router.post("/:id/new-track", async (req, res) => {
   try {
     const trackPath = req.params.id;
+    const { trackTitle, trackAuthor } = req.body;
 
-    let trackTitle = req.body.trackTitle;
-    let trackAuthor = req.body.trackAuthor;
 
     const newTrack = new Track({
       trackTitle,
@@ -166,50 +167,22 @@ router.post("/add-signed-URL", auth, async (req, res) => {
   }
 });
 
-router.post("/remove-s3-url", auth, async (req, res) => {
-  try {
-    Track.findByIdAndUpdate(
-      req.body._id,
-      {
-        trackSignedURL: null,
-      },
-      (err, data) => {
-        if (err) {
-          res.json(err);
-        } else {
-          res.json(data);
-        }
-      }
-    );
-  } catch (err) {
-    res.json(err);
-  }
-});
-
 router.delete("/:demoId/tracks/:trackId", auth, async (req, res) => {
   try {
 
     const { demoId, trackId } = req.params;
-
-    console.log(req.params);
     
     const track = await Track.findByIdAndDelete(trackId);
 
-    console.log('DELETED TRACK', track);
-
-    const demo = Demo.findOneAndUpdate(
+    Demo.findOneAndUpdate(
       { tracks: trackId },
       { $pull: { tracks: trackId } },
       { new: true }
     );
 
-    console.log('UPDATED DEMO', demo);
-
-    const deletedS3 = await s3.deleteFile(`${demoId}/${trackId}`);
-
-    console.log('DELETED S3', deletedS3);
+    await s3.deleteFile(`${demoId}/${trackId}`);
      
-    res.json(demo);
+    res.json(track);
 
   } catch (err) {
     console.log('ERROR MESSAGE', err.message);

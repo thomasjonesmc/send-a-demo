@@ -10,14 +10,14 @@ import { FaTimes } from 'react-icons/fa';
 export default function NewTrack({onClick, demo, setTracks}) {
   const [trackTitle, setTrackTitle] = useState("");
   const [ error, setError ] = useState(null);
-  const { userData } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   
   const submit = async (e) => {
     e.preventDefault();
     if (trackTitle === "") return;
     try {
-      const insertTrack = { trackTitle, trackAuthor: userData.user.displayName };
-      const { data: newTrack  } = await Axios.post(`/demos/new-track/${demo._id}`, insertTrack);
+      const insertTrack = { trackTitle, trackAuthor: user.displayName };
+      const { data: newTrack  } = await Axios.post(`/demos/${demo._id}/new-track`, insertTrack);
       
       setTracks(tracks => [...tracks, {...newTrack, player: null } ]);
 

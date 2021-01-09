@@ -13,7 +13,7 @@ export default function Register() {
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState(null);
 
-  const { setUserData } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const history = useHistory();
 
   const submit = async (e) => {
@@ -24,16 +24,16 @@ export default function Register() {
 
     try {
       const newUser = { email, password, passwordCheck, displayName };
-      await Axios.post("users/register", newUser);
-      const loginRes = await Axios.post("users/login", {
+      await Axios.post("/users/register", newUser);
+      const { data: loginRes } = await Axios.post("/users/login", {
         email,
         password,
       });
-      setUserData({ token: loginRes.data.token, user: loginRes.data.user });
-      localStorage.setItem("auth-token", loginRes.data.token);
+      setUser(loginRes.user);
+      localStorage.setItem("auth-token", loginRes.token);
       history.push("/");
-    } catch (e) {
-      e.response.data.msg && setError(e.response.data.msg);
+    } catch (err) {
+      err.response.data.error && setError(err.response.data.error);
     }
   };
 

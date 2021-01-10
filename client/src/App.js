@@ -8,6 +8,7 @@ import Register from "components/pages/register/Register";
 import { UserProvider } from "context/UserContext";
 import NewDemo from "components/pages/myDemos/NewDemo";
 import Demo from "components/pages/demo/Demo";
+import { Profile } from "components/pages/profile/Profile";
 import "style.css";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
           <Route exact path="/my-demos" component={MyDemos} />
           <Route exact path="/new-demo" component={NewDemo} />
           <Route exact path="/demos/:demoId" component={Demo} />
+          <Route exact path="/users/:username" component={Profile} />
           <Route path="/" render={() => <div>404</div>} />
         </Switch>
         </div>

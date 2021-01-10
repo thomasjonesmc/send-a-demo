@@ -11,6 +11,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [userName, setUserName] = useState("");
   const [error, setError] = useState(null);
 
   const { setUser } = useContext(UserContext);
@@ -18,12 +19,12 @@ export default function Register() {
 
   const submit = async (e) => {
 
-    if (!email || !password || !passwordCheck || !displayName) {
+    if (!email || !password || !passwordCheck || !displayName || !userName) {
       return setError("All Fields Required");
     }
 
     try {
-      const newUser = { email, password, passwordCheck, displayName };
+      const newUser = { email, password, passwordCheck, userName, displayName };
       await Axios.post("/users/register", newUser);
       const { data: loginRes } = await Axios.post("/users/login", {
         email,
@@ -42,9 +43,9 @@ export default function Register() {
     <Form title="Register" onSubmit={submit}>
 
       <FormInput name="email" type="email" label="Email" onChange={setEmail} autoFocus />
+      <FormInput name="userName" label="User Name" onChange={setUserName} />
       <FormInput name="displayName" label="Display Name" onChange={setDisplayName} />
       <FormInput name="password" type="password" label="Password" onChange={setPassword} />
-
       <FormInput name="passwordCheck" type="password" label="Verify Password" onChange={setPasswordCheck} />
 
       <div className="center">

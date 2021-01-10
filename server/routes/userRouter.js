@@ -6,31 +6,32 @@ const User = require("../models/userModel");
 
 router.post("/register", async (req, res) => {
   try {
-    let { email, password, passwordCheck, displayName } = req.body;
+    let { email, password, passwordCheck, displayName, userName } = req.body;
+
+    console.log(req.body);
 
     //validate request
-
-    if (!email || !password || !passwordCheck || !displayName)
+    if (!email || !password || !passwordCheck || !displayName || !userName)
       return res.status(400).json({ msg: "Please populate all fields." });
     if (password.length < 5)
       return res
         .status(400)
-        .json({ msg: "Password must be at least 5 characters" });
+        .json({ error: "Password must be at least 5 characters" });
     if (password !== passwordCheck)
-      return res.status(400).json({ msg: "Password fields must match!" });
+      return res.status(400).json({ error: "Password fields must match!" });
 
-    const existingDisplayName = await User.findOne({
-      displayName: displayName,
+    const existingUserName = await User.findOne({
+      userName: userName,
     });
-    if (existingDisplayName)
+    if (existingUserName)
       return res.status(400).json({
-        msg: "An account with this display name is already registered.",
+        error: "An account with this username is already registered.",
       });
 
     const existingUser = await User.findOne({ email: email });
     if (existingUser)
       return res.status(400).json({
-        msg: "An account with this email is already registered.",
+        error: "An account with this email is already registered.",
       });
 
     //hash password
@@ -41,6 +42,7 @@ router.post("/register", async (req, res) => {
       email,
       password: passwordHash,
       displayName,
+      userName
     });
 
     const savedUser = await newUser.save();
@@ -75,7 +77,8 @@ router.post("/login", async (req, res) => {
       user: {
         id: user._id,
         displayName: user.displayName,
-        email: user.email
+        email: user.email,
+        userName: user.userName
       }
     });
 
@@ -108,12 +111,24 @@ router.get("/", auth, async (req, res) => {
       displayName: user.displayName,
       email: user.email,
       id: user._id,
+      userName: user.userName
     });
 
   } catch (err) {
     res.status(500).json({ error: err.message});
   }
 
+});
+
+router.get("/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    console.log(username);
+
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
 });
 
 const tokenIsValid = async (token) => {

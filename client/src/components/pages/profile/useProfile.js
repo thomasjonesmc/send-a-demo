@@ -1,17 +1,28 @@
 import Axios from 'axios';
 import { useEffect, useState } from 'react';
 
-const useProfile = (username) => {
+export const useProfile = (userName) => {
 
     const [ profile, setProfile ] = useState(null);
     const [ error, setError ] = useState(null);
+    const [ loading, setLoading ] = useState(true);
 
     useEffect(() => {
-      Axios.get(`/users${username}`)
-        .then(res => setProfile(res.data))
-        .catch(err => setError(err.message));
-        
-    }, [username]);
 
-    return { profile };
+      setLoading(true);
+
+      Axios.get(`/users/${userName}`)
+        .then(res => {
+          setProfile(res.data);
+          setError(null);
+        })
+        .catch(err => {
+          setError(err.response.data.error);
+          setProfile(null);
+        })
+        .finally(() => setLoading(false));
+        
+    }, [userName]);
+
+    return { profile, error, loading };
 }

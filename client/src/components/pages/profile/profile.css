@@ -1,0 +1,64 @@
+.profileContainer {
+   margin: 0 auto;
+   max-width: 800px;
+   padding: 0px 15px;
+}
+
+.profileHeader {
+    padding: 10px 0px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.profileHeader span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 100%;
+}
+
+.profileDisplayName {
+    font-weight: bold;
+    font-size: x-large;
+}
+
+.profileUserName {
+    color: gray;
+    font-weight: lighter;
+    margin: 0px 10px;
+    flex-shrink: 0;
+}
+
+.profileFollowButton {
+    margin-left: auto;
+    padding: 5px 25px;
+    border: 2px solid black;
+    border-radius: 15px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.profileInfoContainer {
+    box-shadow: 0px 0px 3px 1px lightgray;
+    margin: 10px 0px;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.profileImageContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.profileImage {
+    max-width: 150px;
+    border-radius: 50%;
+}
+
+.profileFollow {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}

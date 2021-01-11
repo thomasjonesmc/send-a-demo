@@ -31,6 +31,7 @@ export default function Header() {
         />
     
         {user && <div>
+          <button className="headerButton" onClick={() => history.push(`/users/${user.userName}`)}>My Profile</button>
           <button className="headerButton" onClick={() => history.push("/my-demos")}>My Demos</button>
           <button className="headerButton" onClick={logout}>Log Out</button>
         </div>}

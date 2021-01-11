@@ -8,8 +8,6 @@ router.post("/register", async (req, res) => {
   try {
     let { email, password, passwordCheck, displayName, userName } = req.body;
 
-    console.log(req.body);
-
     //validate request
     if (!email || !password || !passwordCheck || !displayName || !userName)
       return res.status(400).json({ msg: "Please populate all fields." });
@@ -20,19 +18,19 @@ router.post("/register", async (req, res) => {
     if (password !== passwordCheck)
       return res.status(400).json({ error: "Password fields must match!" });
 
-    const existingUserName = await User.findOne({
-      userName: userName,
-    });
-    if (existingUserName)
-      return res.status(400).json({
-        error: "An account with this username is already registered.",
-      });
+    // const existingUserName = await User.findOne({
+    //   userName: userName,
+    // });
+    // if (existingUserName)
+    //   return res.status(400).json({
+    //     error: "An account with this username is already registered.",
+    //   });
 
-    const existingUser = await User.findOne({ email: email });
-    if (existingUser)
-      return res.status(400).json({
-        error: "An account with this email is already registered.",
-      });
+    // const existingUser = await User.findOne({ email: email });
+    // if (existingUser)
+    //   return res.status(400).json({
+    //     error: "An account with this email is already registered.",
+    //   });
 
     //hash password
     const salt = await bcrypt.genSalt();
@@ -97,37 +95,74 @@ router.delete("/delete", auth, async (req, res) => {
 });
 
 router.get("/", auth, async (req, res) => {
-
+  
   try {
     const token = req.header("x-auth-token");
-
+    
     const isValid = await tokenIsValid(token);
-
+    
     if (!isValid) throw new Error("Invalid token");
-
+    
     const user = await User.findById(req.user);
-
+    
     res.json({
       displayName: user.displayName,
       email: user.email,
       id: user._id,
       userName: user.userName
     });
-
+    
   } catch (err) {
+    console.log('ERROR', err.message);
     res.status(500).json({ error: err.message});
   }
 
 });
 
-router.get("/:username", async (req, res) => {
+router.get("/:userName", async (req, res) => {
+  
   try {
-    const { username } = req.params;
+    const { userName } = req.params;
 
-    console.log(username);
+    const foundUser = await User.findOne({ userName }, { __v: 0, password: 0 }).collation({locale: "en", strength: 2});
+
+    if (!foundUser) throw new Error(`No user found with username ${userName}`);
+
+    const user = foundUser.toObject();
+    
+    res.json(user);
 
   } catch (err) {
-    res.status(500).json({error: err.message});
+    res.status(500).json({error: err.message})
+  }
+});
+
+router.get("/:userName/followers", async (req, res) => {
+  
+  try {
+    const { userName } = req.params;
+
+    const userFollowers = await User.aggregate([
+      {
+        $match: { userName }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "followers",
+          foreignField: "_id",
+          as: "followers"
+        }
+      }
+    ])
+    // .collation({locale: "en", strength: 2});
+
+    console.log(userFollowers);
+    
+    res.json(userFollowers);
+
+  } catch (err) {
+    res.status(500).json({error: err.message})
   }
 });
 

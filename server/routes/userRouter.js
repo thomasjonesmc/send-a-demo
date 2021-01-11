@@ -142,7 +142,7 @@ router.get("/:userName/followers", async (req, res) => {
   try {
     const { userName } = req.params;
 
-    const userFollowers = await User.aggregate([
+    const [ user ] = await User.aggregate([
       {
         $match: { userName }
       },
@@ -153,13 +153,17 @@ router.get("/:userName/followers", async (req, res) => {
           foreignField: "_id",
           as: "followers"
         }
+      },
+      {
+        $project: {
+          "followers": 1,
+          "_id": 0
+        }
       }
     ])
     // .collation({locale: "en", strength: 2});
 
-    console.log(userFollowers);
-    
-    res.json(userFollowers);
+    res.json(user.followers);
 
   } catch (err) {
     res.status(500).json({error: err.message})

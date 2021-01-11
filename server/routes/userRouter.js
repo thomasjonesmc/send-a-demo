@@ -113,7 +113,6 @@ router.get("/", auth, async (req, res) => {
     });
     
   } catch (err) {
-    console.log('ERROR', err.message);
     res.status(500).json({ error: err.message});
   }
 
@@ -142,6 +141,8 @@ router.get("/:userName/followers", async (req, res) => {
   try {
     const { userName } = req.params;
 
+    console.log(userName);
+
     const [ user ] = await User.aggregate([
       {
         $match: { userName }
@@ -156,15 +157,18 @@ router.get("/:userName/followers", async (req, res) => {
       },
       {
         $project: {
-          "followers": 1,
+          "followers.userName": 1,
+          "followers.displayName": 1,
+          "followers._id": 1,
+          'userName': 1,
+          "displayName": 1,
           "_id": 0
         }
       }
     ])
-    // .collation({locale: "en", strength: 2});
+    .collation({locale: "en", strength: 2});
 
-    res.json(user.followers);
-
+    res.json(user);
   } catch (err) {
     res.status(500).json({error: err.message})
   }

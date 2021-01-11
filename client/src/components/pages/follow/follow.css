@@ -1,19 +1,21 @@
 .followContainer {
     margin: 0 auto;
-    max-width: 400px;
-    border-right: 1px solid black;
-    border-left: 1px solid black;
+    max-width: 500px;
 }
 
 .followHeader {
-    border-bottom: 1px solid black;
     padding: 10px;
 }
 
 .follow {
     padding: 10px;
-    border-bottom: 1px solid black;
     cursor: pointer;
+    border: 1px solid lightgray;
+    border-bottom: none;
+}
+
+.follow:last-of-type {
+    border-bottom: 1px solid lightgray;
 }
 
 .follow:hover {

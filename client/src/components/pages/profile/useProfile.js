@@ -24,5 +24,5 @@ export const useProfile = (userName) => {
         
     }, [userName]);
 
-    return { profile, error, loading };
+    return { profile, setProfile, error, setError, loading };
 }

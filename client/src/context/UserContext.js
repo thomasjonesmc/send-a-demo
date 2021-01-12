@@ -10,11 +10,13 @@ export const UserProvider = (props) => {
   
     let token = localStorage.getItem("auth-token");
     
-    Axios.get("/users", {
-      headers: { "x-auth-token": token },
-    })
-    .then(res => setUser(res.data))
-    .catch(() => setUser(null));
+    if (token) {
+      Axios.get("/users", {
+        headers: { "x-auth-token": token },
+      })
+        .then(res => setUser(res.data))
+        .catch(() => setUser(null));
+    }
   
   }, []);
 

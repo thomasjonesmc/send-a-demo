@@ -185,49 +185,109 @@ router.get("/:userName/following", async (req, res) => {
   }
 });
 
+// THIS IS A STRAIGHT COPY PAST OF `/demos/get-demo-list` with only the $match changed
+// when we refatcor the routes into more layers of logic, this should become a reusable function
+router.get("/:userId/demos", async (req, res) => {
+
+  try {    
+    const { userId } = req.params;
+
+    const userDemos = await Demo.aggregate([
+      // only get demos where the user is the creator and 
+      { 
+        $match: {
+          $and: [
+            { creatorId: ObjectId(userId) },
+            { isPublic: true }
+          ]
+        }
+      },
+      // get the User document that the creator Id refers to
+      {
+        $lookup: {
+          from: "users",
+          localField: "creatorId",
+          foreignField: "_id",
+          as: "creator"
+        }
+      },
+      // move that creator document out of an array and into the userDemo we return
+      {
+        $unwind: "$creator"
+      },
+      // convert all the track ids in the tracks array to track objects, notice the "as" has the same name as the existing "tracks" array, so it overwrites it
+      {
+        $lookup: {
+          from: "tracks",
+          localField: "tracks",
+          foreignField: "_id",
+          as: "tracks"
+        }
+      }, 
+      // converts all user ids in the "contributors" array to user objects, also overwrites existing users array
+      {
+        $lookup: {
+          from: "users",
+          localField: "contributors",
+          foreignField: "_id",
+          as: "contributors"
+        }
+      },
+      // ignore the passwords and the creatorId since the creatorId gets stored in the creator object
+      {
+        $project: {
+          "contributors.password": 0,
+          "creator.password": 0,
+          "creatorId": 0
+        }
+      }
+    ]);
+
+    res.json(userDemos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.put("/:followerId/follow/:followeeId", async (req, res) => {
   try {
     const { followerId, followeeId } = req.params;
 
-    const updatedFollower = await User.findOneAndUpdate(
-      { _id: ObjectId(followerId) },
-      { $push: { following: ObjectId(followeeId) } },
-      {
-        fields: { __v: 0, password: 0 },
-        new: true
-      }
-    );
+    const updatedUsers = await followUnfollow(followerId, followeeId, "follow");
 
-    const updatedFollowee = await User.findOneAndUpdate(
-      { _id: ObjectId(followeeId) },
-      { $push: { followers: ObjectId(followerId) } },
-      {
-        fields: { __v: 0, password: 0 },
-        new: true
-      }
-    );
-
-    const follower = updatedFollower.toObject();
-    const followee = updatedFollowee.toObject();
-
-    console.log("Updated Followee", followee);
-    console.log("Updated Follower", follower);
-
-    res.json({
-      followee: {
-        ...followee, 
-        followers: followee.followers.length,
-        following: followee.following.length
-      },
-      follower: {
-        ...follower, 
-        followers: follower.followers.length,
-        following: follower.following.length
-      }
-    });
+    res.json(updatedUsers);
   } catch (err) {
     res.status(500).json({error: err.message});
   }
+});
+
+router.put("/:followerId/unfollow/:followeeId", async (req, res) => {
+  try {
+    const { followerId, followeeId } = req.params;
+
+    const updatedUsers = await followUnfollow(followerId, followeeId, "unfollow");
+
+    res.json(updatedUsers);
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
+});
+
+
+// responds with true if the follower does follow the followee, false otherwise
+router.get("/:followerId/follows/:followeeId", async (req, res) => {
+
+  const { followerId, followeeId } = req.params;
+
+  const user = await User.find({ 
+    $and: [
+      { _id: ObjectId(followerId) },
+      { following: ObjectId(followeeId) }
+    ]
+  });
+
+  // if a non-empty array is found, the follower does follow the followee
+  res.json(user.length !== 0);
 });
 
 const tokenIsValid = async (token) => {
@@ -270,6 +330,48 @@ const getFollows = async (followType, userName) => {
   .collation({locale: "en", strength: 2});
 
   return user || null;
+}
+
+const followUnfollow = async (followerId, followeeId, followType) => {
+
+  let arrayOperation = "";
+  if (followType === "follow") { arrayOperation = "$push"; }
+  else if (followType === "unfollow") { arrayOperation = "$pull"; }
+  else { throw new Error("You can only follow or unfollow"); }
+
+  const updatedFollower = await User.findOneAndUpdate(
+    { _id: ObjectId(followerId) },
+    { [arrayOperation]: { following: ObjectId(followeeId) } },
+    {
+      fields: { __v: 0, password: 0 },
+      new: true
+    }
+  );
+
+  const updatedFollowee = await User.findOneAndUpdate(
+    { _id: ObjectId(followeeId) },
+    { [arrayOperation]: { followers: ObjectId(followerId) } },
+    {
+      fields: { __v: 0, password: 0 },
+      new: true
+    }
+  );
+
+  const follower = updatedFollower.toObject();
+  const followee = updatedFollowee.toObject();
+
+  return {
+    followee: {
+      ...followee, 
+      followers: followee.followers.length,
+      following: followee.following.length
+    },
+    follower: {
+      ...follower, 
+      followers: follower.followers.length,
+      following: follower.following.length
+    }
+  };
 }
 
 module.exports = router;

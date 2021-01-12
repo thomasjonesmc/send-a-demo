@@ -12,6 +12,7 @@ export default function Header() {
   const logout = () => {
     setUser(null);
     localStorage.setItem("auth-token", "");
+    localStorage.setItem("auth-token", null);
     history.push("/");
   }
 

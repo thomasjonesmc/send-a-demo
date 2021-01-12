@@ -12,10 +12,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null)
 
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
   const history = useHistory();
-
-  console.log(user);
 
   const submit = async () => {
 

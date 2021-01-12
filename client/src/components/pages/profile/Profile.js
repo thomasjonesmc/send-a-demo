@@ -5,20 +5,23 @@ import './profile.css';
 import profilePic from 'img/gabby.jpg';
 import Axios from 'axios';
 import UserContext from 'context/UserContext';
+import DemoList from '../myDemos/DemoList';
 
 export const Profile = () => {
 
     const { userName } = useParams();
-    const { profile, setProfile, error, setError, loading } = useProfile(userName);
     const { user, setUser } = useContext(UserContext);
+    const { profile, setProfile, error, setError, loading, page, demos } = useProfile(user, userName);
 
-    if (loading || !user) return <div>loading</div>
+    if (loading) return <div>loading</div>
     if (error) return <div>{error}</div>
 
-    const onOwnProfile = user._id === profile._id;
-
     const followClick = () => {
-        Axios.put(`/users/${user._id}/follow/${profile._id}`)
+        
+        let action = "follow";
+        if (page.following) { action = "unfollow"; }
+
+        Axios.put(`/users/${user._id}/${action}/${profile._id}`)
             .then(res => {
                 console.log("FOLLOWER", res.data.follower);
                 console.log("FOLLOWEE", res.data.followee);
@@ -28,12 +31,19 @@ export const Profile = () => {
             .catch(err => setError(err.response.data.error));
     }
 
-    // this is all temporary 
+    // this is all temporary, should be refactored into sepaate components 
     return <div className="profileContainer">
         <div className="profileHeader">
-            <span className="profileDisplayName">{profile.displayName}</span>
-            <span className="profileUserName">@{profile.userName}</span>
-            {!onOwnProfile && <button className="profileFollowButton" onClick={() => followClick()}>Follow</button>}
+            <div>
+                <div className="profileDisplayName">{profile.displayName}</div>
+                <div className="profileUserName">@{profile.userName}</div>
+                {page.ownProfile && <div className="profileUserName">{profile.email}</div>}
+            </div>
+            {!page.ownProfile && page.interactable &&
+                <button className="profileFollowButton" onClick={() => followClick()}>
+                    {page.following ? "Unfollow" : "Follow"}
+                </button>
+            }
         </div>
 
         <div className="profileInfoContainer">
@@ -41,13 +51,18 @@ export const Profile = () => {
                 <img className="profileImage" src={profilePic} alt="Profile"/>
             </div>
 
-            <span className="profileDisplayName">{profile.displayName}</span>
-            <span className="profileUserName">@{profile.userName}</span>
+            <div className="profileDisplayName">{profile.displayName}</div>
+            <div className="profileUserName">@{profile.userName}</div>
             
             <div className="profileFollow">
                 <Link to={`/users/${userName}/followers`}>{profile.followers} Followers</Link>
                 <Link to={`/users/${userName}/following`}>{profile.following} Following</Link>
             </div>
+        </div>
+
+        <div style={{marginTop: "20px"}}>
+            {demos.length > 0 && <h2 style={{margin: "15px 0px"}}>{profile.displayName}'s Demos</h2>}
+            <DemoList demos={demos} />
         </div>
     </div>
 } 

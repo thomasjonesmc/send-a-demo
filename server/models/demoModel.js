@@ -5,6 +5,7 @@ const demoSchema = new Schema({
   title: { type: String, required: true },
   createdOn: { type: Date, required: true, default: Date.now },
   modifiedOn: { type: Date, required: true, default: Date.now },
+  isPublic: { type: Boolean, required: true, default: false },
   tracks: {
     type: [{ type: Schema.Types.ObjectId, ref: "track" }],
     default: []

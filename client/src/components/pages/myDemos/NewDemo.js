@@ -19,7 +19,7 @@ export default function CreateDemo() {
 
     try {
       const newDemoRes = await Axios.post("/demos/new-demo", {
-        creatorId: user.id,
+        creatorId: user._id,
         title: demoTitle
       });
       

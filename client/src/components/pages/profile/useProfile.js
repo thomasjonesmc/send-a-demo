@@ -49,6 +49,8 @@ export const useProfile = (user, userName) => {
       if (user && user.userName.toLowerCase() === userName.toLowerCase()) {
         const token = localStorage.getItem("auth-token");
         
+        console.log("TOP", user, profile, userName);
+
         // fetch the user's own profile with their public and private demos since they are on their own profile page
         Axios.get("/demos/get-demo-list", { headers: { "x-auth-token": token } })
           .then(res => {
@@ -57,12 +59,9 @@ export const useProfile = (user, userName) => {
           .catch(err => {
             setError(err.message);
           });
-      }
+      } else if (profile && user && profile.userName.toLowerCase() !== user.userName.toLowerCase()) {
 
-    }, [userName, user]);
-
-    useEffect(() => {
-      if (profile && profile.userName.toLowerCase() !== userName.toLowerCase()) {
+        console.log("BOTTOM", user, profile, userName);
 
         // fetch the profile page of the user whose profile we're on unless it is their own profile
         Axios.get(`/users/${profile._id}/demos`)
@@ -73,7 +72,8 @@ export const useProfile = (user, userName) => {
             setError(err.messgae);
           })
       }
-    }, [profile, userName]);
+
+    }, [userName, user, profile]);
 
     return { profile, setProfile, error, setError, demos, loading, page };
 }

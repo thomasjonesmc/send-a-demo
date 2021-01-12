@@ -2,7 +2,9 @@ import React, { useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useProfile } from './useProfile';
 import './profile.css';
-import profilePic from 'img/gabby.jpg';
+import gabby from 'img/gabby.jpg';
+import oliver from 'img/oliver.jpg';
+import defaultProfile from 'img/profile.png';
 import Axios from 'axios';
 import UserContext from 'context/UserContext';
 import DemoList from '../myDemos/DemoList';
@@ -15,6 +17,14 @@ export const Profile = () => {
 
     if (loading) return <div>loading</div>
     if (error) return <div>{error}</div>
+
+    // temporary hardcoded profile pics for FUN!!!
+    let profilePic = defaultProfile;
+    if (userName.toLowerCase().includes('mac')) {
+        profilePic = oliver;
+    } else if (userName.toLowerCase().includes('sam')) {
+        profilePic = gabby;
+    }
 
     const followClick = () => {
         

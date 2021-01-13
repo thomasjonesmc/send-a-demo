@@ -13,11 +13,11 @@ import { Popup } from "components/reusable/popup/Popup";
 export default function Demo({location}) {
   
   const [showNewTrack, setShowNewTrack] = useState(false);
-  const { demo, error, loading, tracks, recorder, setTracks, setError } = useDemo(location.state);
+  const { demo, error, demoLoading, tracks, tracksLoading, recorder, setTracks, setError } = useDemo(location.state);
   const [ playing, setPlaying ] = useState(false);
 
-  if (loading) return <span className="center">Loading Demos... 🎸</span>;
-  if (!demo) return <div>No Demo Found</div>
+  if (demoLoading) return <span className="center">Loading Demo... 🎸</span>;
+  if (!demo) return <div className="center">No Demo Found</div>
 
   return (
     <div className="demoPage">
@@ -31,20 +31,25 @@ export default function Demo({location}) {
       </div>
 
       <hr style={{margin: "15px 0px"}}/>
-
-      <div className="center">
-        <Button onClick={() => setPlaying(p => !p)}>
-          {playing ? <FaPause /> : <FaPlay />}
-        </Button>
-      </div>
+     
+      {tracksLoading 
+        ? <div className="center">Tracks Loading</div> 
+        : <>
+          <div className="center">
+            <Button onClick={() => setPlaying(p => !p)}>
+              {playing ? <FaPause /> : <FaPlay />}
+            </Button>
+          </div>
+          {tracks.map(t => <Track key={t._id} track={t} demo={demo} recorder={recorder} playingState={[playing, setPlaying]} tracksState={[tracks, setTracks]} />)}
+          </>
+      }
 
       {error && <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>}
+
 
       {showNewTrack && <Popup title="New Track" onExit={() => setShowNewTrack(false)}>
         <NewTrack demoId={demo._id} setTracks={setTracks} setShowNewTrack={setShowNewTrack} />
       </Popup>}
-       
-      {tracks.map(t => <Track key={t._id} track={t} demo={demo} recorder={recorder} playingState={[playing, setPlaying]} tracksState={[tracks, setTracks]} />)}
   
     </div>
   );

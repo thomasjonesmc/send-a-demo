@@ -37,6 +37,7 @@ export const Track = ({track, recorder, playingState, tracksState, demo}) => {
             })
             .then(res => {
                 if (res.data.error) { throw new Error(res.data.error); }
+                setTracks(tracks.filter(t => t._id !== track._id));
             })
             .catch(err => setError(err.message));
         }
@@ -136,14 +137,20 @@ export const Track = ({track, recorder, playingState, tracksState, demo}) => {
             
             const fileLocation = URL.createObjectURL(localFile);
             
-            setTracks(tracks.map(t => {
+            setTracks(await Promise.all(tracks.map(async t => {
                 if (t._id === track._id) {
-                    const player = new Tone.Player(fileLocation).toDestination();
+                    const player = await new Promise((resolve, reject) => {
+                        const p = new Tone.Player(fileLocation, () => {
+                            if (p) resolve(p.toDestination());
+                            else reject(new Error(`Could not create track from file ${localFile.name}`));
+                        });
+                    }); 
+                    
                     player.volume.value = volume;
                     return { ...track, player }
                 } 
                 return t;
-            }));
+            })));
 
             recorder.clear();
             setHasAudio(true);
@@ -195,12 +202,12 @@ export const Track = ({track, recorder, playingState, tracksState, demo}) => {
                
                {/* recorder is null if the user does not allow recording in browser. don't let user click start if its null */}
                {recorder && !hasAudio && <>
-                   <button className="trackControlButton" onClick={startRecording} disabled={recording}>Start</button>
+                    <button className="trackControlButton" onClick={startRecording} disabled={recording}>Start</button>
                     <button className="trackControlButton" onClick={stopRecording} disabled={!recording}>Stop</button>
                </>}
                 
                 {file && <button className="trackControlButton" onClick={uploadFile} disabled={recording || uploading}>Upload</button>}
-                {hasAudio && <button className="trackControlButton" onClick={deleteAudio}>Delete Audio</button>}
+                {hasAudio && !uploading && <button className="trackControlButton" onClick={deleteAudio}>Delete Audio</button>}
                 
                 <VolumeSlider value={volume} onChange={volumeChange} onMute={volumeMute} onMax={volumeMax} />
             </div>

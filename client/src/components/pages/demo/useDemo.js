@@ -11,7 +11,8 @@ export const useDemo = (locationState) => {
     const [ demo, setDemo ] = useState(null);
     const [ tracks, setTracks ] = useState([]);
     const [ error, setError ] = useState(null);
-    const [ loading, setLoading ] = useState(true);
+    const [ demoLoading, setDemoLoading ] = useState(true);
+    const [ tracksLoading, setTracksLoading ] = useState(true);
     const [ recorder, setRecorder ] = useState(null);
     const { demoId } = useParams();
 
@@ -42,8 +43,13 @@ export const useDemo = (locationState) => {
     useEffect(() => {
     
         (async () => {
-
+            
             try {
+
+            
+                setDemoLoading(true);
+                setTracksLoading(true);
+                
                 let currentDemo = null;
 
                 // if the locationState did not get passed in, we need to fetch the demo
@@ -55,25 +61,37 @@ export const useDemo = (locationState) => {
                 }
 
                 setDemo(currentDemo);
+                setDemoLoading(false);
 
-                setTracks(currentDemo.tracks.map(track => {
-                    return {
-                        player: track.trackSignedURL ? new Tone.Player(track.trackSignedURL).toDestination() : null,
-                        ...track
+                const currentTracks = await Promise.all(currentDemo.tracks.map(async (track) => {
+
+                    let player = null;
+                    if (track.trackSignedURL) {
+                        player = await new Promise((resolve, reject) => {
+                            const p = new Tone.Player(track.trackSignedURL, () => {
+                                if (p) resolve(p.toDestination());
+                                else reject(new Error(`Could not create track from track signed url ${track.trackSignedURL}`));
+                            });
+                        });
                     }
+
+                    return { ...track, player };
                 }));
-                setLoading(false);
+
+                setTracks(currentTracks);
+                setTracksLoading(false);
                 setError(null);
 
             } catch (err) {
                 setDemo(null);
                 setTracks([]);
-                setLoading(false);
                 setError(err.message);
+                setDemoLoading(false);
+                setTracksLoading(false);
             }
         })();
             
     }, [locationState, demoId]);
 
-    return { demo, tracks, error, loading, recorder, setTracks };
+    return { demo, tracks, error, demoLoading, tracksLoading, recorder, setTracks };
 }

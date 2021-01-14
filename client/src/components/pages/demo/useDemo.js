@@ -10,6 +10,7 @@ export const useDemo = (locationState) => {
   const [demo, setDemo] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [error, setError] = useState(null);
+  const [demoLength, setDemoLength] = useState(null);
   const [demoLoading, setDemoLoading] = useState(true);
   const [tracksLoading, setTracksLoading] = useState(true);
   const [recorder, setRecorder] = useState(null);
@@ -44,7 +45,7 @@ export const useDemo = (locationState) => {
     // repositioning the current time of the demo to 0 seconds (in case the user was listening to another demo)
     Tone.Transport.seconds = 0;
     // "cancelling" old tracks (in case the user was listening to another demo.)
-    // cancel() takes in a time, default is 0 seconds. removes all audio after time
+    // cancel() takes in a time, default is 0 seconds, removes all audio after time
     Tone.Transport.cancel();
     (async () => {
       try {
@@ -63,15 +64,17 @@ export const useDemo = (locationState) => {
 
         setDemo(currentDemo);
         setDemoLoading(false);
-
+        let trackLengths = [];
         const currentTracks = await Promise.all(
           currentDemo.tracks.map(async (track) => {
             let player = null;
             if (track.trackSignedURL) {
               player = await new Promise((resolve, reject) => {
                 const p = new Tone.Player(track.trackSignedURL, () => {
-                  if (p) resolve(p.sync().start(0).toDestination());
-                  else
+                  if (p) {
+                    trackLengths.push(p.buffer.duration);
+                    resolve(p.sync().start(0).toDestination());
+                  } else
                     reject(
                       new Error(
                         `Could not create track from track signed url ${track.trackSignedURL}`
@@ -84,7 +87,7 @@ export const useDemo = (locationState) => {
             return { ...track, player };
           })
         );
-
+        setDemoLength(Math.max(...trackLengths));
         setTracks(currentTracks);
         setTracksLoading(false);
         setError(null);
@@ -106,5 +109,6 @@ export const useDemo = (locationState) => {
     tracksLoading,
     recorder,
     setTracks,
+    demoLength,
   };
 };

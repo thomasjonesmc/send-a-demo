@@ -21,14 +21,6 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
   const [tracks, setTracks] = tracksState;
   const [playing, setPlaying] = playingState;
 
-  // useEffect(() => {
-  //     if (track.player) {
-  //         Tone.loaded().then(() => {
-  //             playing ? track.player.start() : track.player.stop();
-  //         });
-  //     }
-  // }, [playing, track.player]);
-
   const deleteTrack = async () => {
     if (window.confirm("Remove this track?")) {
       Axios.delete(`/demos/${demoId}/tracks/${track._id}`, {
@@ -186,9 +178,9 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
   };
 
   const volumeMute = () => {
-    setVolume(-20);
+    setVolume(-400);
     if (track.player) {
-      track.player.volume.value = -20;
+      track.player.volume.value = -400;
     }
   };
 

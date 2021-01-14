@@ -13,21 +13,20 @@ import * as Tone from "tone";
 
 export default function Demo({ location }) {
   const [showNewTrack, setShowNewTrack] = useState(false);
-  const {
-    demo,
-    error,
-    demoLoading,
-    tracks,
-    tracksLoading,
-    recorder,
-    setTracks,
-    setError,
-  } = useDemo(location.state);
+  const [currentTime, setCurrentTime] = useState(0);
+  const { demo, error, demoLoading, tracks, tracksLoading, recorder, setTracks, setError, demoLength } = useDemo(
+    location.state
+  );
   const [playing, setPlaying] = useState(false);
 
+  //Controls play/pause
   useEffect(() => {
     playing ? Tone.Transport.start() : Tone.Transport.pause();
   }, [playing]);
+
+  useEffect(() => {
+    if (currentTime >= demoLength) setPlaying(false);
+  }, [currentTime, demoLength]);
 
   if (demoLoading) return <span className="center">Loading Demo... 🎸</span>;
   if (!demo) return <div className="center">No Demo Found</div>;
@@ -47,10 +46,13 @@ export default function Demo({ location }) {
       ) : (
         <>
           <div className="center">
-            <Button onClick={() => setPlaying((p) => !p)}>
-              {playing ? <FaPause /> : <FaPlay />}
-            </Button>
+            <Button onClick={() => setPlaying((p) => !p)}>{playing ? <FaPause /> : <FaPlay />}</Button>
           </div>
+          <AudioScrubber
+            demoLength={demoLength}
+            timeState={[currentTime, setCurrentTime]}
+            playingState={[playing, setPlaying]}
+          />
           {tracks.map((t) => (
             <Track
               key={t._id}
@@ -64,22 +66,51 @@ export default function Demo({ location }) {
         </>
       )}
 
-      {error && (
-        <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>
-      )}
+      {error && <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>}
 
       {showNewTrack && (
         <Popup title="New Track" onExit={() => setShowNewTrack(false)}>
-          <NewTrack
-            demoId={demo._id}
-            setTracks={setTracks}
-            setShowNewTrack={setShowNewTrack}
-          />
+          <NewTrack demoId={demo._id} setTracks={setTracks} setShowNewTrack={setShowNewTrack} />
         </Popup>
       )}
     </div>
   );
 }
+
+export const AudioScrubber = ({
+  demoLength,
+  timeState: [currentTime, setCurrentTime],
+  playingState: [playing, setPlaying],
+}) => {
+  const audioTimeChange = (time) => {
+    Tone.Transport.seconds = time;
+    setCurrentTime(time);
+  };
+
+  useEffect(() => {
+    let interval;
+    if (playing && Tone.Transport.seconds <= demoLength) {
+      interval = setInterval(() => {
+        setCurrentTime(Tone.Transport.seconds);
+      }, 100);
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [setCurrentTime, playing, demoLength]);
+
+  return (
+    <input
+      className="volumeSlider"
+      type="range"
+      min={0}
+      max={demoLength}
+      value={currentTime}
+      step={0.1}
+      onChange={(e) => audioTimeChange(e.target.value)}
+    />
+  );
+};
 
 export const NewTrack = ({ demoId, setTracks, setShowNewTrack }) => {
   const [trackTitle, setTrackTitle] = useState("");
@@ -106,20 +137,13 @@ export const NewTrack = ({ demoId, setTracks, setShowNewTrack }) => {
 
   return (
     <Form onSubmit={onSubmit}>
-      <FormInput
-        name="newTrackTitle"
-        label="Track Title"
-        onChange={setTrackTitle}
-        autoFocus
-      />
+      <FormInput name="newTrackTitle" label="Track Title" onChange={setTrackTitle} autoFocus />
 
       <div className="center">
         <Button type="submit">Create New Track</Button>
       </div>
 
-      {error && (
-        <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>
-      )}
+      {error && <ErrorNotice clearError={() => setError(null)}>{error}</ErrorNotice>}
     </Form>
   );
 };

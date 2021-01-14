@@ -42,13 +42,14 @@ export const useDemo = (locationState) => {
 
   // any time the demoID changes, we fetch the demo with the changed ID
   useEffect(() => {
-    // repositioning the current time of the demo to 0 seconds (in case the user was listening to another demo)
-    Tone.Transport.seconds = 0;
-    // "cancelling" old tracks (in case the user was listening to another demo.)
-    // cancel() takes in a time, default is 0 seconds, removes all audio after time
-    Tone.Transport.cancel();
     (async () => {
       try {
+        // repositioning the current time of the demo to 0 seconds (in case the user was listening to another demo)
+        Tone.Transport.seconds = 0;
+        // "cancelling" old tracks (in case the user was listening to another demo.)
+        // cancel() takes in a time, default is 0 seconds, removes all audio after time
+        Tone.Transport.cancel();
+
         setDemoLoading(true);
         setTracksLoading(true);
 

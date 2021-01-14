@@ -9,7 +9,6 @@
     "axios": "^0.21.0",
     "dotenv": "^8.2.0",
     "lamejs": "^1.2.0",
-    "mic-recorder-to-mp3": "github:picasocro1/mic-recorder-to-mp3#encode-after-record",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-icons": "^4.1.0",

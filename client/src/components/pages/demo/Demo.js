@@ -9,6 +9,7 @@ import { Form, FormInput } from "components/reusable/form/Form";
 import UserContext from "context/UserContext";
 import Axios from "axios";
 import { Popup } from "components/reusable/popup/Popup";
+import { AudioScrubber } from "components/pages/demo/AudioScrubber"
 import * as Tone from "tone";
 
 export default function Demo({ location }) {
@@ -77,59 +78,6 @@ export default function Demo({ location }) {
     </div>
   );
 }
-
-export const AudioScrubber = ({
-  demoLength,
-  timeState: [currentTime, setCurrentTime],
-  playingState: [playing, setPlaying],
-}) => {
-  const [playingOnPickup, setPlayingOnPickup] = useState(false);
-  const audioTimeChange = (time) => {
-    Tone.Transport.seconds = time;
-    setCurrentTime(time);
-  };
-
-  useEffect(() => {
-    let interval;
-    if (playing && Tone.Transport.seconds <= demoLength) {
-      interval = setInterval(() => {
-        setCurrentTime(Tone.Transport.seconds);
-      }, 50);
-    }
-    return () => {
-      clearInterval(interval);
-    };
-  }, [setCurrentTime, playing, demoLength]);
-
-  const stopAudioAndSetPickup = () => {
-    setPlayingOnPickup(playing);
-    setPlaying(false);
-  };
-
-  return (
-    <>
-      <div className="scrubberTimeContainer">
-        <p>{parseFloat(currentTime).toFixed(2)}</p>
-        <p>-{demoLength - currentTime > 0.1 ? `${parseFloat(demoLength - currentTime).toFixed(2)}` : `0.00`}</p>
-      </div>
-
-      <input
-        className="volumeSlider"
-        style={{ marginTop: "15px" }}
-        type="range"
-        min={0}
-        max={demoLength}
-        value={currentTime}
-        step={0.05}
-        onTouchStart={() => stopAudioAndSetPickup()}
-        onTouchEnd={() => setPlaying(playingOnPickup)}
-        onMouseDown={() => stopAudioAndSetPickup()}
-        onChange={(e) => audioTimeChange(e.target.value)}
-        onMouseUp={() => setPlaying(playingOnPickup)}
-      />
-    </>
-  );
-};
 
 export const NewTrack = ({ demoId, setTracks, setShowNewTrack }) => {
   const [trackTitle, setTrackTitle] = useState("");

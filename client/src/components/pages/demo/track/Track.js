@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./track.css";
 import * as Tone from "tone";
 import { VolumeSlider } from "./VolumeSlider";

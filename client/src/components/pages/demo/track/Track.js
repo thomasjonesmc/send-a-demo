@@ -41,9 +41,7 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
       try {
         if (track.trackSignedURL) {
           // delete from aws!!!
-          const { data: changedTrack } = await Axios.delete(
-            `/demos/${demoId}/tracks/${track._id}/audio`
-          );
+          const { data: changedTrack } = await Axios.delete(`/demos/${demoId}/tracks/${track._id}/audio`);
 
           console.log("CHANGED TRACK", changedTrack);
 
@@ -89,11 +87,7 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
         headers: { "Content-Type": file.type },
       });
 
-      await Axios.post(
-        `/demos/add-signed-url`,
-        { trackId: track._id, url },
-        { headers: { "x-auth-token": token } }
-      );
+      await Axios.post(`/demos/add-signed-url`, { trackId: track._id, url }, { headers: { "x-auth-token": token } });
 
       setTracks((tracks) =>
         tracks.map((t) => {
@@ -146,12 +140,7 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
               const player = await new Promise((resolve, reject) => {
                 const p = new Tone.Player(fileLocation, () => {
                   if (p) resolve(p.sync().start(0).toDestination());
-                  else
-                    reject(
-                      new Error(
-                        `Could not create track from file ${localFile.name}`
-                      )
-                    );
+                  else reject(new Error(`Could not create track from file ${localFile.name}`));
                 });
               });
 
@@ -213,29 +202,17 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
           {/* recorder is null if the user does not allow recording in browser. don't let user click start if its null */}
           {recorder && !hasAudio && (
             <>
-              <button
-                className="trackControlButton"
-                onClick={startRecording}
-                disabled={recording}
-              >
+              <button className="trackControlButton" onClick={startRecording} disabled={recording}>
                 Start
               </button>
-              <button
-                className="trackControlButton"
-                onClick={stopRecording}
-                disabled={!recording}
-              >
+              <button className="trackControlButton" onClick={stopRecording} disabled={!recording}>
                 Stop
               </button>
             </>
           )}
 
           {file && (
-            <button
-              className="trackControlButton"
-              onClick={uploadFile}
-              disabled={recording || uploading}
-            >
+            <button className="trackControlButton" onClick={uploadFile} disabled={recording || uploading}>
               Upload
             </button>
           )}
@@ -245,12 +222,7 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
             </button>
           )}
 
-          <VolumeSlider
-            value={volume}
-            onChange={volumeChange}
-            onMute={volumeMute}
-            onMax={volumeMax}
-          />
+          <VolumeSlider value={volume} onChange={volumeChange} onMute={volumeMute} onMax={volumeMax} />
         </div>
       </div>
 

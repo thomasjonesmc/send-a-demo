@@ -12,6 +12,7 @@ import { Popup } from "components/reusable/popup/Popup";
 import * as Tone from "tone";
 
 export default function Demo({ location }) {
+  Tone.start();
   const [showNewTrack, setShowNewTrack] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const { demo, error, demoLoading, tracks, tracksLoading, recorder, setTracks, setError, demoLength } = useDemo(
@@ -82,6 +83,7 @@ export const AudioScrubber = ({
   timeState: [currentTime, setCurrentTime],
   playingState: [playing, setPlaying],
 }) => {
+  const [playingOnPickup, setPlayingOnPickup] = useState(false);
   const audioTimeChange = (time) => {
     Tone.Transport.seconds = time;
     setCurrentTime(time);
@@ -92,23 +94,40 @@ export const AudioScrubber = ({
     if (playing && Tone.Transport.seconds <= demoLength) {
       interval = setInterval(() => {
         setCurrentTime(Tone.Transport.seconds);
-      }, 100);
+      }, 50);
     }
     return () => {
       clearInterval(interval);
     };
   }, [setCurrentTime, playing, demoLength]);
 
+  const stopAudioAndSetPickup = () => {
+    setPlayingOnPickup(playing);
+    setPlaying(false);
+  };
+
   return (
-    <input
-      className="volumeSlider"
-      type="range"
-      min={0}
-      max={demoLength}
-      value={currentTime}
-      step={0.1}
-      onChange={(e) => audioTimeChange(e.target.value)}
-    />
+    <>
+      <div className="scrubberTimeContainer">
+        <p>{parseFloat(currentTime).toFixed(2)}</p>
+        <p>-{demoLength - currentTime > 0.1 ? `${parseFloat(demoLength - currentTime).toFixed(2)}` : `0.00`}</p>
+      </div>
+
+      <input
+        className="volumeSlider"
+        style={{ marginTop: "15px" }}
+        type="range"
+        min={0}
+        max={demoLength}
+        value={currentTime}
+        step={0.05}
+        onTouchStart={() => stopAudioAndSetPickup()}
+        onTouchEnd={() => setPlaying(playingOnPickup)}
+        onMouseDown={() => stopAudioAndSetPickup()}
+        onChange={(e) => audioTimeChange(e.target.value)}
+        onMouseUp={() => setPlaying(playingOnPickup)}
+      />
+    </>
   );
 };
 

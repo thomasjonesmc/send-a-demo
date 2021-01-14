@@ -10,3 +10,8 @@
   padding: 20px 0;
   text-align: center;
 }
+
+.scrubberTimeContainer {
+  display: flex;
+  justify-content: space-between;
+}

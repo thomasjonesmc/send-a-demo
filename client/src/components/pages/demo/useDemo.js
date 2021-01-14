@@ -26,7 +26,7 @@ export const useDemo = (locationState) => {
         stream = audioStream;
         const audioContext = new AudioContext();
         const input = audioContext.createMediaStreamSource(stream);
-        setRecorder(new Recorder(input, { numChannels: 1 }));
+        setRecorder(new Recorder(input));
       })
       .catch((err) => {
         if (err.name === "NotAllowedError") {
@@ -74,12 +74,7 @@ export const useDemo = (locationState) => {
                   if (p) {
                     trackLengths.push(p.buffer.duration);
                     resolve(p.sync().start(0).toDestination());
-                  } else
-                    reject(
-                      new Error(
-                        `Could not create track from track signed url ${track.trackSignedURL}`
-                      )
-                    );
+                  } else reject(new Error(`Could not create track from track signed url ${track.trackSignedURL}`));
                 });
               });
             }

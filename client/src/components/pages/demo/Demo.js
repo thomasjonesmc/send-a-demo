@@ -22,17 +22,29 @@ export default function Demo({ location }) {
   const [playing, setPlaying] = useState(false);
 
   //Controls play/pause
-  useEffect(() => {
-    playing ? Tone.Transport.start() : Tone.Transport.pause();
-  }, [playing]);
+  // useEffect(() => {
+  //   playing ? Tone.Transport.start() : Tone.Transport.pause();
+  // }, [playing]);
 
   useEffect(() => {
-    if (currentTime >= demoLength) setPlaying(false);
+    if (currentTime >= demoLength) {
+      setPlaying(false);
+      Tone.Transport.stop();
+    }
   }, [currentTime, demoLength]);
 
   if (demoLoading) return <span className="center">Loading Demo... 🎸</span>;
   if (!demo) return <div className="center">No Demo Found</div>;
   
+  const playClick = () => {
+    setPlaying((p) => !p);
+    if (playing) {
+      Tone.Transport.pause();
+    } else {
+      Tone.Transport.start();
+    }
+  }
+
   return (
     <div className="demoPage">
       <h1 id="demoTitleHeading">{demo.title}</h1>
@@ -50,7 +62,7 @@ export default function Demo({ location }) {
           {tracks.length !== 0 ? 
           <>
             <div className="center">
-              <Button onClick={() => setPlaying((p) => !p)}>{playing ? <FaPause /> : <FaPlay />}</Button>
+              <Button onClick={playClick}>{playing ? <FaPause /> : <FaPlay />}</Button>
             </div>
             <AudioScrubber
               demoLength={demoLength}

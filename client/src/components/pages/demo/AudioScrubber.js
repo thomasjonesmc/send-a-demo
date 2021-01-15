@@ -25,10 +25,20 @@ export const AudioScrubber = ({
     };
   }, [setCurrentTime, playing, demoLength]);
 
-  const stopAudioAndSetPickup = () => {
+  const scrubStart = () => {
     setPlayingOnPickup(playing);
     setPlaying(false);
+    Tone.Transport.pause();
   };
+
+  const scrubEnd = () => {
+    setPlaying(playingOnPickup);
+    if (playingOnPickup) {
+      Tone.Transport.start();
+    } else {
+      Tone.Transport.pause();
+    }
+  }
 
   const toMinutesAndSeconds = (time) => {
     const minutes = Math.floor(time / 60);
@@ -55,11 +65,11 @@ export const AudioScrubber = ({
         max={demoLength}
         value={currentTime}
         step={0.001}
-        onTouchStart={() => stopAudioAndSetPickup()}
-        onTouchEnd={() => setPlaying(playingOnPickup)}
-        onMouseDown={() => stopAudioAndSetPickup()}
+        onTouchStart={scrubStart}
+        onTouchEnd={scrubEnd}
+        onMouseDown={scrubStart}
         onChange={(e) => audioTimeChange(e.target.value)}
-        onMouseUp={() => setPlaying(playingOnPickup)}
+        onMouseUp={scrubEnd}
       />
     </>
   );

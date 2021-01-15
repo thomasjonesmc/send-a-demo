@@ -37,6 +37,7 @@ export const useDemo = (locationState) => {
     return () => {
       if (stream) stream.getAudioTracks()[0].stop();
       Tone.Transport.stop();
+      Tone.Transport.cancel(0);
     };
   }, []);
 
@@ -59,9 +60,11 @@ export const useDemo = (locationState) => {
 
         setDemo(currentDemo);
         setDemoLoading(false);
+
         let trackLengths = [];
         const currentTracks = await Promise.all(
           currentDemo.tracks.map(async (track) => {
+
             let player = null;
             if (track.trackSignedURL) {
               player = await new Promise((resolve, reject) => {
@@ -77,6 +80,7 @@ export const useDemo = (locationState) => {
             return { ...track, player };
           })
         );
+
         setDemoLength(Math.max(...trackLengths));
         setTracks(currentTracks);
         setTracksLoading(false);
@@ -90,13 +94,6 @@ export const useDemo = (locationState) => {
       }
     })();
   }, [locationState, demoId]);
-
-  useEffect(() => {
-    return () => {
-      Tone.Transport.stop();
-      tracks.forEach(t => { if (t.player) t.player.unsync(); });
-    }
-  }, [tracks]);
 
   return {
     demo,

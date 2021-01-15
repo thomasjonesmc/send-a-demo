@@ -6,6 +6,7 @@ import { FaTimes } from "react-icons/fa";
 import Axios from "axios";
 import { useParams } from "react-router-dom";
 import ErrorNotice from "components/reusable/error/Error";
+import { useTrack } from "./useTrack";
 // import { encodeMp3 } from 'utils/recorderUtils';
 
 export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
@@ -15,11 +16,11 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
   const [error, setError] = useState(null);
   const [hasAudio, setHasAudio] = useState(!!track.trackSignedURL);
   const [recording, setRecording] = useState(false);
-  const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [volume, setVolume] = useState(0);
   const [tracks, setTracks] = tracksState;
   const [playing, setPlaying] = playingState;
+  const { file, setFile, rec } = useTrack(setTracks, track);
 
   const deleteTrack = async () => {
     if (window.confirm("Remove this track?")) {
@@ -42,8 +43,6 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
         if (track.trackSignedURL) {
           // delete from aws!!!
           const { data: changedTrack } = await Axios.delete(`/demos/${demoId}/tracks/${track._id}/audio`);
-
-          console.log("CHANGED TRACK", changedTrack);
 
           setTracks(
             tracks.map((t) => {
@@ -107,52 +106,18 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
   };
 
   const startRecording = () => {
-    recorder.record();
     setRecording(true);
     setPlaying(true);
+    rec.current.start();
+    Tone.Transport.start();
   };
 
   const stopRecording = async () => {
     try {
       setRecording(false);
       setPlaying(false);
-
-      recorder.stop();
-
-      // get the blob from exportWAV
-      const blob = await new Promise((resolve, reject) => {
-        recorder.exportWAV((blob, err) => (blob ? resolve(blob) : reject(err)));
-      });
-
-      const localFile = new File([blob], `${track._id}.wav`, {
-        type: blob.type,
-        lastModified: Date.now(),
-      });
-
-      setFile(localFile);
-
-      const fileLocation = URL.createObjectURL(localFile);
-
-      setTracks(
-        await Promise.all(
-          tracks.map(async (t) => {
-            if (t._id === track._id) {
-              const player = await new Promise((resolve, reject) => {
-                const p = new Tone.Player(fileLocation, () => {
-                  if (p) resolve(p.sync().start(0).toDestination());
-                  else reject(new Error(`Could not create track from file ${localFile.name}`));
-                });
-              });
-
-              player.volume.value = volume;
-              return { ...track, player };
-            }
-            return t;
-          })
-        )
-      );
-
-      recorder.clear();
+      rec.current.stop();
+      Tone.Transport.stop();
       setHasAudio(true);
     } catch (err) {
       setError(err.message);

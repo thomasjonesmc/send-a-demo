@@ -162,7 +162,11 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
   const volumeChange = (e) => {
     setVolume(parseInt(e.target.value));
     if (track.player) {
-      track.player.volume.value = parseInt(e.target.value);
+      if (parseInt(e.target.value) === -20) {
+        setVolume(-400);
+        track.player.volume.value = -400;
+      } 
+      else track.player.volume.value = parseInt(e.target.value);
     }
   };
 

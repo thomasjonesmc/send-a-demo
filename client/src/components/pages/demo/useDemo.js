@@ -44,12 +44,6 @@ export const useDemo = (locationState) => {
   useEffect(() => {
     (async () => {
       try {
-        // repositioning the current time of the demo to 0 seconds (in case the user was listening to another demo)
-        Tone.Transport.seconds = 0;
-        // "cancelling" old tracks (in case the user was listening to another demo.)
-        // cancel() takes in a time, default is 0 seconds, removes all audio after time
-        Tone.Transport.cancel();
-
         setDemoLoading(true);
         setTracksLoading(true);
 
@@ -96,6 +90,13 @@ export const useDemo = (locationState) => {
       }
     })();
   }, [locationState, demoId]);
+
+  useEffect(() => {
+    return () => {
+      Tone.Transport.stop();
+      tracks.forEach(t => { if (t.player) t.player.unsync(); });
+    }
+  }, [tracks]);
 
   return {
     demo,

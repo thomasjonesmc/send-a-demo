@@ -32,7 +32,7 @@ export default function Demo({ location }) {
 
   if (demoLoading) return <span className="center">Loading Demo... 🎸</span>;
   if (!demo) return <div className="center">No Demo Found</div>;
-
+  
   return (
     <div className="demoPage">
       <h1 id="demoTitleHeading">{demo.title}</h1>
@@ -47,14 +47,17 @@ export default function Demo({ location }) {
         <div className="center">Tracks Loading</div>
       ) : (
         <>
-          <div className="center">
-            <Button onClick={() => setPlaying((p) => !p)}>{playing ? <FaPause /> : <FaPlay />}</Button>
-          </div>
-          <AudioScrubber
-            demoLength={demoLength}
-            timeState={[currentTime, setCurrentTime]}
-            playingState={[playing, setPlaying]}
-          />
+          {tracks.length !== 0 ? 
+          <>
+            <div className="center">
+              <Button onClick={() => setPlaying((p) => !p)}>{playing ? <FaPause /> : <FaPlay />}</Button>
+            </div>
+            <AudioScrubber
+              demoLength={demoLength}
+              timeState={[currentTime, setCurrentTime]}
+              playingState={[playing, setPlaying]}
+            />
+          </> : null}
           {tracks.map((t) => (
             <Track
               key={t._id}

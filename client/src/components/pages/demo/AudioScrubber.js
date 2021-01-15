@@ -18,7 +18,7 @@ export const AudioScrubber = ({
     if (playing && Tone.Transport.seconds <= demoLength) {
       interval = setInterval(() => {
         setCurrentTime(Tone.Transport.seconds);
-      }, 50);
+      }, 1);
     }
     return () => {
       clearInterval(interval);
@@ -44,7 +44,7 @@ export const AudioScrubber = ({
     <>
       <div className="scrubberTimeContainer">
         <p>{toMinutesAndSeconds(currentTime)}</p>
-        <p>-{demoLength - currentTime > 0.1 ? toMinutesAndSeconds(demoLength - currentTime) : `0:00.00`}</p>
+        <p>-{demoLength - currentTime > 0.001 ? toMinutesAndSeconds(demoLength - currentTime) : `0:00.00`}</p>
       </div>
 
       <input
@@ -54,7 +54,7 @@ export const AudioScrubber = ({
         min={0}
         max={demoLength}
         value={currentTime}
-        step={0.05}
+        step={0.001}
         onTouchStart={() => stopAudioAndSetPickup()}
         onTouchEnd={() => setPlaying(playingOnPickup)}
         onMouseDown={() => stopAudioAndSetPickup()}

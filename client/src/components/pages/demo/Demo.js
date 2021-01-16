@@ -16,15 +16,10 @@ export default function Demo({ location }) {
   Tone.start();
   const [showNewTrack, setShowNewTrack] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const { demo, error, demoLoading, tracks, tracksLoading, recorder, setTracks, setError, demoLength } = useDemo(
+  const { demo, error, demoLoading, tracks, tracksLoading, setTracks, setError, demoLength, canRecord } = useDemo(
     location.state
   );
   const [playing, setPlaying] = useState(false);
-
-  //Controls play/pause
-  // useEffect(() => {
-  //   playing ? Tone.Transport.start() : Tone.Transport.pause();
-  // }, [playing]);
 
   useEffect(() => {
     if (currentTime >= demoLength) {
@@ -74,8 +69,7 @@ export default function Demo({ location }) {
             <Track
               key={t._id}
               track={t}
-              demo={demo}
-              recorder={recorder}
+              canRecord={canRecord}
               playingState={[playing, setPlaying]}
               tracksState={[tracks, setTracks]}
             />

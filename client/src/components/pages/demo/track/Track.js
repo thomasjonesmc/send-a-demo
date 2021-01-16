@@ -9,7 +9,7 @@ import ErrorNotice from "components/reusable/error/Error";
 import { useTrack } from "./useTrack";
 // import { encodeMp3 } from 'utils/recorderUtils';
 
-export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
+export const Track = ({ track, playingState, tracksState, canRecord }) => {
   const { demoId } = useParams();
   const token = localStorage.getItem("auth-token");
 
@@ -169,7 +169,7 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
 
         <div className="trackControls">
           {/* recorder is null if the user does not allow recording in browser. don't let user click start if its null */}
-          {recorder && !hasAudio && (
+          {canRecord && !hasAudio && (
             <>
               <button className="trackControlButton" onClick={startRecording} disabled={recording}>
                 Start

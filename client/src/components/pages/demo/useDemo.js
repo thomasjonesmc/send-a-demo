@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import * as Tone from "tone";
 
@@ -20,11 +20,12 @@ export const useDemo = (locationState) => {
     let stream = null;
 
     navigator.mediaDevices
-      .getUserMedia({ audio: true, video: false })
+      .getUserMedia({ audio: {
+        echoCancellation: false,
+        autoGainControl: false,
+        noiseSuppression: false
+      }})
       .then(() => {
-        // stream = audioStream;
-        // const audioContext = new AudioContext();
-        // const input = audioContext.createMediaStreamSource(stream);
         console.log("Access to microphone granted.")
       })
       .catch((err) => {
@@ -90,12 +91,6 @@ export const useDemo = (locationState) => {
     })();
   }, [locationState, demoId]);
 
-  useEffect(() => {
-    return () => {
-      Tone.Transport.stop();
-      tracks.forEach(t => { if (t.player) t.player.unsync(); });
-    }
-  }, [tracks]);
 
   return {
     demo,

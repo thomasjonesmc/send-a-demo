@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "./track.css";
 import * as Tone from "tone";
 import { VolumeSlider } from "./VolumeSlider";
@@ -7,7 +7,6 @@ import Axios from "axios";
 import { useParams } from "react-router-dom";
 import ErrorNotice from "components/reusable/error/Error";
 import MicRecorder from "mic-recorder-to-mp3";
-// import { encodeMp3 } from 'utils/recorderUtils';
 
 export const Track = ({ track, playingState, tracksState, demo }) => {
   const { demoId } = useParams();
@@ -23,6 +22,12 @@ export const Track = ({ track, playingState, tracksState, demo }) => {
   const [playing, setPlaying] = playingState;
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
+
+  useEffect(() => {
+    return () => {
+      if (track.player) track.player.unsync();
+    }
+  }, [track.player])
 
   const deleteTrack = async () => {
     if (window.confirm("Remove this track?")) {
@@ -45,8 +50,6 @@ export const Track = ({ track, playingState, tracksState, demo }) => {
         if (track.trackSignedURL) {
           // delete from aws!!!
           const { data: changedTrack } = await Axios.delete(`/demos/${demoId}/tracks/${track._id}/audio`);
-
-          console.log("CHANGED TRACK", changedTrack);
 
           setTracks(
             tracks.map((t) => {
@@ -109,12 +112,11 @@ export const Track = ({ track, playingState, tracksState, demo }) => {
     }
   };
 
-  const startRecording = async () => {
+  const startRecording = () => {
     try {
-    await recorder.start();
-    console.log("Recording...")
-    setRecording(true);
-    setPlaying(true)
+      recorder.start();
+      setRecording(true);
+      setPlaying(true)
     } catch (err) {
       setError(err.message);
     }
@@ -138,19 +140,6 @@ export const Track = ({ track, playingState, tracksState, demo }) => {
         setFile(localFile);
         fileLocation = URL.createObjectURL(localFile);
       })
-
-      // // get the blob from exportWAV
-      // const blob = await new Promise((resolve, reject) => {
-      //   recorder.exportWAV((blob, err) => (blob ? resolve(blob) : reject(err)));
-      // });
-
-      // const localFile = new File([blob], `${track._id}.wav`, {
-      //   type: blob.type,
-      //   lastModified: Date.now(),
-      // });
-
-
-
 
       setTracks(
         await Promise.all(

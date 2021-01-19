@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "./track.css";
 import * as Tone from "tone";
 import { VolumeSlider } from "./VolumeSlider";
@@ -6,9 +6,9 @@ import { FaTimes } from "react-icons/fa";
 import Axios from "axios";
 import { useParams } from "react-router-dom";
 import ErrorNotice from "components/reusable/error/Error";
-// import { encodeMp3 } from 'utils/recorderUtils';
+import MicRecorder from "mic-recorder-to-mp3";
 
-export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
+export const Track = ({ track, playingState, tracksState, demo }) => {
   const { demoId } = useParams();
   const token = localStorage.getItem("auth-token");
 
@@ -20,6 +20,14 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
   const [volume, setVolume] = useState(0);
   const [tracks, setTracks] = tracksState;
   const [playing, setPlaying] = playingState;
+
+  const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
+
+  useEffect(() => {
+    return () => {
+      if (track.player) track.player.unsync();
+    }
+  }, [track.player])
 
   const deleteTrack = async () => {
     if (window.confirm("Remove this track?")) {
@@ -42,8 +50,6 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
         if (track.trackSignedURL) {
           // delete from aws!!!
           const { data: changedTrack } = await Axios.delete(`/demos/${demoId}/tracks/${track._id}/audio`);
-
-          console.log("CHANGED TRACK", changedTrack);
 
           setTracks(
             tracks.map((t) => {
@@ -107,31 +113,33 @@ export const Track = ({ track, recorder, playingState, tracksState, demo }) => {
   };
 
   const startRecording = () => {
-    recorder.record();
-    setRecording(true);
-    setPlaying(true);
+    try {
+      recorder.start();
+      setRecording(true);
+      setPlaying(true)
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const stopRecording = async () => {
     try {
       setRecording(false);
       setPlaying(false);
-
-      recorder.stop();
-
-      // get the blob from exportWAV
-      const blob = await new Promise((resolve, reject) => {
-        recorder.exportWAV((blob, err) => (blob ? resolve(blob) : reject(err)));
-      });
-
-      const localFile = new File([blob], `${track._id}.wav`, {
-        type: blob.type,
-        lastModified: Date.now(),
-      });
-
-      setFile(localFile);
-
-      const fileLocation = URL.createObjectURL(localFile);
+      let localFile;
+      let fileLocation;
+      recorder
+        .stop()
+        .getMp3()
+        .then(([buffer, blob]) => {
+         localFile = new File(buffer, `${track._id}.mp3`, {
+          type: blob.type,
+          lastModified: Date.now(),
+        });
+        console.log(localFile);
+        setFile(localFile);
+        fileLocation = URL.createObjectURL(localFile);
+      })
 
       setTracks(
         await Promise.all(

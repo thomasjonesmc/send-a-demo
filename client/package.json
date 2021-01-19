@@ -6,15 +6,14 @@
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "dotenv": "^8.2.0",
-    "lamejs": "^1.2.0",
+    "mic-recorder-to-mp3": "git+https://github.com/thomasjonesmc/mic-recorder-to-mp3.git",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-icons": "^4.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
-    "recorderjs": "git+https://github.com/mattdiamond/Recorderjs.git",
     "tone": "^14.7.58"
   },
   "scripts": {

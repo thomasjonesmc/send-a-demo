@@ -16,7 +16,7 @@ export default function Demo({ location }) {
   Tone.start();
   const [showNewTrack, setShowNewTrack] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const { demo, error, demoLoading, tracks, tracksLoading, recorder, setTracks, setError, demoLength } = useDemo(
+  const { demo, error, demoLoading, tracks, tracksLoading, setTracks, setError, demoLength } = useDemo(
     location.state
   );
   const [playing, setPlaying] = useState(false);
@@ -27,7 +27,10 @@ export default function Demo({ location }) {
   }, [playing]);
 
   useEffect(() => {
-    if (currentTime >= demoLength) setPlaying(false);
+    if (currentTime >= demoLength){
+      setPlaying(false);
+      Tone.Transport.stop();
+    }
   }, [currentTime, demoLength]);
 
   if (demoLoading) return <span className="center">Loading Demo... 🎸</span>;
@@ -63,7 +66,6 @@ export default function Demo({ location }) {
               key={t._id}
               track={t}
               demo={demo}
-              recorder={recorder}
               playingState={[playing, setPlaying]}
               tracksState={[tracks, setTracks]}
             />

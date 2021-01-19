@@ -20,11 +20,7 @@ export const useDemo = (locationState) => {
     let stream = null;
 
     navigator.mediaDevices
-      .getUserMedia({ audio: {
-        echoCancellation: false,
-        autoGainControl: false,
-        noiseSuppression: false
-      }})
+      .getUserMedia({audio: true})
       .then(() => {
         console.log("Access to microphone granted.")
       })

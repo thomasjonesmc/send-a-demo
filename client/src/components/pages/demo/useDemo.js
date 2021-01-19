@@ -1,8 +1,7 @@
 import Axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import * as Tone from "tone";
-import Recorder from "recorderjs";
 
 // location state will contain the demo *if* the user clicked on the demo from the `/my-demos` page
 // otherwise location state will be undefined, if it is undefined we will need to fetch the demo
@@ -13,8 +12,8 @@ export const useDemo = (locationState) => {
   const [demoLength, setDemoLength] = useState(null);
   const [demoLoading, setDemoLoading] = useState(true);
   const [tracksLoading, setTracksLoading] = useState(true);
-  const [recorder, setRecorder] = useState(null);
   const { demoId } = useParams();
+
 
   // on first time page load we ask the user for microphone permissions
   useEffect(() => {
@@ -22,11 +21,11 @@ export const useDemo = (locationState) => {
 
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
-      .then((audioStream) => {
-        stream = audioStream;
-        const audioContext = new AudioContext();
-        const input = audioContext.createMediaStreamSource(stream);
-        setRecorder(new Recorder(input));
+      .then(() => {
+        // stream = audioStream;
+        // const audioContext = new AudioContext();
+        // const input = audioContext.createMediaStreamSource(stream);
+        console.log("Access to microphone granted.")
       })
       .catch((err) => {
         if (err.name === "NotAllowedError") {
@@ -104,7 +103,6 @@ export const useDemo = (locationState) => {
     error,
     demoLoading,
     tracksLoading,
-    recorder,
     setTracks,
     demoLength,
   };

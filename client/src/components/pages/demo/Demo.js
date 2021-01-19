@@ -63,7 +63,6 @@ export default function Demo({ location }) {
               key={t._id}
               track={t}
               demo={demo}
-              recorder={recorder}
               playingState={[playing, setPlaying]}
               tracksState={[tracks, setTracks]}
             />

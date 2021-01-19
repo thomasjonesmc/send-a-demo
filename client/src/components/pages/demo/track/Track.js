@@ -114,9 +114,10 @@ export const Track = ({ track, playingState, tracksState, demo }) => {
 
   const startRecording = () => {
     try {
-      recorder.start();
+      Tone.Transport.seconds = - (Tone.Transport.context._context._nativeAudioContext.outputLatency + .02);
       setRecording(true);
-      setPlaying(true)
+      setPlaying(true);
+      recorder.start();
     } catch (err) {
       setError(err.message);
     }

@@ -114,7 +114,11 @@ export const Track = ({ track, playingState, tracksState, demo }) => {
 
   const startRecording = () => {
     try {
-      Tone.Transport.seconds = - (Tone.Transport.context._context._nativeAudioContext.outputLatency + .02);
+      //Only Firefox has this property on AudioContext, so it will only be in sync for Firefox
+      //This is a temporary fix, hopefully we find a way to sync on all browsers soon
+      if (Tone.Transport.context._context._nativeAudioContext.outputLatency + .02) {
+        Tone.Transport.seconds = - (Tone.Transport.context._context._nativeAudioContext.outputLatency + .02);
+      }
       setRecording(true);
       setPlaying(true);
       recorder.start();

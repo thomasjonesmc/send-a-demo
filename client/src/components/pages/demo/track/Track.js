@@ -7,8 +7,9 @@ import Axios from "axios";
 import { useParams } from "react-router-dom";
 import ErrorNotice from "components/reusable/error/Error";
 import MicRecorder from "mic-recorder-to-mp3";
+import { Waveform } from "./Waveform";
 
-export const Track = ({ track, playingState, tracksState, demo }) => {
+export const Track = ({ track, playingState, tracksState, demo, demoLength }) => {
   const { demoId } = useParams();
   const token = localStorage.getItem("auth-token");
 
@@ -19,7 +20,7 @@ export const Track = ({ track, playingState, tracksState, demo }) => {
   const [uploading, setUploading] = useState(false);
   const [volume, setVolume] = useState(0);
   const [tracks, setTracks] = tracksState;
-  const [playing, setPlaying] = playingState;
+  const [, setPlaying] = playingState;
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
 
@@ -207,11 +208,14 @@ export const Track = ({ track, playingState, tracksState, demo }) => {
           </div>
 
           <div className="trackWave">
+            {/* <div style={{width: "100%"}}> */}
+              <Waveform track={track} demoLength={demoLength} />
+            {/* </div> */}
             <button onClick={deleteTrack} className="deleteTrackButton">
               <FaTimes />
             </button>
-            <div>{playing ? "Playing" : "Paused"}</div>
-            <div>{track.player ? track.player.buffer.duration : null}</div>
+            {/* <div>{playing ? "Playing" : "Paused"}</div>
+            <div>{track.player ? track.player.buffer.duration : null}</div> */}
           </div>
         </div>
 

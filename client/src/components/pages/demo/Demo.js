@@ -66,6 +66,7 @@ export default function Demo({ location }) {
               key={t._id}
               track={t}
               demo={demo}
+              demoLength={demoLength}
               playingState={[playing, setPlaying]}
               tracksState={[tracks, setTracks]}
             />

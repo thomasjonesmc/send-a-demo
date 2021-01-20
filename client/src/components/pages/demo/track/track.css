@@ -12,7 +12,7 @@
 
 .trackWave {
     background-color: lightgray;
-    padding: 20px;
+    padding: 0;
     flex: 4;
     position: relative;
 }

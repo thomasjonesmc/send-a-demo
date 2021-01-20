@@ -14,7 +14,8 @@
     "react-icons": "^4.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
-    "tone": "^14.7.58"
+    "tone": "^14.7.58",
+    "wavesurfer.js": "^4.4.0"
   },
   "scripts": {
     "start": "HTTPS=true react-scripts start",

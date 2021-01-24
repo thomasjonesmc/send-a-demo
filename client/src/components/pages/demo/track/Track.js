@@ -9,7 +9,14 @@ import ErrorNotice from "components/reusable/error/Error";
 import MicRecorder from "mic-recorder-to-mp3";
 import { Waveform } from "./Waveform";
 
-export const Track = ({ track, playingState, tracksState, demo, demoLength }) => {
+export const Track = ({
+  track,
+  playingState,
+  timeState:[currentTime, setCurrentTime],
+  tracksState,
+  demo,
+  demoLength
+}) => {
   const { demoId } = useParams();
   const token = localStorage.getItem("auth-token");
 
@@ -20,7 +27,7 @@ export const Track = ({ track, playingState, tracksState, demo, demoLength }) =>
   const [uploading, setUploading] = useState(false);
   const [volume, setVolume] = useState(0);
   const [tracks, setTracks] = tracksState;
-  const [, setPlaying] = playingState;
+  const [playing, setPlaying] = playingState;
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
 
@@ -208,14 +215,15 @@ export const Track = ({ track, playingState, tracksState, demo, demoLength }) =>
           </div>
 
           <div className="trackWave">
-            {/* <div style={{width: "100%"}}> */}
-              <Waveform track={track} demoLength={demoLength} />
-            {/* </div> */}
+            {track.player ? <Waveform
+                              track={track}
+                              demoLength={demoLength}
+                              timeState={[currentTime, setCurrentTime]}
+                              playingState={[playing, setPlaying]}
+                            /> : null}
             <button onClick={deleteTrack} className="deleteTrackButton">
               <FaTimes />
             </button>
-            {/* <div>{playing ? "Playing" : "Paused"}</div>
-            <div>{track.player ? track.player.buffer.duration : null}</div> */}
           </div>
         </div>
 

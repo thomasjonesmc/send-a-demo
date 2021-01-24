@@ -41,6 +41,7 @@
 
 .deleteTrackButton {
     position: absolute;
+    z-index: 6;
     display: flex;
     justify-content: center;
     align-items: center;

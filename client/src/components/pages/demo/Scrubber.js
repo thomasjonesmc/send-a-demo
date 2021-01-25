@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import * as Tone from 'tone';
 import './scrubber.css';
 
@@ -34,13 +34,13 @@ export const AudioScrubber = ({
   );
 };
 
-export const Scrubber = ({
+export const Scrubber = forwardRef(({
   demoLength,
   timeState: [currentTime, setCurrentTime],
   playingState: [playing, setPlaying],
-  scrubberType
-}) => {
-  
+  scrubberType,
+}, ref) => {
+
   const [playingOnPickup, setPlayingOnPickup] = useState(false);
   const audioTimeChange = (time) => {
     Tone.Transport.seconds = time;
@@ -81,6 +81,7 @@ export const Scrubber = ({
         onMouseDown={scrubStart}
         onChange={(e) => audioTimeChange(e.target.value)}
         onMouseUp={scrubEnd}
+        ref={ref}
       />
   )
-}
+});

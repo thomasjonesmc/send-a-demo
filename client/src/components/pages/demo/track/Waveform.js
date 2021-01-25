@@ -12,6 +12,18 @@ export const Waveform = ({
   let trackStart;
   let trackWidth;
 
+  const [ trackHeight, setTrackHeight ] = useState(0);
+  const scrubberRef = useRef(null);
+
+  const setHeightOnResize = () => {
+    setTrackHeight(scrubberRef.current.offsetHeight);
+  }
+  useEffect(() => {
+    window.addEventListener('resize', setHeightOnResize);
+    setTrackHeight(scrubberRef.current.offsetHeight);
+    return () => window.removeEventListener('resize', setHeightOnResize);
+  }, []);
+
   const [ filteredData, setFilteredData ] = useState(null);
   const [ loading, setLoading ] = useState(true);
 
@@ -68,27 +80,31 @@ export const Waveform = ({
         demoLength={demoLength}
         playingState={[playing, setPlaying]}
         scrubberType={"trackScrubber"}
+        ref={scrubberRef}
       />
       <div style={{left: trackStart, position: "relative"}}>  
         {!loading ? (
-          <RenderedWaveform filteredData={filteredData} trackWidth={trackWidth} />
+          <RenderedWaveform
+            filteredData={filteredData}
+            trackWidth={trackWidth}
+            trackHeight={trackHeight}
+          />
         ) : "Loading waveform data..." }
       </div>
     </div>
   )
 }
 
-const RenderedWaveform = ({filteredData, trackWidth}) => {
+const RenderedWaveform = ({filteredData, trackWidth, trackHeight}) => {
   const canvasRef = useRef(null);
   useEffect(() => {
-
     //Draw the waveform
     const draw = filteredData => {
       const canvas = canvasRef.current;
       canvas.style.width= trackWidth;
-      canvas.style.height= 100;
+      canvas.style.height= trackHeight;
       canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight / 1.25;
+      canvas.height = canvas.offsetHeight;
       const ctx = canvas.getContext("2d");
       ctx.scale(1, 1);
       //Makes waveform appear in middle of canvas rather than the bottom
@@ -116,7 +132,7 @@ const RenderedWaveform = ({filteredData, trackWidth}) => {
       ctx.lineTo(x + width, 0);
     };
     draw(filteredData);
-  }, [filteredData, trackWidth])
+  }, [filteredData, trackWidth, trackHeight])
   
   return <canvas ref={canvasRef} />
 }

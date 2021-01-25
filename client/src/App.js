@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { ProtectedRoute } from "components/ProtectedRoute";
 import Header from "components/header/Header";
 import Home from "components/pages/home/Home";
 import MyDemos from "components/pages/myDemos/MyDemos";
@@ -12,6 +13,7 @@ import { Profile } from "components/pages/profile/Profile";
 import { Follow } from "components/pages/follow/Follow";
 import "style.css";
 
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -22,13 +24,13 @@ export default function App() {
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
-          <Route exact path="/my-demos" component={MyDemos} />
-          <Route exact path="/new-demo" component={NewDemo} />
-          <Route exact path="/demos/:demoId" component={Demo} />
-          <Route exact path="/users/:userName" component={Profile} />
-          <Route exact path="/users/:userName/followers" component={Follow} />
-          <Route exact path="/users/:userName/following" component={Follow} />
-          <Route path="/" render={() => <div>404</div>} />
+          <ProtectedRoute exact path="/my-demos" component={MyDemos} />
+          <ProtectedRoute exact path="/new-demo" component={NewDemo} />
+          <ProtectedRoute exact path="/demos/:demoId" component={Demo} />
+          <ProtectedRoute exact path="/users/:userName" component={Profile} />
+          <ProtectedRoute exact path="/users/:userName/followers" component={Follow} />
+          <ProtectedRoute exact path="/users/:userName/following" component={Follow} />
+          <Route path="/" render={() => <div className="center">404 - Page Not Found</div>} />
         </Switch>
         </div>
       </UserProvider>

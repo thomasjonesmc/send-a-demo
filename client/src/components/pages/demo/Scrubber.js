@@ -1,12 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import * as Tone from 'tone';
-import './audioScrubber.css';
+import './scrubber.css';
 
 export const AudioScrubber = ({
   demoLength,
   timeState: [currentTime, setCurrentTime],
   playingState: [playing, setPlaying],
 }) => {
+
+  const toMinutesAndSeconds = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time - minutes * 60;
+    if (seconds < 10) {
+      return (`${minutes}:0${parseFloat(seconds).toFixed(2)}`)  
+    } else {
+      return (`${minutes}:${parseFloat(seconds).toFixed(2)}`)
+    }
+  }
+
+  return (
+    <>
+      <div className="scrubberTimeContainer">
+        <p>{toMinutesAndSeconds(currentTime)}</p>
+        <p>-{demoLength - currentTime > 0.001 ? toMinutesAndSeconds(demoLength - currentTime) : `0:00.00`}</p>
+      </div>
+      <Scrubber
+        demoLength={demoLength} 
+        timeState={[currentTime, setCurrentTime]}
+        playingState={[playing, setPlaying]}
+        scrubberType={"audioScrubber"}
+      />
+    </>
+  );
+};
+
+export const Scrubber = forwardRef(({
+  demoLength,
+  timeState: [currentTime, setCurrentTime],
+  playingState: [playing, setPlaying],
+  scrubberType,
+}, ref) => {
+
   const [playingOnPickup, setPlayingOnPickup] = useState(false);
   const audioTimeChange = (time) => {
     Tone.Transport.seconds = time;
@@ -34,26 +68,9 @@ export const AudioScrubber = ({
     setPlaying(playingOnPickup);
   }
 
-  const toMinutesAndSeconds = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time - minutes * 60;
-    if (seconds < 10) {
-      return (`${minutes}:0${parseFloat(seconds).toFixed(2)}`)  
-    } else {
-      return (`${minutes}:${parseFloat(seconds).toFixed(2)}`)
-    }
-  }
-
   return (
-    <>
-      <div className="scrubberTimeContainer">
-        <p>{toMinutesAndSeconds(currentTime)}</p>
-        <p>-{demoLength - currentTime > 0.001 ? toMinutesAndSeconds(demoLength - currentTime) : `0:00.00`}</p>
-      </div>
-
       <input
-        className="audioScrubber"
-        style={{ marginTop: "15px" }}
+        className={scrubberType}
         type="range"
         min={0}
         max={demoLength}
@@ -64,7 +81,7 @@ export const AudioScrubber = ({
         onMouseDown={scrubStart}
         onChange={(e) => audioTimeChange(e.target.value)}
         onMouseUp={scrubEnd}
+        ref={ref}
       />
-    </>
-  );
-};
+  )
+});

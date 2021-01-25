@@ -9,7 +9,7 @@ import { Form, FormInput } from "components/reusable/form/Form";
 import UserContext from "context/UserContext";
 import Axios from "axios";
 import { Popup } from "components/reusable/popup/Popup";
-import { AudioScrubber } from "components/pages/demo/AudioScrubber"
+import { AudioScrubber } from "components/pages/demo/Scrubber"
 import * as Tone from "tone";
 
 export default function Demo({ location }) {
@@ -66,7 +66,9 @@ export default function Demo({ location }) {
               key={t._id}
               track={t}
               demo={demo}
+              demoLength={demoLength}
               playingState={[playing, setPlaying]}
+              timeState={[currentTime, setCurrentTime]}
               tracksState={[tracks, setTracks]}
             />
           ))}

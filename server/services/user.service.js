@@ -98,9 +98,9 @@ const getUserByUserName = async (userName) => {
     const user = foundUser.toObject();
 
     return {
-      ...user, 
-      followers: user.followers.length, 
-      following: user.following.length
+        ...user, 
+        followers: user.followers.length, 
+        following: user.following.length
     }
 }
 
@@ -124,8 +124,8 @@ const unfollowUser = (followerId, followeeId) => {
 const userDoesFollow = async (followerId, followeeId) => {
     const user = await User.find({ 
         $and: [
-          { _id: ObjectId(followerId) },
-          { following: ObjectId(followeeId) }
+            { _id: ObjectId(followerId) },
+            { following: ObjectId(followeeId) }
         ]
     });
     

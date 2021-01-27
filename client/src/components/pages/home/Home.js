@@ -1,7 +1,5 @@
-import React, { useContext } from "react";
-import { useHistory } from "react-router-dom";
+import React from "react";
 import { Button } from "components/reusable/button/Button";
-import UserContext from "context/UserContext";
 import "components/pages/home/home.css";
 
 export default function Home() {

@@ -30,10 +30,10 @@ export default function App() {
             <ProtectedRoute exact path="/register" component={Register} condition={user === null} redirect="/my-demos" />
             <ProtectedRoute exact path="/my-demos" component={MyDemos} condition={user} />
             <ProtectedRoute exact path="/new-demo" component={NewDemo} condition={user} />
-            <ProtectedRoute exact path="/demos/:demoId" component={Demo} condition={user} />
-            <ProtectedRoute exact path="/users/:userName" component={Profile} condition={user} />
-            <ProtectedRoute exact path="/users/:userName/followers" component={Follow} condition={user} />
-            <ProtectedRoute exact path="/users/:userName/following" component={Follow} condition={user} />
+            <Route exact path="/demos/:demoId" component={Demo} condition={user} />
+            <Route exact path="/users/:userName" component={Profile} condition={user} />
+            <Route exact path="/users/:userName/followers" component={Follow} condition={user} />
+            <Route exact path="/users/:userName/following" component={Follow} condition={user} />
             <Route path="/" render={() => <div className="center">404 - Page Not Found</div>} />
           </Switch>
         </div>

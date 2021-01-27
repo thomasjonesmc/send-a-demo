@@ -15,16 +15,10 @@ export const UserProvider = (props) => {
       Axios.get("/users", {
         headers: { "x-auth-token": token },
       })
-        .then(res => {
-          setUser(res.data)
-          setLoading(false);
-        })
-        .catch(() => {
-          setUser(null)
-          setLoading(false);
-        });
+        .then(res => setUser(res.data))
+        .catch(() => setUser(null))
+        .finally(() => setLoading(false));
     }
-  
   }, []);
 
   // return the UserContext.Provider with the values already baked in. This way our app component only has to be wrapped in the UserProvider

@@ -132,6 +132,16 @@ const userDoesFollow = async (followerId, followeeId) => {
     return user.length !== 0; 
 }
 
+const searchUsers = async (search) => {
+
+    const users = await User.find(
+        { userName: { $regex: search, $options: "i"} },
+        { displayName: 1, userName: 1, _id: 1 }
+    );
+
+    return users;
+}
+
 // helper function that we can reuse to get a user's followers and following
 const getUserFollowsByUserName = async (followType, userName) => {
     const [ user ] = await User.aggregate([
@@ -218,5 +228,6 @@ module.exports = {
     getUserFollowingByUserName,
     followUser,
     unfollowUser,
-    userDoesFollow
+    userDoesFollow,
+    searchUsers
 }

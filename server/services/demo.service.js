@@ -2,6 +2,7 @@ const Demo = require("../models/demoModel");
 const Track = require("../models/trackModel");
 const { ObjectId } = require('mongoose').Types;
 const s3 = require("../services/s3.service");
+const error = require("../util/error");
 
 // get demos where the user is the creator or in the list of contributors
 const getPersonalUserDemos = (userId) => {
@@ -85,6 +86,20 @@ const deleteTrackAudio = async (demoId, trackId) => {
     return { ...changedTrack.toObject(), trackSignedURL: null };
 }
 
+const addUserToDemo = async (demoId, userId) => {
+
+    const updatedDemo = await Demo.findOneAndUpdate(
+        // add the user to the demo with the demoId if the user is not already in the array of contributors and not the creator
+        { _id: demoId, creatorId: { $ne: userId }, contributors: { $ne: userId } },
+        { $push: { contributors: userId } },
+        { new: true }
+    );
+
+    if (!updatedDemo) { error("Couldn't add user to demo"); }
+
+    return updatedDemo;
+}
+
 // a helper function that gets demos, lets us pass in a custom mongo $match to filter
 const getDemos = (match) => {
 
@@ -142,5 +157,6 @@ module.exports = {
     updateTrackUrl,
     deleteDemoById,
     deleteTrack,
-    deleteTrackAudio
+    deleteTrackAudio,
+    addUserToDemo
 }

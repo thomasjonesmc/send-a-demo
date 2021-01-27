@@ -42,11 +42,11 @@ export default function Register() {
    
     <Form title="Register" onSubmit={submit}>
 
-      <FormInput name="email" type="email" label="Email" onChange={setEmail} autoFocus />
-      <FormInput name="userName" label="User Name" onChange={setUserName} />
-      <FormInput name="displayName" label="Display Name" onChange={setDisplayName} />
-      <FormInput name="password" type="password" label="Password" onChange={setPassword} />
-      <FormInput name="passwordCheck" type="password" label="Verify Password" onChange={setPasswordCheck} />
+      <FormInput name="email" type="email" label="Email" onChange={e => setEmail(e.target.value)} autoFocus />
+      <FormInput name="userName" label="User Name" onChange={e => setUserName(e.target.value)} />
+      <FormInput name="displayName" label="Display Name" onChange={e => setDisplayName(e.target.value)} />
+      <FormInput name="password" type="password" label="Password" onChange={e => setPassword(e.target.value)} />
+      <FormInput name="passwordCheck" type="password" label="Verify Password" onChange={e => setPasswordCheck(e.target.value)} />
 
       <div className="center">
         <Button type="submit">Register 😁</Button>

@@ -29,6 +29,11 @@ router.post("/add-signed-url", auth, (req, res) => {
     respond(res, () => serv.updateTrackUrl(trackId, url));
 });
 
+router.put("/:demoId/addContributor/:userId", (req, res) => {
+    const { demoId, userId } = req.params;
+    respond(res, () => serv.addUserToDemo(demoId, userId));
+});
+
 router.delete("/:demoId", (req, res) => {
     const { demoId } = req.params;
     respond(res, () => serv.deleteDemoById(demoId));

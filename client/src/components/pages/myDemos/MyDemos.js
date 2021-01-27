@@ -3,7 +3,7 @@ import UserContext from "../../../context/UserContext";
 import { Button } from "components/reusable/button/Button";
 import DemoList from "components/pages/myDemos/DemoList";
 import { useMyDemos } from "./useMyDemos";
-import "components/pages/myDemos/mydemos.css";
+import "components/pages/myDemos/myDemos.css";
 import ErrorNotice from "components/reusable/error/Error";
 
 export default function MyDemos() {

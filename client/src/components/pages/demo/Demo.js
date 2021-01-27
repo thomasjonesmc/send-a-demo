@@ -111,7 +111,7 @@ export const NewTrack = ({ demoId, setTracks, setShowNewTrack }) => {
 
   return (
     <Form onSubmit={onSubmit}>
-      <FormInput name="newTrackTitle" label="Track Title" onChange={setTrackTitle} autoFocus />
+      <FormInput name="newTrackTitle" label="Track Title" onChange={e => setTrackTitle(e.target.value)} autoFocus />
 
       <div className="center">
         <Button type="submit">Create New Track</Button>

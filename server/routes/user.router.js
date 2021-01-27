@@ -10,9 +10,8 @@ router.post("/register", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-    // email will be updated to something like `loginIdentifier` to accomodate email OR username in future
-    const { email, password } = req.body;
-    respond(res, () => serv.loginUser(email, password));
+    const { loginIdentifier, password } = req.body;
+    respond(res, () => serv.loginUser(loginIdentifier, password));
 });
 
 router.delete("/delete", auth, (req, res) => {

@@ -43,12 +43,20 @@ const loginUser = async (loginIdentifier, password) => {
         error("All Fields Required");
     }
 
-    const foundUser = await User.findOne({ email: loginIdentifier }, { __v: 0 });
-    const { password: foundPassword, ...user} = foundUser.toObject();
+    let foundUser = null;
 
-    if (!user) {
-        error("No account with this email has been found", 400);
+    // a simple regex test to see if the loginIdentifier matches the following: anystring@anystring.anystring
+    if (/\S+@\S+\.\S+/.test(loginIdentifier)) {
+        foundUser = await User.findOne({ email: loginIdentifier }, { __v: 0 });
+    } else {
+        foundUser = await User.findOne({ userName: loginIdentifier }, { __v: 0 });
     }
+
+    if (!foundUser) {
+        error("No account with this email or username", 400);
+    }
+
+    const { password: foundPassword, ...user} = foundUser.toObject();
 
     const isMatch = await bcrypt.compare(password, foundPassword);
     if (!isMatch) error("Invalid Credentials", 400);

@@ -33,6 +33,6 @@ mongoose.connect(
 );
 
 //set up routes
-app.use("/users", require("./routes/userRouter"));
-app.use("/demos", require("./routes/demoRouter"));
-app.use("/s3", require("./routes/s3Router"));
+app.use("/users", require("./routes/user.router"));
+app.use("/demos", require("./routes/demo.router"));
+app.use("/s3", require("./routes/s3.router"));

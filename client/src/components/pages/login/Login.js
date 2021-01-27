@@ -8,7 +8,8 @@ import { Form, FormInput } from "components/reusable/form/Form";
 
 export default function Login() {
 
-  const [email, setEmail] = useState("");
+  // loginIdentifier is the user's email or username
+  const [loginIdentifier, setLoginIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null)
 
@@ -17,12 +18,12 @@ export default function Login() {
 
   const submit = async () => {
 
-    if (email === "" || password === "") {
-      return setError("Email and Password are required");
+    if (loginIdentifier === "" || password === "") {
+      return setError("All Fields Required");
     }
 
     try {
-      const loginUser = { email, password };
+      const loginUser = { loginIdentifier, password };
       const { data: loginRes } = await Axios.post("/users/login", loginUser);
       setUser(loginRes.user);
       localStorage.setItem("auth-token", loginRes.token);
@@ -35,7 +36,7 @@ export default function Login() {
   return (
     <Form title="Login" onSubmit={submit}>
 
-      <FormInput name="email" type="email" label="Email" onChange={setEmail} autoFocus />
+      <FormInput name="loginIdentifier" label="Email or Username" onChange={setLoginIdentifier} autoFocus />
       <FormInput name="password" type="password" label="Password" onChange={setPassword} />
 
       <div className="center">

@@ -1,21 +1,11 @@
-import React, { useContext } from "react";
-import { useHistory } from "react-router-dom";
+import React from "react";
 import { Button } from "components/reusable/button/Button";
-import UserContext from "context/UserContext";
 import "components/pages/home/home.css";
 
 export default function Home() {
-
-  const { user } = useContext(UserContext);
-  const history = useHistory();
-
+  
   const buttonStyle = {
     margin: "20px 10px"
-  }
-  
-  if (user) {
-    history.push('/my-demos');
-    return null;
   }
 
   return (

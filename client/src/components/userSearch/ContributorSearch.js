@@ -41,6 +41,7 @@ export const ContributorSearch = ({demo, onAddContributor, onExit}) => {
     const filterUsers = (u) => {
         const isCreator = u._id === demo.creator._id;
         const isContributor = demo.contributors.includes(u._id);
+
         return !isCreator && !isContributor;
     }
 

@@ -1,5 +1,6 @@
 const Demo = require("../models/demoModel");
 const Track = require("../models/trackModel");
+const User = require("../models/userModel");
 const { ObjectId } = require('mongoose').Types;
 const s3 = require("../services/s3.service");
 const error = require("../util/error");
@@ -24,11 +25,20 @@ const getPublicUserDemos = (userId) => {
     })
 }
 
-const getDemoById = (demoId) => {
-    return Demo.findById(demoId).populate({
-        path: "tracks",
-        model: Track,
-    });
+const getDemoById = async (demoId) => {
+    
+    const res = await Demo.findById(demoId)
+        .populate({ path: "tracks", model: Track })
+        .populate({ path: "creatorId", model: User, select: '-__v -password'});
+
+    if (!res) return res;
+
+    const { creatorId: creator, ...demo } = res.toObject();
+
+    return {
+        ...demo,
+        creator
+    };    
 }
 
 const createDemo = (creatorId, title) => {

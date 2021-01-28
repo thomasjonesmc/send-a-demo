@@ -49,7 +49,7 @@ export const useDemo = (locationState) => {
         } else {
           currentDemo = locationState.demo;
         }
-
+        
         setDemo(currentDemo);
         setDemoLoading(false);
         let trackLengths = [];

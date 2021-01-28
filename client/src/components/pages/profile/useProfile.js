@@ -68,8 +68,7 @@ export const useProfile = (user, userName) => {
             setError(err.messgae);
           })
       }
-
     }, [userName, user, profile]);
 
-    return { profile, setProfile, error, setError, demos, loading, page };
+    return { profile, setProfile, error, setError, demos, setDemos, loading, page };
 }

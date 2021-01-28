@@ -2,9 +2,7 @@ import React from "react";
 import { DemoItem } from "./DemoItem";
 import './myDemos.css';
 
-const DemoList = (props) => {
-
-  const { demos } = props;
+const DemoList = ({demos, setDemos}) => {
 
   if (!demos || demos.length === 0) {
     return (
@@ -17,7 +15,7 @@ const DemoList = (props) => {
 
   return (
     <>
-      {demos.map((demo) => <DemoItem key={demo._id} demo={demo} />)}
+      {demos.map((demo) => <DemoItem key={demo._id} demo={demo} setDemos={setDemos} />)}
     </>
   );
 };

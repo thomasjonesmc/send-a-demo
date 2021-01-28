@@ -1,33 +1,17 @@
-import Axios from 'axios';
 import { IconButton } from 'components/reusable/button/Button';
-import { Popup } from 'components/reusable/popup/Popup';
-import { UserSearch } from 'components/userSearch/UserSearch';
+import { ContributorSearch } from 'components/userSearch/ContributorSearch';
 import UserContext from 'context/UserContext';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { MdPersonAdd } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
 
-export const DemoItem = ({demo}) => {
+export const DemoItem = ({demo, setDemos}) => {
 
     const history = useHistory();
     const { user } = useContext(UserContext);
     const [ showSearch, setShowSearch ] = useState(false);
-    const [ error, setError ] = useState(null);
-    const [ notice, setNotice ] = useState(null);
-
-    const timeoutRef = useRef();
-
-    // useEffect that removes the error/notice after 4 seconds of appearing
-    useEffect(() => {
-        timeoutRef.current = setTimeout(() => {
-            setError(null);
-            setNotice(null);
-        }, 4000);
-
-        return () => clearTimeout(timeoutRef.current);
-    }, [error, notice]);
-
+    
     const demoClick = () => {
         history.push({
             pathname: `/demos/${demo._id}`,
@@ -35,19 +19,13 @@ export const DemoItem = ({demo}) => {
         });
     }
 
-    const userClick = async (clickedUser, setSearch) => {
-
-        if (!window.confirm(`Add ${clickedUser.userName} to demo contributors?`)) {
-            return;
-        }
-
-        try {
-            await Axios.put(`/demos/${demo._id}/addContributor/${clickedUser._id}`);
-            setNotice(`Added ${clickedUser.userName} to contributors!`);
-            setSearch('');
-        } catch (err) {
-            setError(err.response.data.error);
-        }
+    const onAddContributor = (updatedDemo) => {
+        setDemos(demos => demos.map(d => {
+            if (d._id === demo._id) {
+                return updatedDemo;
+            }
+            return d;
+        }));
     }
 
     return (
@@ -65,11 +43,7 @@ export const DemoItem = ({demo}) => {
                 <IconButton component={MdPersonAdd} onClick={() => setShowSearch(show => !show)} style={{marginTop: "10px"}} />
             </div>}
 
-            {showSearch && <Popup title="Add User to Demo" onExit={() => setShowSearch(false)}>
-                {notice && <div>{notice}</div>}
-                {error && <div>{error}</div>}
-                <UserSearch userClick={userClick}/>
-            </Popup>}
+            {showSearch && <ContributorSearch demo={demo} onAddContributor={onAddContributor} onExit={() => setShowSearch(false)} />}
         </div>
     )
 }

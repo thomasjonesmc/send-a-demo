@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import { useUserSearch } from './useUserSearch';
 import './userSearch.css';
 
-export const UserSearch = ({userClick}) => {
+export const UserSearch = ({userClick, filter}) => {
     
     const [ search, setSearch ] = useState("");
 
-    const { users, error, loading } = useUserSearch(search);
+    const { users, error, loading } = useUserSearch(search, filter);
+
     
     if (error) return <div>{error}</div>
 

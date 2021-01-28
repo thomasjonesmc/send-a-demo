@@ -33,8 +33,6 @@ export const Profile = () => {
 
         Axios.put(`/users/${user._id}/${action}/${profile._id}`)
             .then(res => {
-                console.log("FOLLOWER", res.data.follower);
-                console.log("FOLLOWEE", res.data.followee);
                 setUser(res.data.follower);
                 setProfile(res.data.followee);
             })

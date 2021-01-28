@@ -21,9 +21,6 @@ export const useDemo = (locationState) => {
 
     navigator.mediaDevices
       .getUserMedia({audio: true})
-      .then(() => {
-        console.log("Access to microphone granted.")
-      })
       .catch((err) => {
         if (err.name === "NotAllowedError") {
           setError("Change Microphone Permissions to Record");
@@ -90,6 +87,7 @@ export const useDemo = (locationState) => {
 
   return {
     demo,
+    setDemo,
     tracks,
     error,
     demoLoading,

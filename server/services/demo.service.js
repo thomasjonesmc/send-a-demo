@@ -88,14 +88,19 @@ const deleteTrackAudio = async (demoId, trackId) => {
 
 const addUserToDemo = async (demoId, userId) => {
 
-    const updatedDemo = await Demo.findOneAndUpdate(
+    const pushDemo = await Demo.findOneAndUpdate(
         // add the user to the demo with the demoId if the user is not already in the array of contributors and not the creator
         { _id: demoId, creatorId: { $ne: userId }, contributors: { $ne: userId } },
         { $push: { contributors: userId } },
-        { new: true }
     );
 
-    if (!updatedDemo) { error("Couldn't add user to demo"); }
+    if (!pushDemo) { error("Couldn't add user to demo"); }
+
+    // after we push the contributor to the demo, we fetch the updated demo
+    // I tried using the `new` flag on the `findOneAndUpdate` above, but I couldn't convert the creatorId to a user document in the same way that the `getDemos` function does
+    const [ updatedDemo ] = await getDemos({
+        _id: ObjectId(demoId)
+    });
 
     return updatedDemo;
 }
@@ -128,19 +133,9 @@ const getDemos = (match) => {
                 as: "tracks"
             }
         }, 
-        // converts all user ids in the "contributors" array to user objects, also overwrites existing users array
-        {
-            $lookup: {
-                from: "users",
-                localField: "contributors",
-                foreignField: "_id",
-                as: "contributors"
-            }
-        },
         // ignore the passwords and the creatorId since the creatorId gets stored in the creator object
         {
             $project: {
-                "contributors.password": 0,
                 "creator.password": 0,
                 "creatorId": 0
             }

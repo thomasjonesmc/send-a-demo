@@ -9,7 +9,7 @@ import ErrorNotice from "components/reusable/error/Error";
 export default function MyDemos() {
   const { user } = useContext(UserContext);
 
-  const { demos, loading, error, setError } = useMyDemos(); 
+  const { demos, setDemos, loading, error, setError } = useMyDemos(); 
 
   return (
     <div id="myDemosContainer">
@@ -28,7 +28,7 @@ export default function MyDemos() {
     
       {loading ? 
         <span className="center">Fetching demos... 🎸</span> : 
-        <DemoList demos={demos} /> 
+        <DemoList demos={demos} setDemos={setDemos} /> 
       }
     </div>
   );

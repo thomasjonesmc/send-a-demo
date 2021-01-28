@@ -32,5 +32,5 @@ export const useMyDemos = () => {
      
     }, []);
 
-    return { demos, loading, error, setError };
+    return { demos, setDemos, loading, error, setError };
 }

@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { useEffect, useRef, useState } from "react";
 
-export const useUserSearch = (search) => {
+export const useUserSearch = (search, filter) => {
 
     const [ users, setUsers ] = useState([]);
     const [ error, setError ] = useState(null);
@@ -14,18 +14,25 @@ export const useUserSearch = (search) => {
         setUsers([]);
 
         clearTimeout(timeoutRef.current);
-
+        
         if (!search) {
             setLoading(false);
             return; 
         }
-          
+        
         setLoading(true);
-
+        
         timeoutRef.current = setTimeout(() => {
             Axios.get(`/users/search/${search}`)
             .then(res => {
-                setUsers(res.data);
+                
+                // if a filter function was passed in, apply it to the data
+                if (filter) {
+                    setUsers(res.data.filter(filter));
+                } else {
+                    setUsers(res.data);
+                }
+
                 setError(null);
             })
             .catch(err => {
@@ -34,7 +41,7 @@ export const useUserSearch = (search) => {
             .finally(() => setLoading(false));
         }, 500);
 
-    }, [search]);
+    }, [search, filter]);
 
-    return { users, error, loading };
+    return { users, setUsers, error, loading };
 }

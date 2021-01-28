@@ -106,7 +106,6 @@ export const Track = ({
       setTracks((tracks) =>
         tracks.map((t) => {
           if (t._id === track._id) {
-            console.log({ ...track, trackSignedURL: signedUrl });
             return { ...track, trackSignedURL: signedUrl };
           }
           return t;
@@ -149,7 +148,6 @@ export const Track = ({
           type: blob.type,
           lastModified: Date.now(),
         });
-        console.log(localFile);
         setFile(localFile);
         fileLocation = URL.createObjectURL(localFile);
       })

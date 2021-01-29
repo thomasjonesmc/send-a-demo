@@ -36,8 +36,8 @@ export default function Login() {
   return (
     <Form title="Login" onSubmit={submit}>
 
-      <FormInput name="loginIdentifier" label="Email or Username" onChange={setLoginIdentifier} autoFocus />
-      <FormInput name="password" type="password" label="Password" onChange={setPassword} />
+      <FormInput name="loginIdentifier" label="Email or Username" onChange={e => setLoginIdentifier(e.target.value)} autoFocus />
+      <FormInput name="password" type="password" label="Password" onChange={e => setPassword(e.target.value)} />
 
       <div className="center">
         <Button type="submit">Login</Button>

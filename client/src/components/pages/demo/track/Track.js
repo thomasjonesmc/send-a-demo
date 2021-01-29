@@ -109,7 +109,6 @@ export const Track = ({
       setTracks((tracks) =>
         tracks.map((t) => {
           if (t._id === track._id) {
-            console.log({ ...track, trackSignedURL: signedUrl });
             return { ...track, trackSignedURL: signedUrl };
           }
           return t;

@@ -31,7 +31,7 @@ export default function CreateDemo() {
 
   return (
     <Form title="New Demo Title" onSubmit={submit}>
-      <FormInput name="demoTitle" onChange={setDemoTitle} autoFocus />
+      <FormInput name="demoTitle" onChange={e => setDemoTitle(e.target.value)} autoFocus />
       <div className="center">
         <Button type="submit">Create New Demo</Button>
       </div>

@@ -13,7 +13,7 @@ export const Profile = () => {
 
     const { userName } = useParams();
     const { user, setUser } = useContext(UserContext);
-    const { profile, setProfile, error, setError, loading, page, demos } = useProfile(user, userName);
+    const { profile, setProfile, error, setError, loading, page, demos, setDemos } = useProfile(user, userName);
 
     if (loading) return <div>loading</div>
     if (error) return <div>{error}</div>
@@ -33,8 +33,6 @@ export const Profile = () => {
 
         Axios.put(`/users/${user._id}/${action}/${profile._id}`)
             .then(res => {
-                console.log("FOLLOWER", res.data.follower);
-                console.log("FOLLOWEE", res.data.followee);
                 setUser(res.data.follower);
                 setProfile(res.data.followee);
             })
@@ -72,7 +70,7 @@ export const Profile = () => {
 
         <div style={{marginTop: "20px"}}>
             {demos.length > 0 && <h2 style={{margin: "15px 0px"}}>{profile.displayName}'s Demos</h2>}
-            <DemoList demos={demos} />
+            <DemoList demos={demos} setDemos={setDemos} />
         </div>
     </div>
 } 

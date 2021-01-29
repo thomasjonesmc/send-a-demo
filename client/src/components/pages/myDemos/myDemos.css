@@ -1,0 +1,38 @@
+#myDemosContainer {
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 0px 15px;
+}
+
+#userNameHeading {
+  padding: 20px 0;
+}
+
+.demoItem {
+  display: flex;
+  margin: 10px 0px;
+  box-shadow: 0px 0px 8px 2px lightgray;
+  border-radius: 15px;
+}
+
+.demoItemInfo {
+  flex: 1;
+  cursor: pointer;
+  padding: 30px;
+}
+
+.demoItemControls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+.demoText {
+  padding-top: 10px;
+}
+
+.demoItemNotice {
+  display: flex;
+  justify-content: space-between;
+}

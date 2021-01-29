@@ -49,3 +49,17 @@
     font-size: 1.4em;
   }
 }
+
+.iconButton {
+  font-size: x-large;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: inherit;
+  cursor: pointer;
+  border: 2px solid black;
+}

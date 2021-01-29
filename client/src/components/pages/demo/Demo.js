@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Button } from "components/reusable/button/Button";
+import { Button, IconButton } from "components/reusable/button/Button";
 import { useDemo } from "./useDemo";
 import { Track } from "./track/Track";
 import { FaPlay, FaPause } from "react-icons/fa";
@@ -11,15 +11,18 @@ import Axios from "axios";
 import { Popup } from "components/reusable/popup/Popup";
 import { AudioScrubber } from "components/pages/demo/Scrubber"
 import * as Tone from "tone";
+import { MdPersonAdd } from "react-icons/md";
+import { ContributorSearch } from "components/userSearch/ContributorSearch";
 
 export default function Demo({ location }) {
   Tone.start();
   const [showNewTrack, setShowNewTrack] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const { demo, error, demoLoading, tracks, tracksLoading, setTracks, setError, lengthState: [trackLengths, setTrackLengths], demoLength } = useDemo(
+  const { demo, error, demoLoading, tracks, tracksLoading, setTracks, setDemo, setError, lengthState: [trackLengths, setTrackLengths], demoLength } = useDemo(
     location.state
   );
   const [playing, setPlaying] = useState(false);
+  const [ showSearch, setShowSearch ] = useState(false);
 
   //Controls play/pause
   useEffect(() => {
@@ -33,6 +36,11 @@ export default function Demo({ location }) {
     }
   }, [currentTime, demoLength]);
 
+
+  const onAddContributor = (updatedDemo) => {
+    setDemo(updatedDemo);
+  }
+
   if (demoLoading) return <span className="center">Loading Demo... 🎸</span>;
   if (!demo) return <div className="center">No Demo Found</div>;
   
@@ -44,6 +52,10 @@ export default function Demo({ location }) {
         <Button onClick={() => setShowNewTrack(true)}>New Track +</Button>
       </div>
 
+      <div className="center">
+        <IconButton component={MdPersonAdd} onClick={() => setShowSearch(show => !show)} style={{marginTop: "10px"}} />
+      </div>
+        
       <hr style={{ margin: "15px 0px" }} />
 
       {tracksLoading ? (
@@ -83,6 +95,8 @@ export default function Demo({ location }) {
           <NewTrack demoId={demo._id} setTracks={setTracks} setShowNewTrack={setShowNewTrack} />
         </Popup>
       )}
+
+      {showSearch && <ContributorSearch demo={demo} onAddContributor={onAddContributor} onExit={() => setShowSearch(false)} />}
     </div>
   );
 }
@@ -112,7 +126,7 @@ export const NewTrack = ({ demoId, setTracks, setShowNewTrack }) => {
 
   return (
     <Form onSubmit={onSubmit}>
-      <FormInput name="newTrackTitle" label="Track Title" onChange={setTrackTitle} autoFocus />
+      <FormInput name="newTrackTitle" label="Track Title" onChange={e => setTrackTitle(e.target.value)} autoFocus />
 
       <div className="center">
         <Button type="submit">Create New Track</Button>

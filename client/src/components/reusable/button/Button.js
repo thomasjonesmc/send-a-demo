@@ -16,3 +16,11 @@ export const RedButton = ({ ...props }) => {
 export const GreenButton = ({ ...props }) => {
   return <Button className="greenBtn" {...props} />;
 };
+
+export const IconButton = ({ component: Component, ...props}) => {
+  return (
+    <button type="button" className="iconButton" {...props}>
+      <Component />
+    </button>
+  )
+}

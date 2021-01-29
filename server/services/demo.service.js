@@ -1,7 +1,9 @@
 const Demo = require("../models/demoModel");
 const Track = require("../models/trackModel");
+const User = require("../models/userModel");
 const { ObjectId } = require('mongoose').Types;
 const s3 = require("../services/s3.service");
+const error = require("../util/error");
 
 // get demos where the user is the creator or in the list of contributors
 const getPersonalUserDemos = (userId) => {
@@ -23,11 +25,20 @@ const getPublicUserDemos = (userId) => {
     })
 }
 
-const getDemoById = (demoId) => {
-    return Demo.findById(demoId).populate({
-        path: "tracks",
-        model: Track,
-    });
+const getDemoById = async (demoId) => {
+    
+    const res = await Demo.findById(demoId)
+        .populate({ path: "tracks", model: Track })
+        .populate({ path: "creatorId", model: User, select: '-__v -password'});
+
+    if (!res) return res;
+
+    const { creatorId: creator, ...demo } = res.toObject();
+
+    return {
+        ...demo,
+        creator
+    };    
 }
 
 const createDemo = (creatorId, title) => {
@@ -85,6 +96,27 @@ const deleteTrackAudio = async (demoId, trackId) => {
     return { ...changedTrack.toObject(), trackSignedURL: null };
 }
 
+const addUserToDemo = async (demoId, userId) => {
+
+    const pushDemo = await Demo.findOneAndUpdate(
+        // add the user to the demo with the demoId if the user is not already in the array of contributors and not the creator
+        { _id: demoId, creatorId: { $ne: userId }, contributors: { $ne: userId } },
+        { $push: { contributors: userId } },
+        { new: true }
+    )
+    .populate({ path: "tracks", model: Track })
+    .populate({ path: "creatorId", model: User, select: '-__v -password'});
+
+    if (!pushDemo) { error("Couldn't add user to demo"); }
+
+    const { creatorId: creator, ...demo } = pushDemo.toObject();
+
+    return {
+        ...demo,
+        creator
+    }; 
+}
+
 // a helper function that gets demos, lets us pass in a custom mongo $match to filter
 const getDemos = (match) => {
 
@@ -113,19 +145,9 @@ const getDemos = (match) => {
                 as: "tracks"
             }
         }, 
-        // converts all user ids in the "contributors" array to user objects, also overwrites existing users array
-        {
-            $lookup: {
-                from: "users",
-                localField: "contributors",
-                foreignField: "_id",
-                as: "contributors"
-            }
-        },
         // ignore the passwords and the creatorId since the creatorId gets stored in the creator object
         {
             $project: {
-                "contributors.password": 0,
                 "creator.password": 0,
                 "creatorId": 0
             }
@@ -142,5 +164,6 @@ module.exports = {
     updateTrackUrl,
     deleteDemoById,
     deleteTrack,
-    deleteTrackAudio
+    deleteTrackAudio,
+    addUserToDemo
 }

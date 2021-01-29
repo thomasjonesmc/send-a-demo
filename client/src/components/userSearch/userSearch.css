@@ -1,0 +1,10 @@
+.userSearchListItem,
+.userSearchLoading {
+    padding: 15px;
+    list-style-type: none;
+}
+
+.userSearchListItem:hover {
+    box-shadow: 0px 0px 5px 0px lightgray;
+    cursor: pointer;
+}

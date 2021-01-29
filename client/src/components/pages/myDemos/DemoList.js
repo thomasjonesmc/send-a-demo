@@ -1,18 +1,8 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
-import "./demoList.css";
+import { DemoItem } from "./DemoItem";
+import './myDemos.css';
 
-const DemoList = (props) => {
-
-  const { demos } = props;
-  const history = useHistory();
-
-  const demoClick = (demo) => {
-    history.push({
-      pathname: `/demos/${demo._id}`,
-      state: { demo }
-    })
-  }
+const DemoList = ({demos, setDemos}) => {
 
   if (!demos || demos.length === 0) {
     return (
@@ -25,18 +15,9 @@ const DemoList = (props) => {
 
   return (
     <>
-      {demos.map((demo) => (
-        <div key={demo._id} className="demo" onClick={() => demoClick(demo)}>
-          <h3 className="demoTitle">{demo.title}</h3>
-          <DemoText label="author" value={demo.creator.displayName} />
-          <DemoText label="created" value={new Date(demo.createdOn).toLocaleDateString()} />
-          <DemoText label="last modified" value={new Date(demo.modifiedOn).toLocaleDateString()} />
-        </div>  
-      ))}
+      {demos.map((demo) => <DemoItem key={demo._id} demo={demo} setDemos={setDemos} />)}
     </>
   );
 };
-
-const DemoText = ({label, value}) => <p className="demoText">{label}: <strong>{value}</strong></p>
   
 export default DemoList;

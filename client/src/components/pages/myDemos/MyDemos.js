@@ -3,13 +3,13 @@ import UserContext from "../../../context/UserContext";
 import { Button } from "components/reusable/button/Button";
 import DemoList from "components/pages/myDemos/DemoList";
 import { useMyDemos } from "./useMyDemos";
-import "components/pages/myDemos/mydemos.css";
+import "components/pages/myDemos/myDemos.css";
 import ErrorNotice from "components/reusable/error/Error";
 
 export default function MyDemos() {
   const { user } = useContext(UserContext);
 
-  const { demos, loading, error, setError } = useMyDemos(); 
+  const { demos, setDemos, loading, error, setError } = useMyDemos(); 
 
   return (
     <div id="myDemosContainer">
@@ -28,7 +28,7 @@ export default function MyDemos() {
     
       {loading ? 
         <span className="center">Fetching demos... 🎸</span> : 
-        <DemoList demos={demos} /> 
+        <DemoList demos={demos} setDemos={setDemos} /> 
       }
     </div>
   );

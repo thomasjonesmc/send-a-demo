@@ -17,7 +17,6 @@ import "style.css";
 export default function App() { 
 
   const { user, loading } = useContext(UserContext);
-  console.log(user);
 
   if (loading) return null;
   return (

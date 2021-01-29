@@ -16,7 +16,7 @@ export default function Demo({ location }) {
   Tone.start();
   const [showNewTrack, setShowNewTrack] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const { demo, error, demoLoading, tracks, tracksLoading, setTracks, setError, demoLength } = useDemo(
+  const { demo, error, demoLoading, tracks, tracksLoading, setTracks, setError, lengthState: [trackLengths, setTrackLengths], demoLength } = useDemo(
     location.state
   );
   const [playing, setPlaying] = useState(false);
@@ -67,6 +67,7 @@ export default function Demo({ location }) {
               track={t}
               demo={demo}
               demoLength={demoLength}
+              lengthState={[trackLengths, setTrackLengths]}
               playingState={[playing, setPlaying]}
               timeState={[currentTime, setCurrentTime]}
               tracksState={[tracks, setTracks]}

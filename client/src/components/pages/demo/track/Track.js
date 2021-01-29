@@ -15,7 +15,8 @@ export const Track = ({
   timeState:[currentTime, setCurrentTime],
   tracksState,
   demo,
-  demoLength
+  demoLength,
+  lengthState: [trackLengths, setTrackLengths]
 }) => {
   const { demoId } = useParams();
   const token = localStorage.getItem("auth-token");
@@ -47,6 +48,7 @@ export const Track = ({
             throw new Error(res.data.error);
           }
           setTracks(tracks.filter((t) => t._id !== track._id));
+          setTrackLengths(trackLengths.filter(length => length.id !== track._id));
         })
         .catch((err) => setError(err.message));
     }
@@ -58,7 +60,6 @@ export const Track = ({
         if (track.trackSignedURL) {
           // delete from aws!!!
           const { data: changedTrack } = await Axios.delete(`/demos/${demoId}/tracks/${track._id}/audio`);
-
           setTracks(
             tracks.map((t) => {
               if (t._id === track._id) {
@@ -78,6 +79,8 @@ export const Track = ({
           );
         }
 
+        //Remove selected track from trackLengths
+        setTrackLengths(trackLengths.filter(length => length.id !== track._id));
         setHasAudio(false);
         setFile(null);
       } catch (err) {
@@ -141,7 +144,7 @@ export const Track = ({
       setPlaying(false);
       let localFile;
       let fileLocation;
-      recorder
+      await recorder
         .stop()
         .getMp3()
         .then(([buffer, blob]) => {
@@ -149,7 +152,6 @@ export const Track = ({
           type: blob.type,
           lastModified: Date.now(),
         });
-        console.log(localFile);
         setFile(localFile);
         fileLocation = URL.createObjectURL(localFile);
       })
@@ -160,11 +162,17 @@ export const Track = ({
             if (t._id === track._id) {
               const player = await new Promise((resolve, reject) => {
                 const p = new Tone.Player(fileLocation, () => {
-                  if (p) resolve(p.sync().start(0).toDestination());
+                  if (p) {
+                    resolve(p.sync().start(0).toDestination());
+                  }
                   else reject(new Error(`Could not create track from file ${localFile.name}`));
                 });
               });
-
+              //Adds the duration of the recorded buffer to trackLengths.
+              // When we add start time for tracks we will have to add that
+              // to the player.buffer.duration to get the length
+              if (trackLengths) setTrackLengths([...trackLengths, {id: track._id, length: player.buffer.duration}]);
+              else setTrackLengths([{id: track._id, length: player.buffer.duration}]);
               player.volume.value = volume;
               return { ...track, player };
             }
@@ -173,7 +181,6 @@ export const Track = ({
         )
       );
 
-      recorder.clear();
       setHasAudio(true);
     } catch (err) {
       setError(err.message);

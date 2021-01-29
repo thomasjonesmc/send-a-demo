@@ -9,9 +9,10 @@ export const useDemo = (locationState) => {
   const [demo, setDemo] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [error, setError] = useState(null);
-  const [demoLength, setDemoLength] = useState(null);
+  const [trackLengths, setTrackLengths] = useState(null);
   const [demoLoading, setDemoLoading] = useState(true);
   const [tracksLoading, setTracksLoading] = useState(true);
+  const [demoLength, setDemoLength] = useState(null);
   const { demoId } = useParams();
 
 
@@ -52,7 +53,7 @@ export const useDemo = (locationState) => {
         
         setDemo(currentDemo);
         setDemoLoading(false);
-        let trackLengths = [];
+        let initTrackLengths = [];
         const currentTracks = await Promise.all(
           currentDemo.tracks.map(async (track) => {
             let player = null;
@@ -60,17 +61,18 @@ export const useDemo = (locationState) => {
               player = await new Promise((resolve, reject) => {
                 const p = new Tone.Player(track.trackSignedURL, () => {
                   if (p) {
-                    trackLengths.push(p.buffer.duration);
+                    if (!track.trackStart) track.trackStart = 0;
+                    initTrackLengths.push({id: track._id, length: p.buffer.duration + track.trackStart});
                     resolve(p.sync().start(0).toDestination());
                   } else reject(new Error(`Could not create track from track signed url ${track.trackSignedURL}`));
                 });
               });
             }
-
+            setTrackLengths([...initTrackLengths]);
             return { ...track, player };
           })
         );
-        setDemoLength(Math.max(...trackLengths));
+
         setTracks(currentTracks);
         setTracksLoading(false);
         setError(null);
@@ -84,6 +86,22 @@ export const useDemo = (locationState) => {
     })();
   }, [locationState, demoId]);
 
+  //sets demo length when trackLengths is modified
+  useEffect(() => {
+    let longestTrack = {id: null, length: 0};
+    if (trackLengths) {
+      setDemoLength(() => {
+        trackLengths.forEach(t => {
+          if (t.length > longestTrack.length) {
+            longestTrack = {id: t.id, length: t.length}
+          }
+        })
+        return longestTrack.length;
+      });
+      //Stopping the Transport after setting demoLength, the demo would not play if I didn't do this
+      Tone.Transport.stop();
+    }
+  }, [trackLengths, setDemoLength])
 
   return {
     demo,
@@ -93,6 +111,7 @@ export const useDemo = (locationState) => {
     demoLoading,
     tracksLoading,
     setTracks,
-    demoLength,
+    lengthState: [trackLengths, setTrackLengths],
+    demoLength
   };
 };

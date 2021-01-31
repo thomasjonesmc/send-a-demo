@@ -41,12 +41,12 @@ const getDemoById = async (demoId) => {
     };    
 }
 
-const createDemo = (creatorId, title) => {
+const createDemo = (creatorId, title, isPublic) => {
     if (!title || !creatorId) {
         error('Demo must have a title and creator');
     }
 
-    return new Demo({ creatorId, title }).save();
+    return new Demo({ creatorId, title, isPublic }).save();
 }
 
 const addTrackToDemo = async (demoId, trackTitle, trackAuthor) => {

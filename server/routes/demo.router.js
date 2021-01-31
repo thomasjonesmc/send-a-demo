@@ -14,8 +14,8 @@ router.get("/:demoId", (req, res) => {
 });
 
 router.post("/new-demo", (req, res) => {
-    let { creatorId, title } = req.body;
-    respond(res, () => serv.createDemo(creatorId, title));
+    let { creatorId, title, isPublic } = req.body;
+    respond(res, () => serv.createDemo(creatorId, title, isPublic));
 });
 
 router.post("/:demoId/new-track", (req, res) => {

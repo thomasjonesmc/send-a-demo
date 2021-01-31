@@ -4,13 +4,14 @@ import { useHistory } from "react-router-dom";
 import UserContext from "context/UserContext";
 import ErrorNotice from "components/reusable/error/Error";
 import { Button } from "components/reusable/button/Button";
-import { Form, FormInput } from "components/reusable/form/Form";
+import { Form, FormCheckBox, FormInput } from "components/reusable/form/Form";
 
 export default function CreateDemo() {
   const { user } = useContext(UserContext);
   const history = useHistory();
 
   const [demoTitle, setDemoTitle] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState(null);
 
   const submit = async (e) => {
@@ -20,7 +21,8 @@ export default function CreateDemo() {
     try {
       const newDemoRes = await Axios.post("/demos/new-demo", {
         creatorId: user._id,
-        title: demoTitle
+        title: demoTitle,
+        isPublic
       });
       
       history.push(`/demos/${newDemoRes.data._id}`);
@@ -30,8 +32,9 @@ export default function CreateDemo() {
   };
 
   return (
-    <Form title="New Demo Title" onSubmit={submit}>
-      <FormInput name="demoTitle" onChange={e => setDemoTitle(e.target.value)} autoFocus />
+    <Form title="New Demo" onSubmit={submit}>
+      <FormInput name="demoTitle" label="Title" onChange={e => setDemoTitle(e.target.value)} autoFocus />
+      <FormCheckBox name="isPublic" label="Public" checked={isPublic} onChange={e => setIsPublic(p => !p)} />
       <div className="center">
         <Button type="submit">Create New Demo</Button>
       </div>

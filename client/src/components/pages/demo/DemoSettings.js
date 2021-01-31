@@ -52,7 +52,7 @@ export const DemoSettings = ({demo, onExit, onUpdateDemo}) => {
             {notice && <div>{notice}</div>}
             <Form onSubmit={submit}>
                 <FormInput name="title" label="Demo Title" value={title} onChange={e => setTitle(e.target.value)} autoFocus />
-                <FormCheckBox type="checkbox" name="isPublic" label="Public" checked={isPublic} onChange={e => setIsPublic(p => !p)} />
+                <FormCheckBox name="isPublic" label="Public" checked={isPublic} onChange={e => setIsPublic(p => !p)} />
             
                 <div className="center">
                     <Button type="submit">Submit Changes</Button>

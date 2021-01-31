@@ -1,11 +1,11 @@
 import { IconButton } from 'components/reusable/button/Button';
-import { Popup } from 'components/reusable/popup/Popup';
 import { ContributorSearch } from 'components/userSearch/ContributorSearch';
 import UserContext from 'context/UserContext';
 import React, { useContext, useState } from 'react';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { MdPersonAdd, MdSettings } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
+import { DemoSettings } from '../demo/DemoSettings';
 
 export const DemoItem = ({demo, setDemos}) => {
 
@@ -47,7 +47,7 @@ export const DemoItem = ({demo, setDemos}) => {
             </div>}
 
             {showSearch && <ContributorSearch demo={demo} onAddContributor={onAddContributor} onExit={() => setShowSearch(false)} />}
-            {showSettings && <Popup title={demo.title} onExit={() => setShowSettings(false)}></Popup>}
+            {showSettings && <DemoSettings demo={demo} onExit={() => setShowSettings(false)} />}
         </div>
     )
 }

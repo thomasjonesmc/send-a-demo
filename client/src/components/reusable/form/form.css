@@ -11,3 +11,13 @@
     flex-direction: column;
     justify-content: center;
 }
+
+.formCheckBoxContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.formCheckBox{
+    margin-bottom: 1.5rem;
+}

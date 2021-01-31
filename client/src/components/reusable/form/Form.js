@@ -1,5 +1,5 @@
 import React from 'react';
-import UnderlinedTextInput from '../inputs/Inputs';
+import { UnderlinedTextInput } from '../inputs/Inputs';
 import './form.css';
 
 export const Form = ({onSubmit, title, ...rest}) => {
@@ -27,4 +27,11 @@ export const FormInput = ({name, label, ...rest}) => (
             {...rest}
         />
     </>    
+)
+
+export const FormCheckBox = ({name, label, ...rest}) => (
+    <div className="formCheckBoxContainer">
+        <label htmlFor={name}>{label}</label>
+        <input className="formCheckBox" type="checkbox" {...rest} />
+    </div>
 )

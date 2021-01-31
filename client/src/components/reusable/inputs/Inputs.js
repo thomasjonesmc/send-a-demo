@@ -2,8 +2,7 @@ import React from "react";
 import "./inputs.css";
 
 export const UnderlinedTextInput = (props) => {
-
-
+  
   return (
     <div>
       <input
@@ -14,5 +13,3 @@ export const UnderlinedTextInput = (props) => {
     </div>
   );
 };
-
-export default UnderlinedTextInput;

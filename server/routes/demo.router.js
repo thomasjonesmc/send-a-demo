@@ -29,6 +29,11 @@ router.post("/add-signed-url", auth, (req, res) => {
     respond(res, () => serv.updateTrackUrl(trackId, url));
 });
 
+router.post("/modify-track-start-time", (req, res) => {
+    const { trackId, startTime } = req.body;
+    respond(res, () => serv.modifyTrackStartTime(trackId, startTime));
+});
+
 router.put("/:demoId/addContributor/:userId", (req, res) => {
     const { demoId, userId } = req.params;
     respond(res, () => serv.addUserToDemo(demoId, userId));

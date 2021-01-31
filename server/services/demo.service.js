@@ -71,6 +71,11 @@ const updateTrackUrl = (trackId, url) => {
     return Track.findByIdAndUpdate(trackId, { trackSignedURL: url });
 }
 
+const modifyTrackStartTime = (trackId, startTime) => {
+    console.log(trackId, startTime);
+    return Track.findByIdAndUpdate(trackId, { trackStart: startTime });
+}
+
 const deleteDemoById = (demoId) => {
     return Demo.findByIdAndDelete(demoId);
 }
@@ -162,6 +167,7 @@ module.exports = {
     createDemo,
     addTrackToDemo,
     updateTrackUrl,
+    modifyTrackStartTime,
     deleteDemoById,
     deleteTrack,
     deleteTrackAudio,

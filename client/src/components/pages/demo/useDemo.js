@@ -63,7 +63,7 @@ export const useDemo = (locationState) => {
                   if (p) {
                     if (!track.trackStart) track.trackStart = 0;
                     initTrackLengths.push({id: track._id, length: p.buffer.duration + track.trackStart});
-                    resolve(p.sync().start(0).toDestination());
+                    resolve(p.sync().start(track.trackStart).toDestination());
                   } else reject(new Error(`Could not create track from track signed url ${track.trackSignedURL}`));
                 });
               });

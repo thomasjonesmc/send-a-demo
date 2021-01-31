@@ -72,7 +72,6 @@ const updateTrackUrl = (trackId, url) => {
 }
 
 const modifyTrackStartTime = (trackId, startTime) => {
-    console.log(trackId, startTime);
     return Track.findByIdAndUpdate(trackId, { trackStart: startTime });
 }
 
@@ -96,9 +95,12 @@ const deleteTrack = async (demoId, trackId) => {
 
 const deleteTrackAudio = async (demoId, trackId) => {
     await s3.deleteFile(`${demoId}/${trackId}`);
-    const changedTrack = await updateTrackUrl(trackId, null);
+    const changedTrack = await Track.findByIdAndUpdate(trackId, {
+        trackSignedURL: null,
+        trackStart: null
+    });
 
-    return { ...changedTrack.toObject(), trackSignedURL: null };
+    return { ...changedTrack.toObject(), trackSignedURL: null, trackStart: null };
 }
 
 const addUserToDemo = async (demoId, userId) => {

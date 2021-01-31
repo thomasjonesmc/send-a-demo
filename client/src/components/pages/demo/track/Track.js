@@ -61,7 +61,6 @@ export const Track = ({
         if (track.trackSignedURL) {
           // delete from aws!!!
           const { data: changedTrack } = await Axios.delete(`/demos/${demoId}/tracks/${track._id}/audio`);
-          await Axios.post("/demos/modify-track-start-time", {trackId: track._id, startTime: null});
           setTracks(
             tracks.map((t) => {
               if (t._id === track._id) {

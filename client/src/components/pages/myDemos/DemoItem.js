@@ -21,7 +21,7 @@ export const DemoItem = ({demo, setDemos}) => {
         });
     }
 
-    const onAddContributor = (updatedDemo) => {
+    const updateDemos = (updatedDemo) => {
         setDemos(demos => demos.map(d => {
             if (d._id === demo._id) {
                 return updatedDemo;
@@ -46,8 +46,8 @@ export const DemoItem = ({demo, setDemos}) => {
                 <IconButton component={MdSettings} onClick={() => setShowSettings(show => !show)} style={{marginTop: "10px"}}/>
             </div>}
 
-            {showSearch && <ContributorSearch demo={demo} onAddContributor={onAddContributor} onExit={() => setShowSearch(false)} />}
-            {showSettings && <DemoSettings demo={demo} onExit={() => setShowSettings(false)} />}
+            {showSearch && <ContributorSearch demo={demo} onAddContributor={updateDemos} onExit={() => setShowSearch(false)} />}
+            {showSettings && <DemoSettings demo={demo} onUpdateDemo={updateDemos} onExit={() => setShowSettings(false)} />}
         </div>
     )
 }

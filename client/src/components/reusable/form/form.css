@@ -13,11 +13,9 @@
 }
 
 .formCheckBoxContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-bottom: 1.5rem;
 }
 
-.formCheckBox{
-    margin-bottom: 1.5rem;
+.formCheckBoxContainer input {
+    margin-left: 5px;
 }

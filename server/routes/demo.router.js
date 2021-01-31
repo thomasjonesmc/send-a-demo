@@ -34,6 +34,13 @@ router.put("/:demoId/addContributor/:userId", (req, res) => {
     respond(res, () => serv.addUserToDemo(demoId, userId));
 });
 
+router.put("/:demoId/update", (req, res) => {
+    const { demoId } = req.params;
+    const { title, isPublic } = req.body;
+
+    respond(res, () => serv.updateDemo(demoId, title, isPublic));
+});
+
 router.delete("/:demoId", (req, res) => {
     const { demoId } = req.params;
     respond(res, () => serv.deleteDemoById(demoId));

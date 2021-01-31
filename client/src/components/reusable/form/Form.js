@@ -31,7 +31,9 @@ export const FormInput = ({name, label, ...rest}) => (
 
 export const FormCheckBox = ({name, label, ...rest}) => (
     <div className="formCheckBoxContainer">
-        <label htmlFor={name}>{label}</label>
-        <input className="formCheckBox" type="checkbox" {...rest} />
+        <label htmlFor={name}>
+            {label}
+        </label>
+        <input type="checkbox" id={name} {...rest} />
     </div>
 )

@@ -23,6 +23,7 @@ export const Track = ({
 
   const [error, setError] = useState(null);
   const [hasAudio, setHasAudio] = useState(!!track.trackSignedURL);
+  const [startTime, setStartTime] = useState(null);
   const [recording, setRecording] = useState(false);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -105,7 +106,8 @@ export const Track = ({
       });
 
       await Axios.post(`/demos/add-signed-url`, { trackId: track._id, url }, { headers: { "x-auth-token": token } });
-
+      // sending request to update track start time on upload
+      await Axios.post("/demos/modify-track-start-time", {trackId: track._id, startTime: startTime});
       setTracks((tracks) =>
         tracks.map((t) => {
           if (t._id === track._id) {
@@ -124,14 +126,16 @@ export const Track = ({
 
   const startRecording = () => {
     try {
+      // Setting start time of track and
+      setStartTime(currentTime);
+      recorder.start();
       //Only Firefox has this property on AudioContext, so it will only be in sync for Firefox
       //This is a temporary fix, hopefully we find a way to sync on all browsers soon
-      if (Tone.Transport.context._context._nativeAudioContext.outputLatency + .02) {
-        Tone.Transport.seconds = - (Tone.Transport.context._context._nativeAudioContext.outputLatency + .02);
+      if (Tone.Transport.context._context._nativeAudioContext.outputLatency) {
+        Tone.Transport.seconds = currentTime - (recorder.context.outputLatency * 2);
       }
       setRecording(true);
-      setPlaying(true);
-      recorder.start();
+      setPlaying(true);     
     } catch (err) {
       setError(err.message);
     }
@@ -162,7 +166,7 @@ export const Track = ({
               const player = await new Promise((resolve, reject) => {
                 const p = new Tone.Player(fileLocation, () => {
                   if (p) {
-                    resolve(p.sync().start(0).toDestination());
+                    resolve(p.sync().start(startTime).toDestination());
                   }
                   else reject(new Error(`Could not create track from file ${localFile.name}`));
                 });
@@ -170,10 +174,10 @@ export const Track = ({
               //Adds the duration of the recorded buffer to trackLengths.
               // When we add start time for tracks we will have to add that
               // to the player.buffer.duration to get the length
-              if (trackLengths) setTrackLengths([...trackLengths, {id: track._id, length: player.buffer.duration}]);
-              else setTrackLengths([{id: track._id, length: player.buffer.duration}]);
+              if (trackLengths) setTrackLengths([...trackLengths, {id: track._id, length: startTime + player.buffer.duration}]);
+              else setTrackLengths([{id: track._id, length: startTime + player.buffer.duration}]);
               player.volume.value = volume;
-              return { ...track, player };
+              return { ...track, player, trackStart: startTime };
             }
             return t;
           })

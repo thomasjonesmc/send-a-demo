@@ -71,6 +71,10 @@ const updateTrackUrl = (trackId, url) => {
     return Track.findByIdAndUpdate(trackId, { trackSignedURL: url });
 }
 
+const modifyTrackStartTime = (trackId, startTime) => {
+    return Track.findByIdAndUpdate(trackId, { trackStart: startTime });
+}
+
 const deleteDemoById = (demoId) => {
     return Demo.findByIdAndDelete(demoId);
 }
@@ -91,9 +95,12 @@ const deleteTrack = async (demoId, trackId) => {
 
 const deleteTrackAudio = async (demoId, trackId) => {
     await s3.deleteFile(`${demoId}/${trackId}`);
-    const changedTrack = await updateTrackUrl(trackId, null);
+    const changedTrack = await Track.findByIdAndUpdate(trackId, {
+        trackSignedURL: null,
+        trackStart: null
+    });
 
-    return { ...changedTrack.toObject(), trackSignedURL: null };
+    return { ...changedTrack.toObject(), trackSignedURL: null, trackStart: null };
 }
 
 const addUserToDemo = async (demoId, userId) => {
@@ -162,6 +169,7 @@ module.exports = {
     createDemo,
     addTrackToDemo,
     updateTrackUrl,
+    modifyTrackStartTime,
     deleteDemoById,
     deleteTrack,
     deleteTrackAudio,

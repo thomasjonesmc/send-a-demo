@@ -1,9 +1,10 @@
 import { IconButton } from 'components/reusable/button/Button';
+import { Popup } from 'components/reusable/popup/Popup';
 import { ContributorSearch } from 'components/userSearch/ContributorSearch';
 import UserContext from 'context/UserContext';
 import React, { useContext, useState } from 'react';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import { MdPersonAdd } from 'react-icons/md';
+import { MdPersonAdd, MdSettings } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
 
 export const DemoItem = ({demo, setDemos}) => {
@@ -11,6 +12,7 @@ export const DemoItem = ({demo, setDemos}) => {
     const history = useHistory();
     const { user } = useContext(UserContext);
     const [ showSearch, setShowSearch ] = useState(false);
+    const [ showSettings, setShowSettings ] = useState(false);
     
     const demoClick = () => {
         history.push({
@@ -41,9 +43,11 @@ export const DemoItem = ({demo, setDemos}) => {
             {user._id === demo.creator._id && <div className="demoItemControls">
                 <IconButton component={FaRegTrashAlt} />
                 <IconButton component={MdPersonAdd} onClick={() => setShowSearch(show => !show)} style={{marginTop: "10px"}} />
+                <IconButton component={MdSettings} onClick={() => setShowSettings(show => !show)} style={{marginTop: "10px"}}/>
             </div>}
 
             {showSearch && <ContributorSearch demo={demo} onAddContributor={onAddContributor} onExit={() => setShowSearch(false)} />}
+            {showSettings && <Popup title={demo.title} onExit={() => setShowSettings(false)}></Popup>}
         </div>
     )
 }

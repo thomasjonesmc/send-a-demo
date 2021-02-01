@@ -41,12 +41,12 @@ const getDemoById = async (demoId) => {
     };    
 }
 
-const createDemo = (creatorId, title) => {
+const createDemo = (creatorId, title, isPublic) => {
     if (!title || !creatorId) {
         error('Demo must have a title and creator');
     }
 
-    return new Demo({ creatorId, title }).save();
+    return new Demo({ creatorId, title, isPublic }).save();
 }
 
 const addTrackToDemo = async (demoId, trackTitle, trackAuthor) => {
@@ -118,10 +118,23 @@ const addUserToDemo = async (demoId, userId) => {
 
     const { creatorId: creator, ...demo } = pushDemo.toObject();
 
-    return {
-        ...demo,
-        creator
-    }; 
+    return { ...demo, creator }; 
+}
+
+// updates a demos title and isPublic status
+const updateDemo = async (demoId, title, isPublic) => {
+
+    const updatedDemo = await Demo.findByIdAndUpdate(demoId, {
+        title, isPublic
+    }, { new: true })
+    .populate({ path: "tracks", model: Track })
+    .populate({ path: "creatorId", model: User, select: '-__v -password'});
+
+    if (!updatedDemo) { error("Couldn't update demo"); }
+
+    const { creatorId: creator, ...demo } = updatedDemo.toObject();
+
+    return { ...demo, creator };
 }
 
 // a helper function that gets demos, lets us pass in a custom mongo $match to filter
@@ -173,5 +186,6 @@ module.exports = {
     deleteDemoById,
     deleteTrack,
     deleteTrackAudio,
-    addUserToDemo
+    addUserToDemo,
+    updateDemo
 }

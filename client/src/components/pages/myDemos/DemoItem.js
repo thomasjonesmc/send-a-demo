@@ -3,14 +3,16 @@ import { ContributorSearch } from 'components/userSearch/ContributorSearch';
 import UserContext from 'context/UserContext';
 import React, { useContext, useState } from 'react';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import { MdPersonAdd } from 'react-icons/md';
+import { MdPersonAdd, MdSettings } from 'react-icons/md';
 import { useHistory } from 'react-router-dom';
+import { DemoSettings } from '../demo/DemoSettings';
 
 export const DemoItem = ({demo, setDemos}) => {
 
     const history = useHistory();
     const { user } = useContext(UserContext);
     const [ showSearch, setShowSearch ] = useState(false);
+    const [ showSettings, setShowSettings ] = useState(false);
     
     const demoClick = () => {
         history.push({
@@ -19,7 +21,7 @@ export const DemoItem = ({demo, setDemos}) => {
         });
     }
 
-    const onAddContributor = (updatedDemo) => {
+    const updateDemos = (updatedDemo) => {
         setDemos(demos => demos.map(d => {
             if (d._id === demo._id) {
                 return updatedDemo;
@@ -41,9 +43,11 @@ export const DemoItem = ({demo, setDemos}) => {
             {user._id === demo.creator._id && <div className="demoItemControls">
                 <IconButton component={FaRegTrashAlt} />
                 <IconButton component={MdPersonAdd} onClick={() => setShowSearch(show => !show)} style={{marginTop: "10px"}} />
+                <IconButton component={MdSettings} onClick={() => setShowSettings(show => !show)} style={{marginTop: "10px"}}/>
             </div>}
 
-            {showSearch && <ContributorSearch demo={demo} onAddContributor={onAddContributor} onExit={() => setShowSearch(false)} />}
+            {showSearch && <ContributorSearch demo={demo} onAddContributor={updateDemos} onExit={() => setShowSearch(false)} />}
+            {showSettings && <DemoSettings demo={demo} onUpdateDemo={updateDemos} onExit={() => setShowSettings(false)} />}
         </div>
     )
 }

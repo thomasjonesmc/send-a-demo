@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Button, IconButton } from "components/reusable/button/Button";
 import { useDemo } from "./useDemo";
 import { Track } from "./track/Track";
-import { FaPlay, FaPause } from "react-icons/fa";
+import { FaPlay, FaPause, FaRegTrashAlt } from "react-icons/fa";
 import "./demo.css";
 import ErrorNotice from "components/reusable/error/Error";
 import { Form, FormInput } from "components/reusable/form/Form";
@@ -11,8 +11,9 @@ import Axios from "axios";
 import { Popup } from "components/reusable/popup/Popup";
 import { AudioScrubber } from "components/pages/demo/Scrubber"
 import * as Tone from "tone";
-import { MdPersonAdd } from "react-icons/md";
+import { MdPersonAdd, MdSettings } from "react-icons/md";
 import { ContributorSearch } from "components/userSearch/ContributorSearch";
+import { DemoSettings } from "./DemoSettings";
 
 export default function Demo({ location }) {
   Tone.start();
@@ -23,6 +24,7 @@ export default function Demo({ location }) {
   );
   const [playing, setPlaying] = useState(false);
   const [ showSearch, setShowSearch ] = useState(false);
+  const [ showSettings, setShowSettings ] = useState(false);
 
   //Controls play/pause
   useEffect(() => {
@@ -52,8 +54,10 @@ export default function Demo({ location }) {
         <Button onClick={() => setShowNewTrack(true)}>New Track +</Button>
       </div>
 
-      <div className="center">
-        <IconButton component={MdPersonAdd} onClick={() => setShowSearch(show => !show)} style={{marginTop: "10px"}} />
+      <div className="demoControlButtonsContainer">
+        <IconButton component={FaRegTrashAlt} />
+        <IconButton component={MdPersonAdd} onClick={() => setShowSearch(show => !show)} />
+        <IconButton component={MdSettings} onClick={() => setShowSettings(show => !show)} />
       </div>
         
       <hr style={{ margin: "15px 0px" }} />
@@ -97,6 +101,8 @@ export default function Demo({ location }) {
       )}
 
       {showSearch && <ContributorSearch demo={demo} onAddContributor={onAddContributor} onExit={() => setShowSearch(false)} />}
+      
+      {showSettings && <DemoSettings demo={demo} onUpdateDemo={updatedDemo => setDemo(updatedDemo)} onExit={() => setShowSettings(false)} />}
     </div>
   );
 }

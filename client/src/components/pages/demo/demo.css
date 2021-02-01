@@ -11,3 +11,13 @@
   text-align: center;
 }
 
+.demoControlButtonsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.demoControlButtonsContainer * {
+  margin: 0px 5px;
+}

@@ -1,4 +1,4 @@
-import UnderlinedTextInput from 'components/reusable/inputs/Inputs';
+import { UnderlinedTextInput } from 'components/reusable/inputs/Inputs';
 import React, { useState } from "react";
 import { useUserSearch } from './useUserSearch';
 import './userSearch.css';

@@ -14,8 +14,8 @@ router.get("/:demoId", (req, res) => {
 });
 
 router.post("/new-demo", (req, res) => {
-    let { creatorId, title } = req.body;
-    respond(res, () => serv.createDemo(creatorId, title));
+    let { creatorId, title, isPublic } = req.body;
+    respond(res, () => serv.createDemo(creatorId, title, isPublic));
 });
 
 router.post("/:demoId/new-track", (req, res) => {
@@ -37,6 +37,13 @@ router.post("/modify-track-start-time", (req, res) => {
 router.put("/:demoId/addContributor/:userId", (req, res) => {
     const { demoId, userId } = req.params;
     respond(res, () => serv.addUserToDemo(demoId, userId));
+});
+
+router.put("/:demoId/update", (req, res) => {
+    const { demoId } = req.params;
+    const { title, isPublic } = req.body;
+
+    respond(res, () => serv.updateDemo(demoId, title, isPublic));
 });
 
 router.delete("/:demoId", (req, res) => {

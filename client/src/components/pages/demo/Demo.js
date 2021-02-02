@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Button, IconButton } from "components/reusable/button/Button";
 import { useDemo } from "./useDemo";
 import { Track } from "./track/Track";
-import { FaPlay, FaPause, FaRegTrashAlt } from "react-icons/fa";
+import { FaPlay, FaPause,FaBackward, FaForward,  FaRegTrashAlt } from "react-icons/fa";
 import "./demo.css";
 import ErrorNotice from "components/reusable/error/Error";
 import { Form, FormInput } from "components/reusable/form/Form";
@@ -35,12 +35,19 @@ export default function Demo({ location }) {
     if (currentTime >= demoLength){
       setPlaying(false);
       Tone.Transport.stop();
+    } else if (currentTime <= -1) {
+      Tone.Transport.seconds = 0;
     }
   }, [currentTime, demoLength]);
 
 
   const onAddContributor = (updatedDemo) => {
     setDemo(updatedDemo);
+  }
+
+  const skipTime = (seconds) => {
+    Tone.Transport.seconds = currentTime + seconds;
+    setCurrentTime(currentTime + seconds);
   }
 
   if (demoLoading) return <span className="center">Loading Demo... 🎸</span>;
@@ -68,8 +75,10 @@ export default function Demo({ location }) {
         <>
           {tracks.length !== 0 ? 
           <>
-            <div className="center">
+            <div className="demoControlButtonsContainer">
+              <Button onClick={() => skipTime(-5)}><FaBackward /></Button>
               <Button onClick={() => setPlaying((p) => !p)}>{playing ? <FaPause /> : <FaPlay />}</Button>
+              <Button onClick={() => skipTime(5)}><FaForward /></Button>
             </div>
             <AudioScrubber
               demoLength={demoLength}

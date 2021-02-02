@@ -37,6 +37,7 @@ export default function Demo({ location }) {
       Tone.Transport.stop();
     } else if (currentTime <= -1) {
       Tone.Transport.seconds = 0;
+      setCurrentTime(0);
     }
   }, [currentTime, demoLength]);
 

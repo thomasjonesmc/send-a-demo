@@ -44,7 +44,7 @@ export const Scrubber = forwardRef(({
   const [playingOnPickup, setPlayingOnPickup] = useState(false);
   const audioTimeChange = (time) => {
     Tone.Transport.seconds = time;
-    setCurrentTime(time);
+    setCurrentTime(parseFloat(time));
   };
 
   useEffect(() => {

@@ -35,9 +35,6 @@ export default function Demo({ location }) {
     if (currentTime >= demoLength){
       setPlaying(false);
       Tone.Transport.stop();
-    } else if (currentTime <= -1) {
-      Tone.Transport.seconds = 0;
-      setCurrentTime(0);
     }
   }, [currentTime, demoLength]);
 
@@ -47,8 +44,16 @@ export default function Demo({ location }) {
   }
 
   const skipTime = (seconds) => {
-    Tone.Transport.seconds = currentTime + seconds;
-    setCurrentTime(currentTime + seconds);
+    if (Tone.Transport.seconds + seconds < 0) {
+      Tone.Transport.seconds = 0;
+      setCurrentTime(0);
+    } else if (Tone.Transport.seconds + seconds > demoLength) {
+      Tone.Transport.seconds = demoLength;
+      setCurrentTime(demoLength);
+    } else {
+      Tone.Transport.seconds = currentTime + seconds;
+      setCurrentTime(currentTime + seconds);
+    }
   }
 
   if (demoLoading) return <span className="center">Loading Demo... 🎸</span>;

@@ -22,14 +22,14 @@ router.get("/", auth, (req, res) => {
     respond(res, () => serv.getUserById(req.user));
 });
 
+router.get("/search", (req, res) => {
+    const { userName } = req.query;
+    respond(res, () => serv.searchUsers(userName));
+});
+
 router.get("/:userName", (req, res) => {
     const { userName } = req.params;
     respond(res, () => serv.getUserByUserName(userName));
-});
-
-router.get("/search/:userName", (req, res) => {
-    const { userName } = req.params;
-    respond(res, () => serv.searchUsers(userName));
 });
 
 router.get("/:userName/followers", (req, res) => {

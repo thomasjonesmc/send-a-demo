@@ -15,9 +15,7 @@ export const useUserSearch = (search, filter) => {
 
         clearTimeout(timeoutRef.current);
         
-        // a single trailing dot gets removed from the API endpoint, resulting in a GET request to `/users/search/` which is the wrong endpoint
-        // two trailing dots goes removes the `/search` part of the route and makes a GET request to `/users/` which is the wrong endpoint
-        if (!search || search === '.' || search === '..') {
+        if (!search) {
             setLoading(false);
             return;
         }
@@ -26,7 +24,9 @@ export const useUserSearch = (search, filter) => {
         
         timeoutRef.current = setTimeout(() => {
             // encode the URI component so special URL characters like `#` or `%` don't affect the URL
-            Axios.get(`/users/search/${encodeURIComponent(search)}/`)
+            Axios.get(`/users/search`, {
+                params: { userName: search }
+            })
             .then(res => {
                 
                 // if a filter function was passed in, apply it to the data

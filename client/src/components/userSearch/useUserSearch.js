@@ -23,7 +23,7 @@ export const useUserSearch = (search, filter) => {
         setLoading(true);
         
         timeoutRef.current = setTimeout(() => {
-            // encode the URI component so special URL characters like `#` or `%` don't affect the URL
+            
             Axios.get(`/users/search`, {
                 params: { userName: search }
             })

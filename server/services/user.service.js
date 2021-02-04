@@ -140,10 +140,13 @@ const userDoesFollow = async (followerId, followeeId) => {
     return user.length !== 0; 
 }
 
-const searchUsers = async (search) => {
+const searchUsers = async (userName) => {
+
+    // escapes all special characters in a regex string
+    userName = userName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
     const users = await User.find(
-        { userName: { $regex: search, $options: "i"} },
+        { userName: { $regex: userName, $options: "i"} },
         { displayName: 1, userName: 1, _id: 1 }
     );
 

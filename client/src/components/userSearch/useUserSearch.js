@@ -17,13 +17,16 @@ export const useUserSearch = (search, filter) => {
         
         if (!search) {
             setLoading(false);
-            return; 
+            return;
         }
         
         setLoading(true);
         
         timeoutRef.current = setTimeout(() => {
-            Axios.get(`/users/search/${search}`)
+            
+            Axios.get(`/users/search`, {
+                params: { userName: search }
+            })
             .then(res => {
                 
                 // if a filter function was passed in, apply it to the data

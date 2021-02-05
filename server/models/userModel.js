@@ -5,7 +5,7 @@ const userSchema = new Schema({
     type: String,
     trim: true, // remove front and back whitespace if it exists
     required: "Email Address is required",
-    validate: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
     index: {
       unique: true,
       collation: { locale: 'en', strength: 2 }

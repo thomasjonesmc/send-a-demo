@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { Popup } from "components/reusable/popup/Popup";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { UserSearch } from "./UserSearch";
 
 export const ContributorSearch = ({demo, onAddContributor, onExit}) => {
@@ -38,12 +38,13 @@ export const ContributorSearch = ({demo, onAddContributor, onExit}) => {
     }
 
     // filter out the creator and users who are already contributors
-    const filterUsers = (u) => {
+    // callback so it doesn't keep changing as demo state updates
+    const filterUsers = useCallback((u) => {
         const isCreator = u._id === demo.creator._id;
         const isContributor = demo.contributors.includes(u._id);
 
         return !isCreator && !isContributor;
-    }
+    }, [demo.contributors, demo.creator._id]);
 
     return (
         <Popup title="Add User to Demo" onExit={onExit}>

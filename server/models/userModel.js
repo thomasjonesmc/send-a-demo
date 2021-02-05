@@ -1,12 +1,21 @@
 const { Schema, model } = require("mongoose");
 
 const userSchema = new Schema({
-  email: { type: String, required: true, unique: true },
+  email: { 
+    type: String,
+    trim: true, // remove front and back whitespace if it exists
+    required: "Email Address is required",
+    validate: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
+    index: {
+      unique: true,
+      collation: { locale: 'en', strength: 2 }
+    }
+  },
   password: { type: String, required: true, minlength: 5 },
   userName: { 
     type: String, 
     required: true,
-    validate: [ /^[a-zA-Z0-9_]{0,15}$/, "Invalid Username" ],
+    match: [ /^[a-zA-Z0-9_]{0,15}$/, "Invalid Username" ],
     maxlength: 15,
     // https://stackoverflow.com/questions/13991604/mongoose-schema-validating-unique-field-case-insensitive
     index: {

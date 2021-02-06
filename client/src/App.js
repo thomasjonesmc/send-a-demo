@@ -1,22 +1,19 @@
-import React, { useContext } from "react";
+import React from "react";
 import Header from "components/header/Header";
-import UserContext from "context/UserContext";
 import { Routes } from "components/routes/Routes";
 import { BrowserRouter } from "react-router-dom";
+import { UserProvider } from "context/UserContext";
 import "style.css";
 
 export default function App() { 
-
-  const { user, loading } = useContext(UserContext);
-
-  if (loading) return null;
-  
   return (
     <BrowserRouter>
+    <UserProvider>
       <div id="app">
         <Header />
-        <Routes user={user} />
+        <Routes />
       </div>
+    </UserProvider>
     </BrowserRouter>
   );
 }

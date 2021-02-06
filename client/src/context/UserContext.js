@@ -18,8 +18,13 @@ export const UserProvider = (props) => {
         .then(res => setUser(res.data))
         .catch(() => setUser(null))
         .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, []);
+
+  // could add a custom loading component here
+  if (loading) return <div>LOADING USER</div>
 
   // return the UserContext.Provider with the values already baked in. This way our app component only has to be wrapped in the UserProvider
   // we could even override the value prop with different values if we wanted if we passed `value` in as props

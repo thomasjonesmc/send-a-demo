@@ -8,9 +8,14 @@ import NewDemo from "components/pages/myDemos/NewDemo";
 import Demo from "components/pages/demo/Demo";
 import { Profile } from "components/pages/profile/Profile";
 import { Follow } from "components/pages/follow/Follow";
+import UserContext from "context/UserContext";
+import { useContext } from "react";
 
-export const Routes = ({user}) => (
-    <Switch>
+export const Routes = () => {
+
+    const { user } = useContext(UserContext);
+
+    return <Switch>
         <ProtectedRoute exact path="/" component={Home} condition={!user} redirect="/my-demos" />
         <ProtectedRoute exact path="/login" component={Login} condition={user === null} redirect="/my-demos"/>
         <ProtectedRoute exact path="/register" component={Register} condition={user === null} redirect="/my-demos" />
@@ -22,4 +27,4 @@ export const Routes = ({user}) => (
         <Route exact path="/users/:userName/following" component={Follow} condition={user} />
         <Route path="/" render={() => <div className="center">404 - Page Not Found</div>} />
     </Switch>
-)
+}

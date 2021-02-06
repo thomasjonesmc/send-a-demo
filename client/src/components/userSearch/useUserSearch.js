@@ -44,6 +44,9 @@ export const useUserSearch = (search, filter) => {
             .finally(() => setLoading(false));
         }, 500);
 
+        // clear the timeout when we unmount so we don't make any unwanted Axios requests
+        return() => clearTimeout(timeoutRef.current);
+        
     }, [search, filter]);
 
     return { users, setUsers, error, loading };

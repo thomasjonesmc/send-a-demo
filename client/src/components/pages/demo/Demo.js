@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useHistory } from 'react-router-dom';
 import { Button, IconButton } from "components/reusable/button/Button";
 import { useDemo } from "./useDemo";
 import { Track } from "./track/Track";
@@ -25,6 +26,7 @@ export default function Demo({ location }) {
   const [playing, setPlaying] = useState(false);
   const [ showSearch, setShowSearch ] = useState(false);
   const [ showSettings, setShowSettings ] = useState(false);
+  const history = useHistory();
 
   //Controls play/pause
   useEffect(() => {
@@ -38,6 +40,12 @@ export default function Demo({ location }) {
     }
   }, [currentTime, demoLength]);
 
+  const deleteDemo = async (demo) => {
+    if (window.confirm(`Are you sure you want to delete your demo "${demo.title}" ?`)) {
+      await Axios.delete(`/demos/${demo._id}`);
+      history.push('/my-demos');
+    }
+  }
 
   const onAddContributor = (updatedDemo) => {
     setDemo(updatedDemo);
@@ -68,7 +76,7 @@ export default function Demo({ location }) {
       </div>
 
       <div className="demoControlButtonsContainer">
-        <IconButton component={FaRegTrashAlt} />
+        <IconButton component={FaRegTrashAlt} onClick={() => deleteDemo(demo)} />
         <IconButton component={MdPersonAdd} onClick={() => setShowSearch(show => !show)} />
         <IconButton component={MdSettings} onClick={() => setShowSettings(show => !show)} />
       </div>

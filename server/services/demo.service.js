@@ -75,18 +75,23 @@ const modifyTrackStartTime = (trackId, startTime) => {
     return Track.findByIdAndUpdate(trackId, { trackStart: startTime });
 }
 
-const deleteDemoById = (demoId) => {
+const deleteDemoById = async (demoId) => {
+    const demo = await Demo.findById(demoId);
+    const tracks = demo.tracks;
+
+    await tracks.forEach(track => deleteTrack(demoId, track._id));
+
     return Demo.findByIdAndDelete(demoId);
 }
 
 const deleteTrack = async (demoId, trackId) => {
-    const track = await Track.findByIdAndDelete(trackId);
-
-    Demo.findOneAndUpdate(
+    await Demo.findOneAndUpdate(
         { tracks: trackId },
         { $pull: { tracks: trackId } },
-        { new: true }
+        { new: true},
     );
+
+    const track = await Track.findByIdAndDelete(trackId);
 
     await s3.deleteFile(`${demoId}/${trackId}`);
 

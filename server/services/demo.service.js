@@ -77,9 +77,11 @@ const modifyTrackStartTime = (trackId, startTime) => {
 
 const deleteDemoById = async (demoId) => {
     const demo = await Demo.findById(demoId);
-    const tracks = demo.tracks;
 
-    await tracks.forEach(track => deleteTrack(demoId, track._id));
+    demo.tracks.forEach(async track => {
+        await Track.findByIdAndDelete(track._id);
+        await s3.deleteFile(`${demoId}/${track._id}`);
+    });
 
     return Demo.findByIdAndDelete(demoId);
 }

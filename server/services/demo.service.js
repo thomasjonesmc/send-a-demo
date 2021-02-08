@@ -88,7 +88,7 @@ const deleteTrack = async (demoId, trackId) => {
     await Demo.findOneAndUpdate(
         { tracks: trackId },
         { $pull: { tracks: trackId } },
-        { new: true},
+        { new: true }
     );
 
     const track = await Track.findByIdAndDelete(trackId);

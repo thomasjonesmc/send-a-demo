@@ -6,8 +6,6 @@ import React, { useEffect, useRef, useState } from 'react';
 
 export const TrackSettings = ({track, onExit, onUpdateTrack}) => {
 
-    console.log("TRACK", track);
-
     const [ title, setTitle ] = useState(track.trackTitle);
     const [ error, setError ] = useState(null);
     const [ notice, setNotice ] = useState(null);

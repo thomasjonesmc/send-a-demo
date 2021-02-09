@@ -46,6 +46,13 @@ router.put("/:demoId/update", (req, res) => {
     respond(res, () => serv.updateDemo(demoId, title, isPublic));
 });
 
+router.put("/update-track/:trackId", (req, res) => {
+    const { trackId } = req.params;
+    const { title } = req.body;
+
+    respond(res, () => serv.updateTrack(trackId, title));
+});
+
 router.delete("/:demoId", (req, res) => {
     const { demoId } = req.params;
     respond(res, () => serv.deleteDemoById(demoId));

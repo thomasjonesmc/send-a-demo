@@ -10,6 +10,7 @@ import MicRecorder from "mic-recorder-to-mp3";
 import { Waveform } from "./Waveform";
 import { TrackSettings } from "./TrackSettings";
 import { MdSettings } from "react-icons/md";
+import { StartTimeSlider } from "./StartTimeSlider";
 
 export const Track = ({
   track,
@@ -256,6 +257,8 @@ export const Track = ({
             </div>
           </div>
         </div>
+
+        <StartTimeSlider track={track} demoLength={demoLength} setTracks={setTracks} />
 
         <div className="trackControls">
           {/* recorder is null if the user does not allow recording in browser. don't let user click start if its null */}

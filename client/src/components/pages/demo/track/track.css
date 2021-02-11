@@ -10,10 +10,12 @@
     display: flex;
 }
 
+.trackRight {
+    flex: 4;
+}
+
 .trackWaveContainer {
     background-color: lightgray;
-    padding: 0;
-    flex: 4;
     display: flex;
 }
 
@@ -131,4 +133,49 @@
     border-radius: 50%;
     background: gray;
     cursor: pointer;
+}
+
+/* Start Time Slider */
+.startSliderContainer {
+    padding: 0px;
+    display: flex;
+    background-color: lightgray;
+    border-top: 2px solid gray;
+}
+
+.startSlider {
+    flex: 1;
+    background-color: lightgray;
+}
+
+.startSlider::-moz-range-thumb,
+.startSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0px;
+    height: 100%;
+    cursor: pointer;
+
+}
+
+.startSliderTime {
+    white-space: nowrap;
+    padding: 0px 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: small;
+    border-left: 2px solid gray;
+}
+
+.startSliderButton {
+    border: none;
+    background-color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: small;
+    border-right: 2px solid gray;
+    padding: 4px;
 }

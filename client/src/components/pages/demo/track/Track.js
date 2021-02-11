@@ -26,7 +26,7 @@ export const Track = ({
 
   const [error, setError] = useState(null);
   const [hasAudio, setHasAudio] = useState(!!track.trackSignedURL);
-  const [startTime, setStartTime] = useState(null);
+  const [startTime, setStartTime] = useState(track.trackStart);
   const [recording, setRecording] = useState(false);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -234,31 +234,36 @@ export const Track = ({
     <>
       <div className="trackContainer">
         <div className="trackTop">
+
           <div className="trackInfo">
             <h3 title={track.trackTitle}>{track.trackTitle}</h3>
             <div>{track.trackAuthor}</div>
           </div>
 
-          <div className="trackWaveContainer">
-            {track.player && 
-            <Waveform
-              track={track}
-              demoLength={demoLength}
-              timeState={[currentTime, setCurrentTime]}
-              playingState={[playing, setPlaying]}
-            />}
-            <div className="trackWaveButtonContainer">
-              <button onClick={deleteTrack} className="trackWaveButton">
-                <FaTimes />
-              </button>
-              <button onClick={() => setShowSettings(show => !show)} className="trackWaveButton">
-                <MdSettings />
-              </button>
+          <div className="trackRight">
+
+            <div className="trackWaveContainer">
+              {track.player && <Waveform
+                track={track}
+                demoLength={demoLength}
+                timeState={[currentTime, setCurrentTime]}
+                playingState={[playing, setPlaying]}
+                />}
+
+              <div className="trackWaveButtonContainer">
+                <button onClick={deleteTrack} className="trackWaveButton">
+                  <FaTimes />
+                </button>
+                <button onClick={() => setShowSettings(show => !show)} className="trackWaveButton">
+                  <MdSettings />
+                </button>
+              </div>
+              
             </div>
+            <StartTimeSlider track={track} demoLength={demoLength} setTracks={setTracks} startTimeState={[startTime, setStartTime]} />
           </div>
         </div>
 
-        <StartTimeSlider track={track} demoLength={demoLength} setTracks={setTracks} />
 
         <div className="trackControls">
           {/* recorder is null if the user does not allow recording in browser. don't let user click start if its null */}

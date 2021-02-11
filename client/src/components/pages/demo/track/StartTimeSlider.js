@@ -1,16 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useRef } from 'react';
+import { FaMinus, FaPlus } from 'react-icons/fa';
 
-export const StartTimeSlider = ({track, demoLength, setTracks}) => {
+export const StartTimeSlider = ({track, demoLength, setTracks, startTimeState}) => {
 
-    const [ start, setStart ] = useState(0);
+    const [ start, setStart ] = startTimeState;
     const maxStart = track.player ? demoLength - track.player.buffer.duration : 0;
 
     const timeout = useRef(null);
-
-    // any time the track start changes, update the start
-    useEffect(() => {
-        setStart(track.trackStart);
-    }, [track.trackStart]);
 
     // clear the timeout on unmount
     useEffect(() => {
@@ -26,11 +23,12 @@ export const StartTimeSlider = ({track, demoLength, setTracks}) => {
         clearTimeout(timeout.current);
 
         timeout.current = setTimeout(() => {
-            console.log("It's been 1 second since we adjusted the start time");
-
             // if the track has a URL we know it has been uploaded to the database before
             if (track.trackSignedURL) {
-                console.log("Make an Axios request to update the track's trackStart so it persists across refresh");
+                axios.post(`/demos/modify-track-start-time`, {
+                    trackId: track._id,
+                    startTime: startValue
+                });
             }
         }, 1000);
 
@@ -50,12 +48,17 @@ export const StartTimeSlider = ({track, demoLength, setTracks}) => {
         track.player.unsync().stop().sync().start(newStart);
     }
 
-    return <div style={{padding: "10px", display: "flex", alignItems: "center", justifyContent: "center"}}>
-        {start !== null && <>
-            <input type="range" step={.001} min={0} max={maxStart} value={start} onChange={e => startChange(e.target.value)} />
-            <button onClick={() => startChange(start - .001)}>Minus 0.001</button>
-            <button onClick={() => startChange(start + .001)}>Plus 0.001</button>
-            <div>Start {start.toFixed(3)}</div>
-        </>}
+    // if the track has no startTime or the maxStart is 0 (meaning it can not be changed to anything since its stuck at 0)
+    if (start === null || maxStart <= 0) return null;
+
+    return <div className="startSliderContainer">
+        <button className="startSliderButton" onClick={() => startChange(start - .001)}>
+            <FaPlus />
+        </button>
+        <button className="startSliderButton" onClick={() => startChange(start + .001)}>
+            <FaMinus />
+        </button>
+        <input className="startSlider" type="range" step={.001} min={0} max={maxStart} value={start} onChange={e => startChange(e.target.value)} />
+        <div className="startSliderTime">{start.toFixed(3)}</div>
     </div>
 }

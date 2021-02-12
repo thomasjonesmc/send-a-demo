@@ -10,11 +10,44 @@
     display: flex;
 }
 
-.trackWave {
-    background-color: lightgray;
-    padding: 0;
+.trackRight {
     flex: 4;
+}
+
+.trackWaveContainer {
+    background-color: lightgray;
+    display: flex;
+}
+
+.trackWaveform {
     position: relative;
+    flex: 1;
+}
+
+.trackWaveButtonContainer {
+    border-left: 2px solid gray;
+    background-color: white;
+    margin-left: auto; /* so it goes all the way to the right side when there is no waveform */
+    z-index: 1; /* added z-index because the <RenderedWaveform> container overlaps otherwise */
+}
+
+.trackWaveButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 10px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 1px solid black;
+    cursor: pointer;
+    font-size: large;
+    background-color: lightgray;
+    margin: 10px 5px 0px 5px;
+}
+
+.trackWaveButton:last-of-type {
+    margin-bottom: 10px;
 }
 
 .trackInfo {
@@ -39,21 +72,6 @@
     padding: 10px;
 }
 
-.deleteTrackButton {
-    position: absolute;
-    z-index: 6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 10px;
-    right: 10px;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    font-size: large;
-}
 
 /* temporary style so it looks a bit nicer */
 .trackControlButton {
@@ -115,4 +133,49 @@
     border-radius: 50%;
     background: gray;
     cursor: pointer;
+}
+
+/* Start Time Slider */
+.startSliderContainer {
+    padding: 0px;
+    display: flex;
+    background-color: lightgray;
+    border-top: 2px solid gray;
+}
+
+.startSlider {
+    flex: 1;
+    background-color: lightgray;
+}
+
+.startSlider::-moz-range-thumb,
+.startSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0px;
+    height: 100%;
+    cursor: pointer;
+
+}
+
+.startSliderTime {
+    white-space: nowrap;
+    padding: 0px 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: small;
+    border-left: 2px solid gray;
+}
+
+.startSliderButton {
+    border: none;
+    background-color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: small;
+    border-right: 2px solid gray;
+    padding: 4px;
 }

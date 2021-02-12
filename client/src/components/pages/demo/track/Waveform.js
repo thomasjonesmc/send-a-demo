@@ -73,7 +73,7 @@ export const Waveform = ({
 
 
   return (
-    <div>
+    <div className="trackWaveform">
       {/* Scrubber is absolutely positioned over the waveform */}
       <Scrubber 
         timeState={[currentTime, setCurrentTime]}

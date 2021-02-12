@@ -8,6 +8,9 @@ import { useParams } from "react-router-dom";
 import ErrorNotice from "components/reusable/error/Error";
 import MicRecorder from "mic-recorder-to-mp3";
 import { Waveform } from "./Waveform";
+import { TrackSettings } from "./TrackSettings";
+import { MdSettings } from "react-icons/md";
+import { StartTimeSlider } from "./StartTimeSlider";
 
 export const Track = ({
   track,
@@ -23,13 +26,14 @@ export const Track = ({
 
   const [error, setError] = useState(null);
   const [hasAudio, setHasAudio] = useState(!!track.trackSignedURL);
-  const [startTime, setStartTime] = useState(null);
+  const [startTime, setStartTime] = useState(track.trackStart);
   const [recording, setRecording] = useState(false);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [volume, setVolume] = useState(0);
   const [tracks, setTracks] = tracksState;
   const [playing, setPlaying] = playingState;
+  const [showSettings, setShowSettings] = useState(false);
 
   const recorder = useMemo(() => new MicRecorder({ bitRate: 128 }), []);
 
@@ -215,27 +219,51 @@ export const Track = ({
     }
   };
 
+  const onUpdateTrack = (updatedTrack) => {
+    setTracks(tracks => tracks.map(t => {
+      if (t._id === track._id) {
+          // spread the original track THEN the updatedOne so we only overwrite updated fields
+          // this makes sure we don't remove the track's audio player since a track fetched from the server won't have a player
+          return { ...t, ...updatedTrack };
+      }
+      return t;
+    }));
+  }
+
   return (
     <>
       <div className="trackContainer">
         <div className="trackTop">
+
           <div className="trackInfo">
             <h3 title={track.trackTitle}>{track.trackTitle}</h3>
             <div>{track.trackAuthor}</div>
           </div>
 
-          <div className="trackWave">
-            {track.player ? <Waveform
-                              track={track}
-                              demoLength={demoLength}
-                              timeState={[currentTime, setCurrentTime]}
-                              playingState={[playing, setPlaying]}
-                            /> : null}
-            <button onClick={deleteTrack} className="deleteTrackButton">
-              <FaTimes />
-            </button>
+          <div className="trackRight">
+
+            <div className="trackWaveContainer">
+              {track.player && <Waveform
+                track={track}
+                demoLength={demoLength}
+                timeState={[currentTime, setCurrentTime]}
+                playingState={[playing, setPlaying]}
+                />}
+
+              <div className="trackWaveButtonContainer">
+                <button onClick={deleteTrack} className="trackWaveButton">
+                  <FaTimes />
+                </button>
+                <button onClick={() => setShowSettings(show => !show)} className="trackWaveButton">
+                  <MdSettings />
+                </button>
+              </div>
+              
+            </div>
+            <StartTimeSlider track={track} demoLength={demoLength} setTracks={setTracks} startTimeState={[startTime, setStartTime]} />
           </div>
         </div>
+
 
         <div className="trackControls">
           {/* recorder is null if the user does not allow recording in browser. don't let user click start if its null */}
@@ -264,6 +292,8 @@ export const Track = ({
           <VolumeSlider value={volume} onChange={volumeChange} onMute={volumeMute} onMax={volumeMax} />
         </div>
       </div>
+
+      {showSettings && <TrackSettings track={track} onExit={() => setShowSettings(false)} onUpdateTrack={onUpdateTrack} />}
 
       {error && (
         <div style={{ padding: "0px 15px" }}>

@@ -144,6 +144,22 @@ const updateDemo = async (demoId, title, isPublic) => {
     return { ...demo, creator };
 }
 
+const updateTrack = async (trackId, title) => {
+
+    if (!title || !trackId) {
+        error("Track title and Id are required to update");
+    }
+
+    const updatedTrack = await Track.findByIdAndUpdate(trackId, 
+        { trackTitle: title }, 
+        { new: true} 
+    );
+
+    if (!updatedTrack) { error("Couldn't update track"); }
+
+    return updatedTrack.toObject();
+}
+
 // a helper function that gets demos, lets us pass in a custom mongo $match to filter
 const getDemos = (match) => {
 
@@ -194,5 +210,6 @@ module.exports = {
     deleteTrack,
     deleteTrackAudio,
     addUserToDemo,
-    updateDemo
+    updateDemo,
+    updateTrack
 }
